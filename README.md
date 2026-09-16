@@ -14,9 +14,9 @@ Vide tutoriais do PI.
 
 ## Nome do Grupo
 
-## Integrantes: <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo Pereira</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci de Oliveira</a>, <a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves Souza</a>, <a href="https://www.linkedin.com/in/victorbarq/">Yusuke Urameshi</a>, <a href="https://www.linkedin.com/in/">Roronoa Zoro</a>
+## Integrantes: <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo Pereira</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci de Oliveira</a>, <a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves Souza</a>, <a href="https://www.linkedin.com/in/">Julia Damasio de Souza</a>
 
-## Professores Orientadores: <a href="https://www.linkedin.com/in/victorbarq/">Dr. Victor Von Doom</a>, <a href="https://www.linkedin.com/in/victorbarq/">Me. Saitama</a>, <a href="https://www.linkedin.com/in/victorbarq/">Dr. Strange</a>, <a href="https://www.linkedin.com/in/victorbarq/">Me. Yoda</a>, <a href="https://www.linkedin.com/in/victorbarq/">Dr. Gero</a>
+## Professores Orientadores: <a href="https://www.linkedin.com/in/paula-astorino-432b5812a/">Paula Astorino</a>, <a href="https://www.linkedin.com/in/katia-bossi/">Kátia Bossi</a>, <a href="https://www.linkedin.com/in/francisco-escobar/">Francisco de Souza Escobar</a>, <a href="https://www.linkedin.com/in/dolemes/">David de Oliveira Lemes</a>, <a href="https://www.linkedin.com/in/j%C3%A9sus-gomes-83b769108/">Jésus Gomes</a>
 
 ## Descrição
 
@@ -26,7 +26,12 @@ Vide tutoriais do PI.
 </p>
 
 
-De um a dois parágrafos sobre o que é seu projeto e o que ele faz.
+O TrocaTicket é uma plataforma web de venda e gestão de ingressos para eventos, que
+conecta organizadores, fornecedores e o público em um único ambiente. O sistema permite
+que um organizador cadastre seu evento, configure lotes e tipos de ingresso, acompanhe
+vendas e pedidos em tempo real por um painel de controle, e faça o controle de acesso no
+dia do evento. Para o comprador, a plataforma centraliza a busca por eventos, a compra e
+o recebimento do ingresso digital.
 <br><br>
 Meu projeto ajuda estudantes FECAP a configurarem seus githubs.
 <br><br>
