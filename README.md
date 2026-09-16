@@ -10,18 +10,18 @@ Vide tutoriais do PI.
 <a href= "https://www.fecap.br/"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhZPrRa89Kma0ZZogxm0pi-tCn_TLKeHGVxywp-LXAFGR3B1DPouAJYHgKZGV0XTEf4AE&usqp=CAU" alt="FECAP - Fundação de Comércio Álvares Penteado" border="0"></a>
 </p>
 
-# Nome do Projeto
+# Troca Ticket
 
-## Nome do Grupo
+## Troca Ticket - Bingo
 
-## Integrantes: <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo Pereira</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci de Oliveira</a>, <a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves Souza</a>, <a href="https://www.linkedin.com/in/">Julia Damasio de Souza</a>
+## Integrantes: <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci</a>, <a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves</a>, <a href="https://www.linkedin.com/in/">Julia Damasio</a>
 
 ## Professores Orientadores: <a href="https://www.linkedin.com/in/paula-astorino-432b5812a/">Paula Astorino</a>, <a href="https://www.linkedin.com/in/katia-bossi/">Kátia Bossi</a>, <a href="https://www.linkedin.com/in/francisco-escobar/">Francisco de Souza Escobar</a>, <a href="https://www.linkedin.com/in/dolemes/">David de Oliveira Lemes</a>, <a href="https://www.linkedin.com/in/j%C3%A9sus-gomes-83b769108/">Jésus Gomes</a>
 
 ## Descrição
 
 <p align="center">
-<img src="https://pix4free.org/assets/library/2021-01-20/originals/game.jpg" alt="NOME DO JOGO" border="0">
+<img src="https://pix4free.org/assets/library/2021-01-20/originals/game.jpg" alt="Troca Ticket" border="0">
   Game by <a href="http://www.nyphotographic.com/">Nick Youngson</a> <a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> <a href="http://pix4free.org/">Pix4free</a>
 </p>
 
