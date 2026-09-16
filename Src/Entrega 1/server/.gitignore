@@ -27,4 +27,5 @@ routes/.*js
 *.sql
 *.js
 node_modules
+.env
 
