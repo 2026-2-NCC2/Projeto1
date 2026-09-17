@@ -39,20 +39,29 @@ May the force be with you!
 
 ## 🛠 Estrutura de pastas
 
--Raiz<br>
-|<br>
-|-->documentos<br>
-  &emsp;|-->antigos<br>
-  &emsp;|Documentação.docx<br>
-|-->executáveis<br>
-  &emsp;|-->windows<br>
-  &emsp;|-->android<br>
-  &emsp;|-->HTML<br>
-|-->imagens<br>
-|-->src<br>
-  &emsp;|-->Backend<br>
-  &emsp;|-->Frontend<br>
-|readme.md<br>
+- **Raiz**
+  - **Documentos**
+    - **Entrega 1**
+      - Cálculo - II
+      - Desenvolvimento Web Full Stack
+      - Gestão Empresarial e Dinâmicas das Organizações
+      - Projeto Interdiciplinar Programação Web
+      - Projetos em Banco de Dados
+    - **Entrega 2**
+      - Cálculo - II
+      - Desenvolvimento Web Full Stack
+      - Gestão Empresarial e Dinâmicas das Organizações
+      - Projeto Interdiciplinar Programação Web
+      - Projetos em Banco de Dados
+    - Documentação.docx
+  - **imagens**
+  - **src**
+    - **Entrega 1**
+      - Backend
+      - Frontend
+    - **Entrega 2**
+      - Backend
+      - Frontend
 
 A pasta raiz contem dois arquivos que devem ser alterados:
 
@@ -106,9 +115,13 @@ make install
 npm test
 Coloque código do prompt de comnando se for necessário
 ```
+## 🔗 Banco de Dados
+ 
+* Entrega 1: A modelagem do banco de dados está documentada em: 
+👉 [`/BD/README.md`](documentos/Entrega%201/BD/README.md)
 
 ## 📋 Licença/License
-<a href="https://github.com/2026-2-NCC2/Projeto1"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Ingresso Troca</font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> © 2026 por </font></font><a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci</a>, <a href="https://www.linkedin.com/in/julia-damasio-b6531a24a">Julia Damasio</a>, <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo</a></font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> está licenciado sob </font></font><a href="https://creativecommons.org/licenses/by/4.0/"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Creative Commons Atribuição 4.0 Internacional</font></font></a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+<a href="https://github.com/2026-2-NCC2/Projeto1"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Troca Ticket</font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> © 2026 por </font></font><a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci</a>, <a href="https://www.linkedin.com/in/julia-damasio-b6531a24a">Julia Damasio</a>, <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo</a></font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> está licenciado sob </font></font><a href="https://creativecommons.org/licenses/by/4.0/"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Creative Commons Atribuição 4.0 Internacional</font></font></a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
 
 Aqui estão as referências usadas no projeto.
 
