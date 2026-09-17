@@ -25,11 +25,6 @@ que um organizador cadastre seu evento, configure lotes e tipos de ingresso, aco
 vendas e pedidos em tempo real por um painel de controle, e faça o controle de acesso no
 dia do evento. Para o comprador, a plataforma centraliza a busca por eventos, a compra e
 o recebimento do ingresso digital.
-<br><br>
-Meu projeto ajuda estudantes FECAP a configurarem seus githubs.
-<br><br>
-May the force be with you!
-<br><br>
 
 ## 🛠 Estrutura de pastas
 
@@ -112,16 +107,10 @@ Coloque código do prompt de comnando se for necessário
 ## 🔗 Banco de Dados
  
 * Entrega 1: A modelagem do banco de dados está documentada em: 
-👉 [`/BD/README.md`](documentos/Entrega%201/BD/README.md)
+ [`/BD/README.md`](documentos/Entrega%201/BD/README.md)
 
 ## 📋 Licença/License
 <a href="https://github.com/2026-2-NCC2/Projeto1"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Troca Ticket</font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> © 2026 por </font></font><a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci</a>, <a href="https://www.linkedin.com/in/julia-damasio-b6531a24a">Julia Damasio</a>, <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo</a></font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> está licenciado sob </font></font><a href="https://creativecommons.org/licenses/by/4.0/"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Creative Commons Atribuição 4.0 Internacional</font></font></a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
 
-Aqui estão as referências usadas no projeto.
-
-1. <https://github.com/iuricode/readme-template>
-2. <https://github.com/gabrieldejesus/readme-model>
-3. <https://chooser-beta.creativecommons.org/>
-4. <https://freesound.org/>
-5. <https://www.toptal.com/developers/gitignore>
-6. Músicas por: <a href="https://freesound.org/people/DaveJf/sounds/616544/"> DaveJf </a> e <a href="https://freesound.org/people/DRFX/sounds/338986/"> DRFX </a> ambas com Licença CC 0.
+## 🎓 Aqui estão as referências usadas no projeto:
+1. https://trocaticket.com.br/
