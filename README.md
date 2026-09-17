@@ -21,8 +21,7 @@ Vide tutoriais do PI.
 ## Descrição
 
 <p align="center">
-<img src="https://pix4free.org/assets/library/2021-01-20/originals/game.jpg" alt="Troca Ticket" border="0">
-  Game by <a href="http://www.nyphotographic.com/">Nick Youngson</a> <a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a> <a href="http://pix4free.org/">Pix4free</a>
+<img src="https://github.com/2026-2-NCC2/Projeto1/blob/main/Imagens/Capa%20Troca%20Ticket%20Projeto.png?raw=true" width="700" alt="Troca Ticket" border="0">
 </p>
 
 
