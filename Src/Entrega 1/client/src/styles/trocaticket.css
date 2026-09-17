@@ -1,2 +1,14 @@
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/utilities" layer(utilities);
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Limelight&family=Monoton&display=swap');
+
+.limelight-regular {
+    font-family: "Limelight", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+.monoton-regular {
+    font-family: "Monoton";
+    font-weight: 400;
+    font-style: normal;
+}

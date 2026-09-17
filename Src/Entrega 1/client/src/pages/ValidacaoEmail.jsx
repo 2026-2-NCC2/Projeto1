@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import * as yup from 'yup'
 
-function Cadastro(){
+function ValidacaoEmail(){
 
     const [formData, setFormData] = useState({email: ''})
 
@@ -25,15 +25,15 @@ function Cadastro(){
 
     return (
         <form onSubmit={enviarValidacao}>
-            <input 
+            <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 value={formData.email}
-                onChange={handleChange} 
-                required/>
+                onChange={handleChange}
+                required />
         </form>
     )
 }
 
-export default Cadastro
+export default ValidacaoEmail

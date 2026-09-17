@@ -22,10 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-config/*.js
-routes/.*js
-*.sql
-*.js
 node_modules
-.env
+config/*.js
+routes/*.js
+server/*.js
+server/*.sql
 
