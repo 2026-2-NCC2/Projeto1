@@ -1,0 +1,147 @@
+/* NAVBAR */
+.navbar {
+  background-color: #00193b;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar__logo {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar__links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.navbar__entrar {
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  text-decoration: none;
+  background-color: #000814;
+  padding: 8px 16px;
+  border-radius: 6px;
+}
+
+.navbar__entrar:hover {
+  color: white;
+}
+
+.navbar__cadastro {
+  background-color: #fafafa;
+  color: #1A2E4A;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* HERO */
+.hero {
+  background-color: #001635;
+  padding: 96px 32px;
+  text-align: center;
+}
+
+.hero__titulo {
+  font-size: 48px;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.hero__destaque {
+  color: #7ED957;
+}
+
+.hero__subtitulo {
+  color: rgba(255,255,255,0.6);
+  font-size: 18px;
+  max-width: 560px;
+  margin: 0 auto 32px auto;
+  line-height: 1.6;
+}
+
+.hero__btn {
+  background-color: #ffffff;
+  color: #1A2E4A;
+  font-weight: bold;
+  padding: 16px 32px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+}
+
+/* COMO FUNCIONA */
+.como-funciona {
+  background-color: white;
+  padding: 64px 32px;
+}
+
+.como-funciona__titulo {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1A2E4A;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.como-funciona__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.passo {
+  background-color: #F7F8FA;
+  border: 1px solid #E2E6EA;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.passo__numero {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #1A2E4A;
+  color: #7ED957;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.passo__titulo {
+  font-weight: bold;
+  color: #1A2E4A;
+  margin-bottom: 8px;
+}
+
+.passo__desc {
+  color: #6B7A8D;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .hero__titulo { font-size: 32px; }
+  .como-funciona__grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .como-funciona__grid { grid-template-columns: 1fr; }
+}

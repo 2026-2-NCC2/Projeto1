@@ -1,0 +1,150 @@
+/* PÁGINA */
+.cadastro-page {
+  min-height: 100vh;
+  background-color: #1A2E4A;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CONTAINER CENTRAL */
+.cadastro-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+/* CARD DO FORMULÁRIO */
+.cadastro-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.cadastro-card h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1A2E4A;
+  margin-bottom: 8px;
+}
+
+.cadastro-card .subtitulo {
+  font-size: 14px;
+  color: #6B7A8D;
+  margin-bottom: 28px;
+}
+
+/* CAMPOS */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A2E4A;
+}
+
+.campo input {
+  padding: 10px 14px;
+  border: 1.5px solid #E2E6EA;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1A2E4A;
+  background-color: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.campo input:focus {
+  border-color: #1A2E4A;
+}
+
+.campo input.campo--erro {
+  border-color: #E53E3E;
+}
+
+/* MENSAGEM DE ERRO */
+.erro-msg {
+  font-size: 12px;
+  color: #E53E3E;
+  font-weight: 500;
+}
+
+.botoes-inferiores {
+  display: grid;
+  /* Cria duas colunas de tamanhos rigorosamente iguais (1fr cada) */
+  grid-template-columns: 1fr 1fr; 
+  /* Espaçamento entre os botões */
+  gap: 16px; 
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* BOTÃO CADASTRAR */
+.btn-cadastrar {
+  /* Remove o width: 50% para o Grid controlar o tamanho */
+  width: 100%; 
+  padding: 12px;
+  background-color: #7ED957;
+  color: #1A2E4A;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cadastrar:hover {
+  background-color: #62B940;
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+  /* Garante que o link ocupe todo o espaço da coluna */
+  display: block; 
+  width: 100%;
+  /* Mesma compensação de padding do botão cadastrar para ficarem idênticos */
+  padding: 12px; 
+  box-sizing: border-box;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  text-decoration: none;
+  background-color: #001029;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.btn-voltar:hover {
+  background-color: #000000;
+}
+
+/* LINK PARA LOGIN */
+.cadastro-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6B7A8D;
+}
+
+.cadastro-footer a {
+  color: #1A2E4A;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .cadastro-card {
+    padding: 28px 20px;
+  }
+}

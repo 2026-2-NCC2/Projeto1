@@ -1,0 +1,230 @@
+/* PÁGINA */
+.cadastro-page {
+  min-height: 100vh;
+  background-color: #1A2E4A;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+}
+
+/* CONTAINER CENTRAL */
+.cadastro-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+/* CARD DO FORMULÁRIO */
+.cadastro-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px; /* Leve aumento para acomodar os seletores lado a lado se necessário */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.cadastro-card h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1A2E4A;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.cadastro-card .subtitulo {
+  font-size: 14px;
+  color: #6B7A8D;
+  margin-bottom: 24px;
+}
+
+/* INDICADOR DE ETAPAS (NOVO) */
+.etapas-indicador {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #E2E6EA;
+  padding-bottom: 12px;
+}
+
+.etapa-item {
+  font-size: 13px;
+  color: #6B7A8D;
+  font-weight: 500;
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+.etapa-item.ativa {
+  color: #1A2E4A;
+  font-weight: 700;
+}
+
+/* CAMPOS */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.campo label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A2E4A;
+  text-align: left;
+}
+
+.campo input {
+  padding: 10px 14px;
+  border: 1.5px solid #E2E6EA;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1A2E4A;
+  background-color: white;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.campo input:focus {
+  border-color: #1A2E4A;
+}
+
+/* SELETOR DE FUNÇÕES/CARDS (NOVO) */
+.role-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 1.5px solid #E2E6EA;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: white;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.role-card:hover {
+  border-color: #1A2E4A;
+  background-color: #F8FAFC;
+}
+
+.role-card.selecionado {
+  border-color: #1A2E4A;
+  background-color: #EBF1FA;
+}
+
+.role-icon {
+  font-size: 24px;
+  margin-right: 14px;
+}
+
+.role-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A2E4A;
+}
+
+.role-desc {
+  margin: 2px 0 0 0;
+  font-size: 12px;
+  color: #6B7A8D;
+}
+
+/* GRID DE BOTÕES */
+.botoes-inferiores {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+  align-items: center;
+  margin-top: 24px;
+}
+
+/* Caso o botão avançar ocupe espaço sozinho (na primeira etapa) */
+.botoes-inferiores.unico {
+  grid-template-columns: 1fr;
+}
+
+/* BOTÃO AVANÇAR / CONCLUIR */
+.btn-cadastrar {
+  width: 100%; 
+  padding: 12px;
+  background-color: #7ED957;
+  color: #1A2E4A;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cadastrar:hover {
+  background-color: #62B940;
+}
+
+.btn-cadastrar:disabled {
+  background-color: #E2E6EA;
+  color: #A0AEC0;
+  cursor: not-allowed;
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+  display: block; 
+  width: 100%;
+  padding: 12px; 
+  box-sizing: border-box;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  background-color: #001029;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-voltar:hover {
+  background-color: #000000;
+}
+
+/* TELA DE SUCESSO (NOVO) */
+.sucesso-container {
+  text-align: center;
+}
+
+.sucesso-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .cadastro-card {
+    padding: 28px 20px;
+  }
+  .etapas-indicador {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

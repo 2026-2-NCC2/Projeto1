@@ -1,14 +1,114 @@
-@import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Limelight&family=Monoton&display=swap');
+@import url('https://googleapis.com');
 
 .limelight-regular {
-    font-family: "Limelight", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
+  font-family: "Limelight", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
   
 .monoton-regular {
-    font-family: "Monoton";
-    font-weight: 400;
-    font-style: normal;
+  font-family: "Monoton", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000814; /* Cor de fundo padrão do site */
+  font-family: 'Inter', sans-serif; /* Fonte legível para o corpo do site */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   2. COMPONENTE: FOOTER (ESTILIZAÇÃO COMPLETA EM LINHA)
+   ========================================================================== */
+
+/* Container principal do rodapé */
+.footer-container {
+  background-color: #1A2E4A; /* Azul escuro correto do container */
+  padding: 30px 24px;       /* Espaçamento interno confortável */
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(255, 255, 255, 0.05); /* Borda superior sutil */
+}
+
+/* Alinha os blocos principais nas extremidades */
+.footer-content {
+  display: flex;
+  flex-direction: row;       
+  align-items: center;       
+  justify-content: space-between; /* Empurra marca para a esquerda e copyright para a direita */
+  width: 100%;
+  max-width: 1200px;         /* Mantém alinhado com o limite máximo do Header */
+  gap: 32px;                 /* Evita que os blocos se encostem */
+}
+
+/* Agrupa a Imagem da Logo e o Texto Descritivo */
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;                 /* Espaço entre a imagem e o texto */
+  flex: 1;                   /* Permite que o texto se estique horizontalmente */
+}
+
+/* Imagem da logo tratada para o tamanho horizontal */
+.footer-logo {
+  height: 44px;              /* Altura ideal para não distorcer no rodapé */
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;            /* Impede a imagem de amassar */
+}
+
+/* Texto corrido em uma linha só */
+.footer-text {
+  color: rgba(255, 255, 255, 0.6); /* Branco fosco com opacidade para leitura agradável */
+  font-size: 13px; 
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 300;
+  text-align: left;          
+}
+
+/* Bloco do texto de Copyright */
+.footer-copyright {
+  color: rgba(255, 255, 255, 0.3); /* Texto discreto */
+  font-size: 11px;
+  margin: 0;
+  text-align: right;         /* Alinhado totalmente à direita */
+  flex-shrink: 0;            /* Garante que o texto não quebre linhas sozinho */
+}
+
+/* ==========================================================================
+   3. REGRAS DE RESPONSIVIDADE (MOBILE / CELULAR)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;  /* Dispõe em blocos verticais no celular */
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .footer-brand {
+    flex-direction: column;  /* Logo fica em cima do texto no celular */
+    text-align: center;
+  }
+
+  .footer-text {
+    text-align: center;      /* Centraliza o texto corrido no celular */
+  }
+
+  .footer-copyright {
+    text-align: center;      /* Centraliza o copyright no celular */
+  }
 }

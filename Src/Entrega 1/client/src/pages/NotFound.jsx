@@ -1,6 +1,9 @@
 function NotFound(){
     return(
-        <></>
+        <>
+        
+        
+        </>
     )
 }
 
