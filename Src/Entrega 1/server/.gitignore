@@ -25,6 +25,6 @@ dist-ssr
 node_modules
 config/*.js
 routes/*.js
-server/*.js
-server/*.sql
+*.js
+*.sql
 
