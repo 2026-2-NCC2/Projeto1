@@ -18,7 +18,7 @@ function LandingPage() {
         <span className="navbar__logo">🎟 TrocaTicket</span>
         <div className="navbar__links">
           <Link to="/login" className="navbar__entrar">Entrar</Link>
-          <Link to ="/cadastro" className="navbar__cadastro">Criar conta</Link>
+          <Link to ="/Cadastro" className="navbar__cadastro">Criar conta</Link>
         </div>
       </nav>
 

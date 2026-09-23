@@ -5,7 +5,6 @@ import NotFound from '../pages/NotFound'
 import Cadastro from '../pages/Cadastro'
 import Login from '../pages/Login'
 import PainelDeEventos from '../pages/PainelDeEventos'
-import CadastroUnificado from '../pages/CadastroUnificado'
 
 export const router = createBrowserRouter([
     {
@@ -32,9 +31,5 @@ export const router = createBrowserRouter([
     {
         path: "/PainelDeEventos",
         element: <PainelDeEventos/>,
-    },
-    {
-        path: "/CadastroUnificado",
-        element: <CadastroUnificado/>,
     },
 ])
