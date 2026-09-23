@@ -91,17 +91,22 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .page-header__inner {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;       /* vira a referência para o texto absoluto */
   display: flex;
   align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  justify-content: flex-end; /* só o botão fica no fluxo normal, à direita */
+  min-height: 64px;          /* evita o header "colapsar" com o texto fora do fluxo */
 }
 
-/* Bloco de texto centralizado dentro do espaço disponível (testando layout) */
+/* Centralizado em relação à página inteira, independente da largura do botão */
 .page-header__text {
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
   text-align: center;
+  width: max-content;
+  max-width: 90%;
 }
 
 .page-header__eyebrow {
@@ -313,8 +318,8 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   .navbar__tab { font-size: 11px; padding: 7px 10px; }
   .page-header { padding: 20px 16px 28px; }
   .page-header__title { font-size: 22px; }
-  .page-header__inner { flex-direction: column; align-items: stretch; }
-  .page-header__text { text-align: left; }
+  .page-header__inner { flex-direction: column; align-items: stretch; min-height: 0; }
+  .page-header__text { position: static; transform: none; text-align: left; width: auto; max-width: none; }
   .filters-bar, .eventos-grid { padding-left: 16px; padding-right: 16px; }
   .search-wrap { max-width: 100%; }
 }
