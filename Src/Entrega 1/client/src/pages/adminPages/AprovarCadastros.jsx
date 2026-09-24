@@ -145,7 +145,7 @@ export default function AprovarCadastros() {
         )}
       </div>
     </div>
-    
+    <Footer/>
     </>
   );
 }
