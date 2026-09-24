@@ -2,7 +2,7 @@
 
 ## Diagrama
 
-![Diagrama do Banco de Dados](Imagens/Diagrama.png)
+![Diagrama do Banco de Dados](/Imagens/Diagrama.png)
 
 ## Tabelas e Atributos
 
