@@ -4,15 +4,15 @@
 @theme {
   --font-sans: 'Inter', sans-serif;
 
-  --color-navy: #1A2E4A;
-  --color-navy-deep: #0d1b2e;
-  --color-navy-2: #1a2f4e;
-  --color-verde: #7ED957;
-  --color-verde-hover: #62B940;
-  --color-brand: #4ade80;
+  --color-navy:       #1A2E4A;
+  --color-navy-deep:  #0d1b2e;
+  --color-navy-2:     #1a2f4e;
+  --color-verde:      #7ED957;
+  --color-verde-hover:#62B940;
+  --color-brand:      #4ade80;
   --color-brand-dark: #15803d;
-  --color-muted: #6B7A8D;
-  --color-borda: #E2E6EA;
+  --color-muted:      #6B7A8D;
+  --color-borda:      #E2E6EA;
 }
 
 @layer base {
@@ -33,4 +33,32 @@
 
   button, input, textarea, select { font: inherit; }
   button, a { -webkit-tap-highlight-color: transparent; }
+
+  /* ── Tokens de compatibilidade para as telas Admin ──
+     Os componentes AdminDashboard e AprovarCadastros usam var(--color-*)
+     com os nomes abaixo. Estes aliases mapeiam para a paleta do projeto. */
+  :root {
+    --color-primary:       #1A2E4A;
+    --color-primary-light: #253D61;
+    --color-accent:        #7ED957;
+    --color-accent-dark:   #62B940;
+    --color-bg:            #F7F8FA;
+    --color-surface:       #FFFFFF;
+    --color-border:        #E2E6EA;
+    --color-text:          #1A2E4A;
+    --color-text-muted:    #6B7A8D;
+    --color-text-light:    #A0AABB;
+    --color-danger:        #E53E3E;
+    --color-danger-light:  #FFF5F5;
+    --color-warning:       #D69E2E;
+    --color-warning-light: #FFFFF0;
+    --color-success:       #38A169;
+    --color-success-light: #F0FFF4;
+    --color-pending:       #805AD5;
+    --color-pending-light: #FAF5FF;
+
+    --shadow-sm: 0 1px 3px rgba(26,46,74,0.08);
+    --shadow-md: 0 4px 12px rgba(26,46,74,0.10);
+    --shadow-lg: 0 8px 24px rgba(26,46,74,0.14);
+  }
 }
