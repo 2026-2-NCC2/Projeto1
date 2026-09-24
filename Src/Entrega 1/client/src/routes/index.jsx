@@ -23,7 +23,6 @@ export const router = createBrowserRouter([
     {
         path:"/Cadastro",
         element:<Cadastro/>,
-
     },
     {
         path: "/Login",
