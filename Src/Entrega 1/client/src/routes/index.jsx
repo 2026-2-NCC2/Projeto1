@@ -3,9 +3,9 @@ import LandingPage from '../pages/LandingPage'
 import ValidacaoEmail from '../pages/ValidacaoEmail'
 import NotFound from '../pages/NotFound'
 import Cadastro from '../pages/Cadastro'
-import TelaDeEscolha from '../pages/TelaDeEscolha'
 import Login from '../pages/Login'
 import PainelDeEventos from '../pages/PainelDeEventos'
+import AprovacaoCadastros from '../pages/adminPages/AprovacaoCadastros'
 
 export const router = createBrowserRouter([
     {
@@ -26,15 +26,15 @@ export const router = createBrowserRouter([
 
     },
     {
-        path: "/TelaDeEscolha",
-        element: <TelaDeEscolha/>,
-    },
-    {
         path: "/Login",
         element: <Login/>,
     },
     {
         path: "/PainelDeEventos",
         element: <PainelDeEventos/>,
+    },
+    {
+        path: "/AprovacaoCadastros",
+        element: <AprovacaoCadastros/>,
     },
 ])
