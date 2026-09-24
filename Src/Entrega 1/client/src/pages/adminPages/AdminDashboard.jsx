@@ -22,8 +22,8 @@ const IconReport = () => <svg width="20" height="20" {...S}><path d="M14 2H6a2 2
 
 // ─── Navbar Admin ─────────────────────────────────────────────────────────────
 const NAV_LINKS = [
-  { to: '/admin',           label: 'Dashboard'  },
-  { to: '/AprovacaoCadastros', label: 'Aprovações' },
+  { to: '/AdminDashboard',           label: 'Dashboard'  },
+  { to: '/AprovarCadastros', label: 'Aprovações' },
 ];
 
 function AdminNav() {
