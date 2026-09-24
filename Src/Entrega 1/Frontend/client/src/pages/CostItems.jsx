@@ -108,5 +108,6 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
         })}
       </div>
     </FormCard>
+    
   );
 }

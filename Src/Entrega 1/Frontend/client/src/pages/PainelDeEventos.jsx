@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // ─── Dados de exemplo iniciais ────────────────────────────────────────────────
 const EVENTOS_INICIAIS = [
@@ -73,18 +74,6 @@ export default function PainelDeEventos() {
   });
 
   // ─── Handlers de Fluxos e Ações ─────────────────────────────────────────────
-  function abrirModalCriar() {
-    setModoModal("criar");
-    setFormId(null);
-    setFormTitulo("");
-    setFormInicio("");
-    setFormFim("");
-    setFormEndereco("");
-    setFormStatus("Publicado");
-    setFormTicket("");
-    setModalAberto(true);
-  }
-
   function abrirModalEditar(ev) {
     setModoModal("editar");
     setFormId(ev.id);
@@ -199,9 +188,9 @@ export default function PainelDeEventos() {
                 <h1 className="text-white text-[26px] font-extrabold tracking-[-0.5px]">{activeTab === "meus" ? "Meus Eventos Criados" : "Painel de Eventos"}</h1>
                 <p className="text-white/45 text-[13px] mt-1.5">{eventos.length} eventos cadastrados · {eventos.filter(e => e.status_publicacao === "Publicado").length} publicados</p>
               </div>
-              <button onClick={abrirModalCriar} className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]">
+              <Link to="/criar-evento/evento" className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]">
                 <IconPlus /> Criar Evento
-              </button>
+              </Link>
             </div>
           </div>
 

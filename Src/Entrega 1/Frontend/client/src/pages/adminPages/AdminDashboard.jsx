@@ -155,7 +155,7 @@ export default function AdminDashboard() {
         <section className="mt-10">
           <h2 className="mb-4 text-lg font-bold text-[var(--color-primary)]">Acesso rápido</h2>
           <div className="flex flex-col gap-3">
-            <QuickCard to="/AprovacaoCadastros" icon="✅"
+            <QuickCard to="/AprovarCadastros" icon="✅"
               titulo="Aprovar Cadastros"
               desc={`${stats.pendentes} solicitações aguardando revisão`}
               badge={stats.pendentes} />
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
         <section className="mt-10">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold text-[var(--color-primary)]">Cadastros recentes</h2>
-            <Link to="/AprovacaoCadastros"
+            <Link to="/AprovarCadastros"
               className="text-sm font-semibold text-[var(--color-primary)] underline underline-offset-2 no-underline hover:opacity-75">
               Ver todos →
             </Link>

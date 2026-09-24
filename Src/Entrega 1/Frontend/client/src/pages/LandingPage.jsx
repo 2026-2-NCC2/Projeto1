@@ -11,19 +11,6 @@ const PASSOS = [
 function LandingPage() {
   return (
     <div>
-      {/* NAVBAR */}
-      <nav className="bg-[#00193b] px-8 py-4 flex justify-between items-center">
-        <span className="text-white text-xl font-bold">🎟 TrocaTicket</span>
-        <div className="flex gap-4 items-center">
-          <Link to="/login" className="text-white/70 hover:text-white text-sm no-underline bg-[#000814] px-4 py-2 rounded-md">
-            Entrar
-          </Link>
-          <Link to="/cadastro" className="bg-[#fafafa] text-navy px-4 py-2 rounded-md text-sm font-bold no-underline">
-            Criar conta
-          </Link>
-        </div>
-      </nav>
-
       {/* HERO */}
       <section className="bg-[#001635] px-8 py-24 text-center">
         <h1 className="text-[32px] md:text-5xl font-black text-white mb-4">

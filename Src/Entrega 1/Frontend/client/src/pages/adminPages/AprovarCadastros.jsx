@@ -19,7 +19,7 @@ const IconSearch = () => <svg width="15" height="15" {...S}><circle cx="11" cy="
 
 // ─── Navbar Admin (igual ao Dashboard) ───────────────────────────────────────
 const NAV_LINKS = [
-  { to: '/AdminDashboard',              label: 'Dashboard'  },
+  { to: '/AdminDashboard', label: 'Dashboard'  },
   { to: '/AprovarCadastros', label: 'Aprovações' },
 ];
 
