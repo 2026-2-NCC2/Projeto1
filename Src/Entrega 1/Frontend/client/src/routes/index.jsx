@@ -8,7 +8,7 @@ import Cadastro from '../pages/Cadastro'
 import Login from '../pages/Login'
 import PainelDeEventos from '../pages/PainelDeEventos'
 import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
-import EventRegistration from '../features/eventRegistration/EventRegistration.jsx'
+import EventRegistration from '../components/EventRegistration.jsx'
 import AdminDashboard from '../pages/adminPages/AdminDashboard.jsx'
 
 export const router = createBrowserRouter([

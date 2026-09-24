@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Wizard } from './components/Wizard.jsx';
-import { EventBasics } from '../../pages/EventBasics.jsx';
-import { AudienceLots } from '../../pages/AudienceLots.jsx';
-import { IndependentCosts } from '../../pages/IndependentCosts.jsx';
-import { CostItems } from '../../pages/CostItems.jsx';
+import { Wizard } from './Wizard.jsx';
+import { EventBasics } from '../pages/EventBasics.jsx';
+import { AudienceLots } from '../pages/AudienceLots.jsx';
+import { IndependentCosts } from '../pages/IndependentCosts.jsx';
+import { CostItems } from '../pages/CostItems.jsx';
 import './eventRegistration.css';
 
 const steps = ['evento', 'publico-lotes', 'custos-independentes', 'itens-custos'];
