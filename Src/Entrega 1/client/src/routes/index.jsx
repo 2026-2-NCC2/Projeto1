@@ -5,7 +5,8 @@ import NotFound from '../pages/NotFound'
 import Cadastro from '../pages/Cadastro'
 import Login from '../pages/Login'
 import PainelDeEventos from '../pages/PainelDeEventos'
-import AprovacaoCadastros from '../pages/adminPages/AprovacaoCadastros'
+import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
+import AdminDashboard from '../pages/adminPages/AdminDashboard'
 
 export const router = createBrowserRouter([
     {
@@ -33,10 +34,14 @@ export const router = createBrowserRouter([
         element: <PainelDeEventos/>,
     },
     {
-        path: "/AprovacaoCadastros",
-        element: <AprovacaoCadastros/>,
+        path: "/AprovarCadastros",
+        element: <AprovarCadastros/>,
     },
     {
+        path: "/AdminDashboard",
+        element: <AdminDashboard/>,
+    },
+    /*{
         path: '/evento',
         element: <EventFlow />,
       },
@@ -55,5 +60,5 @@ export const router = createBrowserRouter([
       {
         path: '*',
         element: <Navigate to="/evento" replace />,
-      },
+      },*/
 ])
