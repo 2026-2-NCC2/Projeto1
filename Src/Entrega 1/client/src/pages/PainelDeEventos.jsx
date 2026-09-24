@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // ─── Dados de exemplo (substituir por fetch da API) ───────────────────────────
 const EVENTOS_MOCK = [
@@ -148,46 +149,6 @@ function EventCard({ evento, onVerDetalhes }) {
   );
 }
 
-// ─── Navbar ───────────────────────────────────────────────────────────────────
-function Navbar({ activeTab, onTabChange }) {
-  return (
-    <nav className="sticky top-0 z-[100] h-[60px] px-4 md:px-8 flex items-center justify-between bg-navy-deep border-b border-white/[0.06]">
-      <a className="flex items-center gap-2 no-underline" href="#">
-        <span className="text-xl">🎫</span>
-        <span className="text-white font-extrabold text-lg tracking-[-0.3px]">
-          Troca<span className="text-brand">Ticket</span>
-        </span>
-      </a>
-
-      <div className="hidden min-[480px]:flex gap-1">
-        {[
-          { key: "painel", label: "Painel de Eventos" },
-          { key: "meus", label: "Meus Eventos" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => onTabChange(tab.key)}
-            className={`border-b-2 rounded-t-lg px-2.5 py-[7px] md:px-4 md:py-2 text-[11px] md:text-[13px] cursor-pointer transition ${
-              activeTab === tab.key
-                ? "text-brand bg-brand/10 border-brand font-semibold"
-                : "text-white/50 border-transparent font-normal hover:text-white/80"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex items-center gap-3">
-        <span className="text-[13px] text-white/50">Organizador</span>
-        <button className="bg-transparent border border-white/20 rounded-lg text-white/65 px-3.5 py-[5px] text-xs cursor-pointer transition-colors hover:border-white/45">
-          Sair
-        </button>
-      </div>
-    </nav>
-  );
-}
-
 // ─── Página principal ─────────────────────────────────────────────────────────
 const STATUS_OPCOES = ["Todos", "Publicado", "Rascunho", "Encerrado", "Cancelado"];
 
@@ -213,7 +174,7 @@ export default function PainelDeEventos() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-navy-deep">
-      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
+     
 
       {/* Header */}
       <div className="bg-navy-deep px-4 pt-5 pb-7 md:px-8 md:pt-7 md:pb-9">
@@ -225,10 +186,10 @@ export default function PainelDeEventos() {
               {EVENTOS_MOCK.length} eventos cadastrados · {publicados} publicados
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-brand text-navy-deep rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]">
+          <Link to="/criar-evento/evento" className="flex items-center gap-2 bg-brand text-navy-deep rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]">
             <IconPlus />
             Criar Evento
-          </button>
+          </Link>
         </div>
       </div>
 

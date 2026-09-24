@@ -1,11 +1,10 @@
-export function Field({ label, children, hint, required, error }) {
+export function Field({ label, children, hint, required }) {
   return (
     <label className="field">
       <span className="field-label">
         {label}{required && <span className="required">*</span>}
       </span>
       {children}
-      {error && <span className="field-error" role="alert">{error}</span>}
       {hint && <span className="field-hint">{hint}</span>}
     </label>
   );
