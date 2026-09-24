@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import Footer from '../../components/Footer';
 
 // ─── Dados mock ───────────────────────────────────────────────────────────────
 const MOCK_CADASTROS = [
@@ -46,6 +47,7 @@ export default function AprovarCadastros() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-[var(--color-bg)] pb-16">
       <div className="bg-[var(--color-primary)] px-6 pb-10 pt-8 md:px-10">
         <div className="mx-auto max-w-[1100px]">
@@ -143,5 +145,7 @@ export default function AprovarCadastros() {
         )}
       </div>
     </div>
+    
+    </>
   );
 }
