@@ -1,4 +1,3 @@
-import '../styles/LandingPage.css'
 import Footer from '../components/Footer'
 import { Link } from 'react-router-dom'
 
@@ -12,39 +11,44 @@ const PASSOS = [
 function LandingPage() {
   return (
     <div>
-
       {/* NAVBAR */}
-      <nav className="navbar">
-        <span className="navbar__logo">🎟 TrocaTicket</span>
-        <div className="navbar__links">
-          <Link to="/login" className="navbar__entrar">Entrar</Link>
-          <Link to ="/Cadastro" className="navbar__cadastro">Criar conta</Link>
+      <nav className="bg-[#00193b] px-8 py-4 flex justify-between items-center">
+        <span className="text-white text-xl font-bold">🎟 TrocaTicket</span>
+        <div className="flex gap-4 items-center">
+          <Link to="/login" className="text-white/70 hover:text-white text-sm no-underline bg-[#000814] px-4 py-2 rounded-md">
+            Entrar
+          </Link>
+          <Link to="/cadastro" className="bg-[#fafafa] text-navy px-4 py-2 rounded-md text-sm font-bold no-underline">
+            Criar conta
+          </Link>
         </div>
       </nav>
 
       {/* HERO */}
-      <section className="hero">
-        <h1 className="hero__titulo">
-          Planeje. Conecte. <span className="hero__destaque">Precifique.</span>
+      <section className="bg-[#001635] px-8 py-24 text-center">
+        <h1 className="text-[32px] md:text-5xl font-black text-white mb-4">
+          Planeje. Conecte. <span className="text-verde">Precifique.</span>
         </h1>
-        <p className="hero__subtitulo">
+        <p className="text-white/60 text-lg max-w-[560px] mx-auto mb-8 leading-relaxed">
           A TrocaTicket reúne organizadores e fornecedores para planejar
           eventos e calcular o preço justo do ingresso.
         </p>
-        <Link to ="/cadastro" className="hero__btn">
+        <Link to="/cadastro" className="inline-block bg-white text-navy font-bold px-8 py-4 rounded-md no-underline cursor-pointer">
           Começar agora.
         </Link>
       </section>
 
       {/* COMO FUNCIONA */}
-      <section className="como-funciona">
-        <h2 className="como-funciona__titulo">Como funciona</h2>
-        <div className="como-funciona__grid">
+      <section className="bg-white px-8 py-16">
+        <h2 className="text-[32px] font-bold text-navy text-center mb-10">Como funciona</h2>
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-4 gap-6 max-w-[960px] mx-auto">
           {PASSOS.map((passo) => (
-            <div key={passo.n} className="passo">
-              <div className="passo__numero">{passo.n}</div>
-              <h3 className="passo__titulo">{passo.titulo}</h3>
-              <p className="passo__desc">{passo.desc}</p>
+            <div key={passo.n} className="bg-[#F7F8FA] border border-borda rounded-xl p-6 text-center">
+              <div className="size-10 rounded-full bg-navy text-verde font-bold text-base flex items-center justify-center mx-auto mb-4">
+                {passo.n}
+              </div>
+              <h3 className="font-bold text-navy mb-2">{passo.titulo}</h3>
+              <p className="text-muted text-sm leading-normal">{passo.desc}</p>
             </div>
           ))}
         </div>

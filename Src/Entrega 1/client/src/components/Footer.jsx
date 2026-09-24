@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/trocaticket.css'; 
+import '../styles/index.css'; 
 import icon from '../assets/branding/logos/logo_navbar_web.png';
 
 function Footer() {

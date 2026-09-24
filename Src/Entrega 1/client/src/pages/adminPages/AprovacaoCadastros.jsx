@@ -6,4 +6,4 @@ function AprovacaoCadastros() {
     )
 }
 
-export default function AprovacaoCadastros
+export default AprovacaoCadastros
