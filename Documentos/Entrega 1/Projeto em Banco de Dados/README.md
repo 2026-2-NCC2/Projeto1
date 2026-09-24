@@ -6,7 +6,7 @@
 
 ## Tabelas e Atributos
 
-### 1. **usuario**
+###**usuario**
 Armazena os dados de acesso e o perfil de todos os usuários do sistema.
 - **id_usuario** (PK, INT): Identificador único.
 - **nome** (VARCHAR(150)): Nome completo.
@@ -19,14 +19,14 @@ Armazena os dados de acesso e o perfil de todos os usuários do sistema.
 
 ---
 
-### 2. **administrador**
+###**administrador**
 Especialização de **usuario** para quem administra a plataforma.
 - **id_administrador** (PK, FK → usuario.id_usuario, INT): Identificador do administrador.
 - **nivel_permissao** (ENUM): Nível de permissão na plataforma.
 
 ---
 
-### 3. **organizador**
+###**organizador**
 Especialização de **usuario** para quem cria e gerencia eventos.
 - **id_organizador** (PK, FK → usuario.id_usuario, INT): Identificador do organizador.
 - **nome_organizacao** (VARCHAR(150)): Nome da organização.
@@ -35,7 +35,7 @@ Especialização de **usuario** para quem cria e gerencia eventos.
 
 ---
 
-### 4. **fornecedor**
+###**fornecedor**
 Especialização de **usuario** para quem oferece produtos ou serviços para os eventos.
 - **id_fornecedor** (PK, FK → usuario.id_usuario, INT): Identificador do fornecedor.
 - **nome_organizacao** (VARCHAR(150)): Nome da empresa.
@@ -45,7 +45,7 @@ Especialização de **usuario** para quem oferece produtos ou serviços para os 
 
 ---
 
-### 5. **evento**
+###**evento**
 Eventos criados pelos organizadores.
 - **id_evento** (PK, INT): Identificador do evento.
 - **id_organizador_fk** (FK → organizador.id_organizador): Organizador responsável.
@@ -62,7 +62,7 @@ Eventos criados pelos organizadores.
 
 ---
 
-### 6. **itemcusto**
+###**itemcusto**
 Itens que o evento precisa contratar e que podem receber propostas de fornecedores.
 - **id_item_custo** (PK, INT): Identificador do item.
 - **id_evento_fk** (FK → evento.id_evento): Evento ao qual o item pertence.
@@ -72,7 +72,7 @@ Itens que o evento precisa contratar e que podem receber propostas de fornecedor
 
 ---
 
-### 7. **custoindependente**
+###**custoindependente**
 Custos do evento que não dependem de fornecedores (ex: taxas, aluguel).
 - **id_custo_independente** (PK, INT): Identificador do custo.
 - **id_evento_fk** (FK → evento.id_evento): Evento ao qual o custo pertence.
@@ -82,7 +82,7 @@ Custos do evento que não dependem de fornecedores (ex: taxas, aluguel).
 
 ---
 
-### 8. **proposta**
+###**proposta**
 Propostas enviadas pelos fornecedores para os itens de custo de um evento.
 - **id_proposta** (PK, INT): Identificador da proposta.
 - **id_fornecedor_fk** (FK → fornecedor.id_fornecedor): Fornecedor que enviou a proposta.
