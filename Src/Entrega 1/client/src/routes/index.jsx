@@ -36,4 +36,24 @@ export const router = createBrowserRouter([
         path: "/AprovacaoCadastros",
         element: <AprovacaoCadastros/>,
     },
+    {
+        path: '/evento',
+        element: <EventFlow />,
+      },
+      {
+        path: '/publico-lotes',
+        element: <EventFlow />,
+      },
+      {
+        path: '/custos-independentes',
+        element: <EventFlow />,
+      },
+      {
+        path: '/itens-custos',
+        element: <EventFlow />,
+      },
+      {
+        path: '*',
+        element: <Navigate to="/evento" replace />,
+      },
 ])
