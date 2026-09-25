@@ -1,17 +1,35 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import logo from '../assets/branding/logos/logo_navbar_web.png'
+
+// Abas que aparecem apenas na rota do Painel de Eventos
+const PAINEL_TABS = [
+  { key: 'painel', label: 'Painel de Eventos' },
+  { key: 'meus',   label: 'Meus Eventos'      },
+]
 
 export default function Header() {
   const { pathname } = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const paginaDeConta = ['/Cadastro', '/Login', '/TelaDeEscolha'].includes(pathname)
-  const criandoEvento = pathname.startsWith('/criar-evento')
-  const noPainel = pathname === '/PainelDeEventos'
+  const path = pathname.toLowerCase()
+
+  const paginaDeConta     = ['/cadastro', '/login', '/teladeescolha'].includes(path)
+  const criandoEvento     = path.startsWith('/criar-evento')
+  const noPainel          = path === '/paineldeeventos'
   const areaDoOrganizador = noPainel || criandoEvento
+
+  // Aba ativa — lida do query param; padrão é 'painel'
+  const activeTab = searchParams.get('tab') || 'painel'
+
+  function handleTabClick(key) {
+    setSearchParams({ tab: key })
+  }
 
   return (
     <header className="bg-[#0d1b2e] text-white">
       <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between px-4 md:px-8">
+
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 text-white no-underline">
           <img src={logo} alt="" className="h-9 w-9 object-contain" />
           <span className="text-lg font-extrabold">
@@ -19,15 +37,37 @@ export default function Header() {
           </span>
         </Link>
 
+        {/* ── Centro: abas no painel, link Eventos na home ── */}
+        {noPainel && (
+          <nav className="flex gap-1">
+            {PAINEL_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => handleTabClick(tab.key)}
+                className={`border-b-2 px-4 py-[7px] text-[13px] cursor-pointer transition rounded-t-md ${
+                  activeTab === tab.key
+                    ? 'text-[#4ade80] bg-[#4ade80]/[0.12] border-[#4ade80] font-semibold'
+                    : 'text-white/55 border-transparent font-normal hover:text-white/85'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        )}
+
+        {/* Altere esta parte do seu código: */}
+        {path === '/' && (
+          <nav className="flex justify-start gap-1 mr-auto ml-6"> {/* 💡 Adicionado mr-auto ml-6 aqui */}
+            <Link to="/PainelDeEventos" className="font-bold text-white/80 hover:text-white">
+              Eventos
+            </Link>
+          </nav>
+        )}
+        {/* ── Links contextuais (lado direito) ── */}
         <nav className="flex items-center gap-4 text-sm">
-        {pathname === '/' && (
-            <Link
-            to="/PainelDeEventos"
-            className="mr-175 font-bold text-white/80 hover:text-white"
-             >
-         Eventos
-          </Link>
-        )}    
+
           {paginaDeConta && (
             <Link to="/" className="text-white/80 hover:text-white">
               Voltar ao início
@@ -69,6 +109,7 @@ export default function Header() {
             </>
           )}
         </nav>
+
       </div>
     </header>
   )
