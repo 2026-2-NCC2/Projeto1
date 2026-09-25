@@ -72,11 +72,10 @@ Há também 4 pastas que seguem da seguinte forma:
 
 ## 💾 Entregas
 
-| Entrega 1 |  Banco de Dados | Link |
+| Entrega 1 |  Materia | Link |
 |---|---|---|
-|Modelagem do banco de dados | [README.md](Documentos/Entrega%201/Projeto%20em%20Banco%20de%20Dados/README.md) |
-| Entrega 1 | Projeto Programação Interdisciplinar Web | Link |
-|Modelagem (Figma) | [README.md](Documentos/Entrega%201/Projeto%20Interdisciplinar%20-%20Programação%20Web/README.md) |
+|25/09 |Modelagem do Banco de Dados | [README.md](Documentos/Entrega%201/Projeto%20em%20Banco%20de%20Dados/README.md) |
+|25/09 |Modelagem (Figma) | [README.md](Documentos/Entrega%201/Projeto%20Interdisciplinar%20-%20Programação%20Web/README.md) |
 
 ## 📋 Licença/License
 <a href="https://github.com/2026-2-NCC2/Projeto1"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Troca Ticket</font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> © 2026 por </font></font><a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci</a>, <a href="https://www.linkedin.com/in/julia-damasio-b6531a24a">Julia Damasio</a>, <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo</a></font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> está licenciado sob </font></font><a href="https://creativecommons.org/licenses/by/4.0/"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Creative Commons Atribuição 4.0 Internacional</font></font></a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
