@@ -70,17 +70,12 @@ Há também 4 pastas que seguem da seguinte forma:
 
 ## 💻 Configuração para Desenvolvimento
 
-## 🔗 Banco de Dados
+## ## 💾 Entregas
 
-## 🔗 Banco de Dados
-
-| Entrega | Descrição | Link |
+| Entrega |  Banco de Dados | Link |
 |---|---|---|
 | 1 | Modelagem do banco de dados | [README.md](Documentos/Entrega%201/Projeto%20em%20Banco%20de%20Dados/README.md) |
-
-## 💾 Projeto Programação Interdisciplinar Web
-
-| Entrega | Descrição | Link |
+| Entrega | Projeto Programação Interdisciplinar Web | Link |
 |---|---|---|
 | 1 | Modelagem (Figma) | [README.md](Documentos/Entrega%201/Projeto%20Interdisciplinar%20-%20Programação%20Web/README.md) |
 
