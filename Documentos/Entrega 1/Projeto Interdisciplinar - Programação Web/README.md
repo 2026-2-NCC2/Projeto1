@@ -1,7 +1,7 @@
-# Modelagem do Banco de Dados – TrocaTicket
+# Protótipos de Tela – TrocaTicket
 
-## Diagrama
+## Link
 
-![Diagrama do Banco de Dados](/Imagens/Diagrama.png)
-
+![Protótipos
+](https://www.figma.com/proto/3MmwfuNBcFrjpeD9tFFXpV/Prot%C3%B3tipos-trocaticket?node-id=0-1&t=k2lDgMAzjgkc9LL1-1)
 
