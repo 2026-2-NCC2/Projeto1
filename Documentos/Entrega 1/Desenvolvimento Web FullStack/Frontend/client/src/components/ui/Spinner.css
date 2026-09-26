@@ -1,0 +1,25 @@
+/* area em volta do spinner, centraliza a bolinha e o texto um embaixo do outro */
+.spinner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-12);
+}
+
+/* bolinha de carregamento: borda cinza com a parte de cima verde, girando sem parar */
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+/* texto embaixo do spinner (ex: "Carregando...") */
+.spinner-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}

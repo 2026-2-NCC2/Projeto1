@@ -1,0 +1,79 @@
+/* fonte Inter do Google Fonts, com todos os pesos usados no site */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* cores e fonte do projeto, viram classes do tailwind (ex: bg-navy, text-verde, border-borda) */
+@theme {
+  --font-sans: 'Inter', sans-serif;
+
+  /* azuis */
+  --color-navy:       #1A2E4A;
+  --color-navy-deep:  #0d1b2e;
+  --color-navy-2:     #1a2f4e;
+  /* verdes */
+  --color-verde:      #7ED957;
+  --color-verde-hover:#62B940;
+  --color-brand:      #4ade80;
+  --color-brand-dark: #15803d;
+  /* cinza do texto secundario e cor das bordas */
+  --color-muted:      #6B7A8D;
+  --color-borda:      #E2E6EA;
+}
+
+/* estilos base que valem pro site todo */
+@layer base {
+  /* padding e borda entram no tamanho do elemento */
+  * { box-sizing: border-box; }
+
+  html { background: #fffaef; }
+
+  /* fundo creme com um brilho laranja bem fraco no canto de cima */
+  body {
+    margin: 0;
+    min-width: 320px;
+    color: #060c1c;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(255, 164, 0, .09), transparent 28rem),
+      linear-gradient(180deg, #fffdf7 0%, #fffaef 100%);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* faz os campos de formulario usarem a mesma fonte do site */
+  button, input, textarea, select { font: inherit; }
+  /* tira o quadrado azul que aparece ao tocar no celular */
+  button, a { -webkit-tap-highlight-color: transparent; }
+
+  /* ── Tokens de compatibilidade para as telas Admin ──
+     Os componentes AdminDashboard e AprovarCadastros usam var(--color-*)
+     com os nomes abaixo. Estes aliases mapeiam para a paleta do projeto. */
+  :root {
+    /* cores principais */
+    --color-primary:       #1A2E4A;
+    --color-primary-light: #253D61;
+    --color-accent:        #7ED957;
+    --color-accent-dark:   #62B940;
+    /* fundo, cards e bordas */
+    --color-bg:            #F7F8FA;
+    --color-surface:       #FFFFFF;
+    --color-border:        #E2E6EA;
+    /* textos */
+    --color-text:          #1A2E4A;
+    --color-text-muted:    #6B7A8D;
+    --color-text-light:    #A0AABB;
+    /* cores dos status (rejeitado, aviso, aprovado, pendente) com a versao clarinha pro fundo */
+    --color-danger:        #E53E3E;
+    --color-danger-light:  #FFF5F5;
+    --color-warning:       #D69E2E;
+    --color-warning-light: #FFFFF0;
+    --color-success:       #38A169;
+    --color-success-light: #F0FFF4;
+    --color-pending:       #805AD5;
+    --color-pending-light: #FAF5FF;
+
+    /* sombras pequena, media e grande */
+    --shadow-sm: 0 1px 3px rgba(26,46,74,0.08);
+    --shadow-md: 0 4px 12px rgba(26,46,74,0.10);
+    --shadow-lg: 0 8px 24px rgba(26,46,74,0.14);
+  }
+}
