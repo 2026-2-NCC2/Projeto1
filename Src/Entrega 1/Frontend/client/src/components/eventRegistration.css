@@ -1,4 +1,7 @@
+/* @scope faz esses estilos valerem so dentro do elemento com a classe .event-registration */
+/* assim o css do cadastro de evento nao interfere no resto do site */
 @scope (.event-registration) {
+/* cores e sombra usadas nessa parte do site */
 :scope {
   --purple: #331166;
   --midnight: #07082e;
@@ -18,6 +21,7 @@
   --shadow: 0 22px 60px rgba(7, 8, 46, 0.12);
 }
 
+/* estilos base: fundo creme com brilho laranja no canto e fonte Inter */
 * { box-sizing: border-box; }
 :scope { background: var(--cream); }
 :scope {
@@ -33,6 +37,7 @@
 button, input, textarea, select { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
+/* cabecalho escuro fixo no topo com a logo e o link da conta */
 .site-header {
   background: var(--midnight);
   color: white;
@@ -51,6 +56,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   justify-content: space-between;
 }
 .brand { color: white; text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 850; letter-spacing: -.025em; font-size: 1.15rem; }
+/* bolinha dourada da logo */
 .brand-mark {
   width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
   color: var(--midnight); background: linear-gradient(135deg, var(--gold), var(--gold-light));
@@ -59,7 +65,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .account-link { color: var(--cream); text-decoration: none; font-size: .84rem; font-weight: 750; border-bottom: 1px solid rgba(255,255,255,.35); }
 .account-link:hover { color: var(--gold); }
 
+/* conteudo ocupa a tela toda menos o cabecalho */
 .main-content { min-height: calc(100vh - 72px); }
+/* faixa roxa/azul do topo com o titulo da pagina */
 .hero-strip {
   background: linear-gradient(125deg, var(--purple) 0%, var(--midnight-2) 62%, var(--midnight) 100%);
   color: white;
@@ -72,10 +80,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .hero-strip h2 { margin: 4px 0 6px; font-size: clamp(1.6rem, 3vw, 2.35rem); line-height: 1.1; letter-spacing: -.045em; }
 .hero-strip p { margin: 0; color: rgba(255,255,255,.72); }
+/* textinho pequeno em cima do titulo */
 .hero-kicker { color: var(--gold-light); text-transform: uppercase; font-size: .72rem; font-weight: 850; letter-spacing: .13em; }
+/* etiqueta "Rascunho salvo" com a bolinha verde */
 .hero-badge { white-space: nowrap; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.07); padding: 10px 14px; border-radius: 999px; font-size: .76rem; font-weight: 760; }
 .hero-badge span { color: var(--ok); margin-right: 4px; }
 
+/* barra de etapas (1 2 3 4), o margin negativo faz ela subir em cima da faixa do topo */
 .wizard {
   width: min(760px, calc(100% - 36px));
   margin: -24px auto 36px;
@@ -90,17 +101,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
   z-index: 5;
 }
 .wizard-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+/* bolinha de cada etapa: feita fica dourada e clicavel, a atual ganha um anel em volta */
 .wizard-dot {
   width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--cream-dim); background: white;
   color: var(--muted); display: grid; place-items: center; font-weight: 850; font-size: .75rem; cursor: default; position: relative; z-index: 2;
 }
 .wizard-dot.done { background: var(--gold); border-color: var(--gold); color: var(--midnight); cursor: pointer; }
 .wizard-dot.active { border-color: var(--gold); color: var(--midnight); box-shadow: 0 0 0 6px rgba(255,164,0,.13); }
+/* linha que liga uma bolinha na outra, fica dourada quando a etapa ja foi feita */
 .wizard-line { position: absolute; height: 2px; top: 15px; left: calc(50% + 22px); width: calc(100% - 44px); background: var(--line); z-index: 1; }
 .wizard-line.done { background: var(--gold); }
 .wizard-label { font-size: .69rem; color: #8a8374; font-weight: 720; text-align: center; }
 .wizard-label.active, .wizard-label.done { color: var(--ink); }
 
+/* card branco de cada etapa do formulario (cabecalho, corpo e rodape) */
 .content-wrap { width: min(900px, calc(100% - 36px)); margin: 0 auto 80px; }
 .form-card {
   background: rgba(255,255,255,.94);
@@ -110,20 +124,25 @@ button, a { -webkit-tap-highlight-color: transparent; }
   overflow: hidden;
   position: relative;
 }
+/* faixinha colorida no topo do card */
 .card-accent { height: 5px; background: linear-gradient(90deg, var(--gold), var(--purple) 55%, var(--midnight)); }
 .form-card-header { padding: 30px 34px 22px; border-bottom: 1px solid var(--line); }
+/* "Etapa X de 4" */
 .eyebrow { color: var(--gold-dark); text-transform: uppercase; font-size: .7rem; font-weight: 850; letter-spacing: .12em; }
 .form-card-header h1 { margin: 5px 0 8px; color: var(--midnight); font-size: clamp(1.55rem, 3vw, 2rem); letter-spacing: -.04em; }
 .form-card-header p { margin: 0; color: var(--muted); line-height: 1.55; font-size: .94rem; }
 .form-card-body { padding: 30px 34px; }
 .form-card-footer { padding: 20px 34px 28px; border-top: 1px solid var(--line); background: #fffdf8; }
+/* grade dos campos, com opcao de 2 colunas */
 .form-grid { display: grid; gap: 20px; }
 .form-grid.two-cols { grid-template-columns: repeat(2, minmax(0,1fr)); }
+/* campo: label, asterisco, dica e erro */
 .field { display: flex; flex-direction: column; gap: 8px; }
 .field-label { font-size: .76rem; font-weight: 800; color: var(--midnight); }
 .required { color: var(--gold-dark); margin-left: 3px; }
 .field-hint { color: #8b8476; font-size: .72rem; line-height: 1.35; }
 .field-error { color: #b42318; font-size: .72rem; font-weight: 700; }
+/* visual padrao de todos os inputs, no foco a borda fica dourada */
 .control, .money-input, .inline-add input, .inline-money {
   width: 100%; border: 1px solid #d9d2c4; background: #fff; border-radius: 10px; min-height: 44px;
   color: var(--ink); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
@@ -132,10 +151,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .control::placeholder, .money-input input::placeholder, .inline-add input::placeholder { color: #b3aa99; }
 .control:focus, .money-input:focus-within, .inline-add input:focus, .inline-money:focus-within { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(255,164,0,.12); outline: none; }
 .textarea { min-height: 110px; resize: vertical; }
+/* campo de dinheiro com o "R$" grudado na esquerda */
 .money-input { display: flex; align-items: center; overflow: hidden; }
 .money-input > span, .inline-money > span { align-self: stretch; display: grid; place-items: center; padding: 0 12px; color: var(--muted); background: #faf6ed; border-right: 1px solid var(--line); font-weight: 800; font-size: .8rem; }
 .money-input input, .inline-money input { flex: 1; min-width: 0; border: 0; outline: 0; padding: 10px 12px; background: transparent; }
+/* linha dos botoes de voltar e avancar */
 .action-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+/* botoes: base, principal dourado, secundario branco, escuro, pequeno e de icone */
 .btn { border: 0; border-radius: 10px; min-height: 42px; padding: 10px 16px; font-weight: 800; font-size: .78rem; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
 .btn:hover { transform: translateY(-1px); }
 .btn-primary { color: var(--midnight); background: linear-gradient(135deg, var(--gold) 0%, #ffc047 100%); box-shadow: 0 8px 20px rgba(222,148,45,.26); display: inline-flex; align-items: center; gap: 9px; }
@@ -145,12 +167,15 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .btn-ghost { color: white; background: var(--midnight-2); justify-self: end; }
 .btn-small { min-height: 38px; color: var(--midnight); background: var(--gold); padding-inline: 13px; }
 .add-button { margin-top: -4px; }
+/* botao do x de remover, fica avermelhado no hover */
 .icon-button { width: 30px; height: 30px; border: 0; border-radius: 8px; background: #f5efe3; color: #786e5c; font-weight: 900; cursor: pointer; }
 .icon-button:hover { background: #f2dfd9; color: #a53c30; }
+/* caixa de aviso amarelinha com o "i" */
 .info-banner { display: flex; gap: 12px; padding: 14px 16px; background: #fff8e9; border: 1px solid #f2dba9; border-radius: 12px; margin-top: 22px; color: #685c43; }
 .info-banner p { margin: 0; font-size: .78rem; line-height: 1.5; }
 .info-icon { flex: 0 0 auto; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; color: var(--midnight); background: var(--gold); font-weight: 900; font-family: Georgia, serif; }
 
+/* lista de custos independentes ja adicionados (etapa 3) */
 .cost-list { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 24px; }
 .cost-list h2 { margin: 0 0 12px; font-size: .95rem; color: var(--midnight); }
 .cost-row { display: flex; justify-content: space-between; gap: 18px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
@@ -159,6 +184,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .cost-row-right { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
 .cost-row-right strong { font-size: .8rem; }
 
+/* resumo dos 3 totais (etapa 4), o ultimo fica escuro com o valor dourado */
 .budget-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
 .budget-summary > div { padding: 15px 16px; background: #faf7f0; border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 4px; }
 .budget-summary span { color: var(--muted); font-size: .68rem; font-weight: 720; }
@@ -167,8 +193,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .budget-summary .budget-total span { color: rgba(255,255,255,.64); }
 .budget-summary .budget-total strong { color: var(--gold); }
 
+/* sanfona das categorias de custo (etapa 4) */
 .accordion-list { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+/* borda entre uma categoria e outra */
 .cost-group + .cost-group { border-top: 1px solid var(--line); }
+/* cabecalho clicavel da categoria: nome, qtd de itens, total e o icone + ou - */
 .cost-group-head { width: 100%; border: 0; background: white; padding: 15px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; cursor: pointer; text-align: left; }
 .cost-group.open .cost-group-head { background: #fffaf0; }
 .cost-group-head > span { display: flex; align-items: center; gap: 10px; }
@@ -176,52 +205,67 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .cost-group-head small { color: var(--muted); font-size: .65rem; }
 .cost-group-head b { color: var(--midnight); font-size: .77rem; }
 .cost-group-head i { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #f2eadb; font-style: normal; color: var(--purple); font-weight: 900; }
+/* conteudo da categoria aberta */
 .cost-group-body { padding: 0 16px 16px; background: #fffaf0; }
+/* tabela de itens com 5 colunas: descricao, qtd, unitario, total e remover */
 .cost-table { display: grid; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
 .cost-table-head, .cost-table-row { display: grid; grid-template-columns: minmax(150px, 2fr) .45fr .85fr .85fr 34px; align-items: center; gap: 10px; padding: 9px 10px; }
 .cost-table-head { background: #f4eddf; color: var(--muted); font-size: .61rem; font-weight: 820; text-transform: uppercase; letter-spacing: .03em; }
 .cost-table-row { background: white; font-size: .72rem; border-top: 1px solid var(--line); }
+/* formulario de adicionar item numa linha so */
 .inline-add { display: grid; grid-template-columns: minmax(160px, 2fr) 82px 150px auto; gap: 8px; }
 .inline-add input { min-height: 38px; padding: 8px 10px; outline: 0; font-size: .72rem; }
 .inline-money { min-height: 38px; display: flex; overflow: hidden; }
 .inline-money > span { padding-inline: 9px; font-size: .68rem; }
 
+/* mensagem verde de evento criado */
 .success-banner { margin-bottom: 18px; border-radius: 12px; border: 1px solid rgba(63,138,91,.32); background: #edf8f0; padding: 13px 15px; display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; color: #285f3b; font-size: .77rem; }
 
+/* tablet e celular (ate 760px) */
 @media (max-width: 760px) {
+  /* faixa do topo fica em coluna e some o aviso de rascunho */
   .hero-strip { min-height: 150px; align-items: flex-start; flex-direction: column; padding-top: 26px; padding-bottom: 44px; }
   .hero-badge { display: none; }
   .wizard { margin-top: -22px; padding-inline: 10px; }
   .wizard-label { font-size: .6rem; }
   .wizard-line { left: calc(50% + 18px); width: calc(100% - 36px); }
   .form-card-header, .form-card-body, .form-card-footer { padding-left: 20px; padding-right: 20px; }
+  /* campos e totais passam pra 1 coluna */
   .form-grid.two-cols { grid-template-columns: 1fr; }
   .budget-summary { grid-template-columns: 1fr; }
+  /* tabela de itens: esconde o cabecalho e escreve "Qtd.", "Unit." e "Total" antes de cada valor */
   .cost-table-head { display: none; }
   .cost-table-row { grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px; }
   .cost-table-row > span:nth-child(2)::before { content: 'Qtd. '; color: var(--muted); }
   .cost-table-row > span:nth-child(3)::before { content: 'Unit. '; color: var(--muted); }
   .cost-table-row > span:nth-child(4)::before { content: 'Total '; color: var(--muted); }
+  /* botao de remover vai pra direita ocupando duas linhas */
   .cost-table-row > span:last-child { grid-column: 2; grid-row: 1 / span 2; }
+  /* formulario de adicionar item quebra em duas linhas */
   .inline-add { grid-template-columns: 1fr 80px; }
   .inline-money { grid-column: 1; }
   .inline-add .btn { grid-column: 2; }
 }
 
+/* celular pequeno (ate 460px) */
 @media (max-width: 460px) {
+  /* cabecalho e logo menores */
   .header-inner { min-height: 64px; padding-inline: 16px; }
   .brand { font-size: 1rem; }
   .brand-mark { width: 30px; height: 30px; }
   .account-link { font-size: .72rem; }
   .hero-strip { padding-inline: 18px; }
   .content-wrap { width: min(100% - 20px, 900px); }
+  /* barra de etapas com bolinhas menores */
   .wizard { width: calc(100% - 20px); margin-bottom: 20px; }
   .wizard-dot { width: 28px; height: 28px; }
   .wizard-line { top: 13px; }
   .form-card { border-radius: 16px; }
   .form-card-header { padding-top: 24px; }
+  /* botoes um embaixo do outro, com o de avancar em cima, ocupando a largura toda */
   .action-row { flex-direction: column-reverse; }
   .action-row .btn { width: 100%; }
+  /* valor e botao de remover dos custos ficam empilhados */
   .cost-row { align-items: flex-start; }
   .cost-row-right { flex-direction: column; align-items: flex-end; }
 }

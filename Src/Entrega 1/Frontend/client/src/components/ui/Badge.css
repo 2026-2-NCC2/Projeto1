@@ -1,12 +1,15 @@
+/* etiqueta colorida pequena (usada no tipo e no status dos cadastros) */
 .badge {
   display: inline-block;
   padding: 2px 10px;
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: 600;
+  /* deixa a primeira letra maiuscula (ex: "pendente" vira "Pendente") */
   text-transform: capitalize;
 }
 
+/* cores de cada variante: fundo clarinho e texto na cor mais forte */
 .badge--success  { background: var(--color-success-light); color: var(--color-success); }
 .badge--danger   { background: var(--color-danger-light);  color: var(--color-danger);  }
 .badge--pending  { background: var(--color-pending-light); color: var(--color-pending); }

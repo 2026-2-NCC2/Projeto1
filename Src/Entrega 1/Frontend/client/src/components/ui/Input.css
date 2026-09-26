@@ -1,19 +1,23 @@
+/* bloco de um campo do formulario (label + input + dica/erro) um embaixo do outro */
 .field {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
 }
 
+/* texto em cima do campo */
 .field__label {
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--color-text);
 }
 
+/* asterisco vermelho dos campos obrigatorios */
 .field__required {
   color: var(--color-danger);
 }
 
+/* o input em si */
 .field__input {
   width: 100%;
   padding: 10px var(--space-4);
@@ -25,29 +29,35 @@
   line-height: 1.5;
 }
 
+/* cor do texto de exemplo dentro do campo */
 .field__input::placeholder {
   color: var(--color-text-light);
 }
 
+/* quando clica no campo: borda azul e uma sombra clarinha em volta */
 .field__input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(26,46,74,0.10);
 }
 
+/* campo com erro fica com borda vermelha */
 .field--error .field__input {
   border-color: var(--color-danger);
 }
 
+/* e a sombra do foco tambem fica vermelha */
 .field--error .field__input:focus {
   box-shadow: 0 0 0 3px rgba(229,62,62,0.12);
 }
 
+/* dica pequena embaixo do campo */
 .field__hint {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
 }
 
+/* mensagem de erro embaixo do campo */
 .field__error {
   font-size: var(--font-size-xs);
   color: var(--color-danger);
