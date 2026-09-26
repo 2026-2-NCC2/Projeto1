@@ -77,7 +77,7 @@ Há também 4 pastas que seguem da seguinte forma:
 |25/09 |Modelagem do Banco de Dados | [Acessse Aqui](Documentos/Entrega%201/Projeto%20em%20Banco%20de%20Dados/README.md) |
 |25/09 |Projeto Interdiciplinar (Figma) | [Acessse Aqui](Documentos/Entrega%201/Projeto%20Interdisciplinar%20-%20Programação%20Web/README.md) |
 |25/09 |Cálculo - II | [Acessse Aqui](Documentos/Entrega%201/C%C3%A1lculo%20-%20II/Entrega%20Calculo%202.pdf) |
-|25/09 |Gestão Empresarial e Dinâmicas das Organizações | [Acessse Aqui](Documentos/Entrega%201/Gest%C3%A3o%20Empresarial%20e%20Din%C3%A2micas%20das%20Organiza%C3%A7%C3%B5es/Entrega%20Aula%201%20-%20Gest%C3%A3o%20Empresarial%20e%20Din%C3%A2micas%20das%20Organiza%C3%A7%C3%B5es.pdf) |
+|25/09 |Gestão Empresarial e Dinâmicas das Organizações | [Acessse Aqui](Documentos/Entrega%201/Gest%C3%A3o%20Empresarial%20e%20Din%C3%A2micas%20das%20Organiza%C3%A7%C3%B5es/Entrega%201.docx.PDF) |
 |25/09 |Desenvolvimento Web Full Stack | [Acessse Aqui](Src/Entrega%201/Frontend) |
 
 ## 📋 Licença/License
