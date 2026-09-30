@@ -23,8 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 node_modules
-config/*.js
-routes/*.js
-*.js
-*.sql
-
+.env
+.env.*
+!.env.example
