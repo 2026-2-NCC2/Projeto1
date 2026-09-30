@@ -3,8 +3,6 @@ USE trocaticket;
 CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
-    idade INT NOT NULL,
-    username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     perfil ENUM('organizador', 'fornecedor', 'administrador') NOT NULL,
