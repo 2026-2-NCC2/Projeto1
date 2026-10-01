@@ -1,83 +1,75 @@
-USE trocaticket;
-
-CREATE TABLE usuario (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    perfil ENUM('organizador', 'fornecedor', 'administrador') NOT NULL,
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=INNODB;
-
-CREATE TABLE organizador (
-    id_organizador INT PRIMARY KEY,
-    nome_organizacao VARCHAR(150) NOT NULL,
-    cnpj VARCHAR(18) UNIQUE NOT NULL,
-    status_aprovacao ENUM('pendente', 'aprovado', 'rejeitado') NOT NULL DEFAULT 'pendente',
-    CONSTRAINT fk_organizador_usuario FOREIGN KEY (id_organizador) REFERENCES usuario(id_usuario) ON DELETE CASCADE
-) ENGINE=INNODB;
-
-CREATE TABLE fornecedor (
-    id_fornecedor INT PRIMARY KEY,
-    nome_organizacao VARCHAR(150) NOT NULL,
-    cnpj VARCHAR(18) UNIQUE NOT NULL,
-    area_atuacao VARCHAR(80) NOT NULL,
-    status_aprovacao ENUM('pendente', 'aprovado', 'rejeitado') NOT NULL DEFAULT 'pendente',
-    CONSTRAINT fk_fornecedor_usuario FOREIGN KEY (id_fornecedor) REFERENCES usuario(id_usuario) ON DELETE CASCADE
-) ENGINE=INNODB;
-
-CREATE TABLE administrador (
-    id_administrador INT PRIMARY KEY,
-    nivel_permissao ENUM('suporte', 'gestor', 'master') NOT NULL DEFAULT 'suporte',
-    CONSTRAINT fk_administrador_usuario FOREIGN KEY (id_administrador) REFERENCES usuario(id_usuario) ON DELETE CASCADE
-) ENGINE=INNODB;
-
-CREATE TABLE evento (
-    id_evento INT AUTO_INCREMENT PRIMARY KEY,
-    id_organizador_fk INT NOT NULL,
-    titulo_evento VARCHAR(150) NOT NULL,
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    endereco VARCHAR(200) NOT NULL,
-    publico_minimo INT,
-    publico_maximo INT,
-    status_publicacao ENUM('rascunho', 'publicado', 'encerrado', 'cancelado') NOT NULL DEFAULT 'rascunho',
-    margem_lucro_percentual DECIMAL(5,2) DEFAULT 0.00,
-    ticket_estimado DECIMAL(10,2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_evento_organizador FOREIGN KEY (id_organizador_fk) REFERENCES organizador(id_organizador) ON DELETE CASCADE,
-    CONSTRAINT chk_datas_evento CHECK (data_fim >= data_inicio)
-) ENGINE=INNODB;
-
-CREATE TABLE itemcusto (
-    id_item_custo INT AUTO_INCREMENT PRIMARY KEY,
-    id_evento_fk INT NOT NULL,
-    categoria VARCHAR(80) NOT NULL,
-    descricao_detalhada VARCHAR(255) NOT NULL,
-    quantidade INT NOT NULL DEFAULT 1,
-    CONSTRAINT fk_itemcusto_evento FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE CASCADE
-) ENGINE=INNODB;
-
-CREATE TABLE custoindependente (
-    id_custo_independente INT AUTO_INCREMENT PRIMARY KEY,
-    id_evento_fk INT NOT NULL,
-    tipo_custo VARCHAR(80) NOT NULL,
-    descricao VARCHAR(255),
-    valor DECIMAL(12,2) NOT NULL,
-    CONSTRAINT fk_custoindependente_evento FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE CASCADE
-) ENGINE=INNODB;
-
-CREATE TABLE proposta (
-    id_proposta INT AUTO_INCREMENT PRIMARY KEY,
-    id_fornecedor_fk INT NOT NULL,
-    id_item_custo_fk INT NOT NULL,
-    valor_oferecido DECIMAL(12,2) NOT NULL,
-    descricao_proposta TEXT,
-    data_validade DATE,
-    observacoes TEXT,
-    status_proposta ENUM('enviada', 'em_analise', 'selecionada', 'recusada') NOT NULL DEFAULT 'enviada',
-    data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_proposta_fornecedor FOREIGN KEY (id_fornecedor_fk) REFERENCES fornecedor(id_fornecedor) ON DELETE CASCADE,
-    CONSTRAINT fk_proposta_itemcusto FOREIGN KEY (id_item_custo_fk) REFERENCES itemcusto(id_item_custo) ON DELETE CASCADE,
-    CONSTRAINT uq_fornecedor_item UNIQUE (id_fornecedor_fk, id_item_custo_fk)
-) ENGINE=INNODB;
+use trocaticket;
+create table usuario (
+    id_usuario int auto_increment primary key,
+    nome varchar(150) not null,
+    email varchar(150) not null unique,
+    senha varchar(255) not null,
+    perfil enum('organizador', 'fornecedor', 'administrador') not null,
+    data_criacao timestamp default current_timestamp
+)ENGINE=INNODB;
+create table organizador (
+    id_organizador int primary key,
+    nome_organizacao varchar(150) not null,
+    cnpj varchar(18) unique not null,
+    status_aprovacao enum('pendente', 'aprovado', 'rejeitado') not null default 'pendente',
+    constraint fk_organizador_usuario foreign key (id_organizador) references usuario(id_usuario) on delete cascade
+) engine=innodb;
+create table fornecedor (
+    id_fornecedor int primary key,
+    nome_organizacao varchar(150) not null,
+    cnpj varchar(18) unique not null,
+    area_atuacao varchar(80) not null,
+    status_aprovacao enum('pendente', 'aprovado', 'rejeitado') not null default 'pendente',
+    constraint fk_fornecedor_usuario foreign key (id_fornecedor) references usuario(id_usuario) on delete cascade
+)ENGINE=INNODB;
+create table administrador (
+    id_administrador int primary key,
+    nivel_permissao enum('suporte', 'gestor', 'master') not null default 'suporte',
+    constraint fk_administrador_usuario foreign key (id_administrador) references usuario(id_usuario) on delete cascade
+)ENGINE=INNODB;
+create table evento (
+    id_evento int auto_increment primary key,
+    id_organizador_fk int not null,
+    titulo_evento varchar(150) not null,
+    data_inicio date not null,
+    data_fim date not null,
+    endereco varchar(200) not null,
+    publico_minimo int,
+    publico_maximo int,
+    status_publicacao enum('rascunho', 'publicado', 'encerrado', 'cancelado') not null default 'rascunho',
+    margem_lucro_percentual decimal(5,2) default 0.00,
+    ticket_estimado decimal(10,2),
+    created_at timestamp default current_timestamp,
+    constraint fk_evento_organizador foreign key (id_organizador_fk) references organizador(id_organizador) on delete cascade,
+    constraint chk_datas_evento check (data_fim >= data_inicio)
+)ENGINE=INNODB;
+create table itemcusto (
+    id_item_custo int auto_increment primary key,
+    id_evento_fk int not null,
+    categoria varchar(80) not null,
+    descricao_detalhada varchar(255) not null,
+    quantidade int not null default 1,
+    constraint fk_itemcusto_evento foreign key (id_evento_fk) references evento(id_evento) on delete cascade
+)ENGINE=INNODB;
+create table custoindependente (
+    id_custo_independente int auto_increment primary key,
+    id_evento_fk int not null,
+    tipo_custo varchar(80) not null,
+    descricao varchar(255),
+    valor decimal(12,2) not null,
+    constraint fk_custoindependente_evento foreign key (id_evento_fk) references evento(id_evento) on delete cascade
+)ENGINE=INNODB;
+create table proposta (
+    id_proposta int auto_increment primary key,
+    id_fornecedor_fk int not null,
+    id_item_custo_fk int not null,
+    valor_oferecido decimal(12,2) not null,
+    descricao_proposta text,
+    data_validade date,
+    observacoes text,
+    status_proposta enum('enviada', 'em_analise', 'selecionada', 'recusada') not null default 'enviada',
+    data_envio timestamp default current_timestamp,
+    constraint fk_proposta_fornecedor foreign key (id_fornecedor_fk) references fornecedor(id_fornecedor) on delete cascade,
+    constraint fk_proposta_itemcusto foreign key (id_item_custo_fk) references itemcusto(id_item_custo) on delete cascade,
+    constraint uq_fornecedor_item unique (id_fornecedor_fk, id_item_custo_fk)
+)ENGINE=INNODB;
