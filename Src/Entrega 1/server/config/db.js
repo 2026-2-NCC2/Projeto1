@@ -1,5 +1,6 @@
-const mysql = require('mysql2/promise')
-require('dotenv').config()
+import mysql from 'mysql2/promise'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const pool = mysql.createPool({
     host: 'localhost',
@@ -11,21 +12,18 @@ const pool = mysql.createPool({
     queueLimit: 0
 })
 
-async function testConnection(){
+// Testa a conexão ao iniciar o servidor
+async function testConnection() {
     try {
         const connection = await pool.getConnection()
         console.log('Banco conectado com sucesso!')
         connection.release()
     } catch (error) {
-        console.error('Erro ao conectar.', error.message)
+        console.error('Erro ao conectar:', error.message)
         process.exit(1)
     }
 }
 
 testConnection()
 
-module.exports = pool
-
-
-
-
+export default pool

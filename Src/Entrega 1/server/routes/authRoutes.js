@@ -1,0 +1,33 @@
+import { Router } from 'express'
+import pool from '../config/db.js'
+import bcrypt from 'bcrypt'
+
+const router = Router()
+
+router.post('/cadastro', async (req, res) => {
+    const { nome, email, senha, perfil } = req.body
+
+    if (!nome || !email || !senha || !perfil) {
+        return res.status(400).json({ erro: 'Nome, email, senha e perfil são obrigatórios.' })
+    }
+
+    try {
+        const senhaCriptografada = await bcrypt.hash(senha, 10)
+
+        const [resultado] = await pool.query(
+            `INSERT INTO usuario (nome, email, senha, perfil) VALUES (?, ?, ?, ?)`,
+            [nome, email, senhaCriptografada, perfil]
+        )
+
+        return res.status(201).json({ ok: true, id: resultado.insertId })
+
+    } catch (erro) {
+        if (erro.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ erro: 'E-mail já cadastrado.' })
+        }
+        console.error(erro)
+        return res.status(500).json({ erro: 'Erro interno.' })
+    }
+})
+
+export default router
