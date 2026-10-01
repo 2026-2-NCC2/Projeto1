@@ -17,6 +17,16 @@ app.get('/', (req, res) => {
     res.send('servidor rodando')
 })
 
+app.get("/usuarios", async (req,res)=>{
+    try{
+        const [resultado] = await pool.query("SELECT * FROM usuario;")
+        res.json(resultado)
+    }
+    catch(erro){
+        res.status(500).json({erro: "Erro no servidor"})
+    }
+})
+
 // Registra todas as rotas de auth com o prefixo /api
 app.use('/api', authRoutes)
 
