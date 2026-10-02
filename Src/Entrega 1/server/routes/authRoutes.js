@@ -30,4 +30,27 @@ router.post('/cadastro', async (req, res) => {
     }
 })
 
+router.delete("/deleteUsers/:id", async (req,res) =>{
+    const {id} = req.params
+
+    try{
+
+        const [resultado] = await pool.query(
+            `DELETE FROM usuario WHERE id_usuario= ?`,
+            [id]
+        )
+
+        if (resultado.affectedRows===0){
+            return res.status(404).json({ erro: 'Usuário não encontrado.' })
+        }
+
+        return res.status(200).json({ ok: true, mensagem: 'Usuário excluído com sucesso.' })
+    }
+    catch(erro){
+
+        return res.status(500).json({ erro: 'Erro interno ao excluir usuário.' })
+
+    }
+})
+
 export default router

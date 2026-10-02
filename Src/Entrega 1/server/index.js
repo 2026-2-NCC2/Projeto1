@@ -33,3 +33,4 @@ app.use('/api', authRoutes)
 app.listen(port, () => {
     console.log(`backend rodando na porta ${port}`)
 })
+

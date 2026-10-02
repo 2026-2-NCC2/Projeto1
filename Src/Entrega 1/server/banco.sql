@@ -1,3 +1,4 @@
+CREATE DATABASE trocaticket;
 USE trocaticket;
 
 CREATE TABLE usuario (
