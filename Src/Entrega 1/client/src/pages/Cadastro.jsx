@@ -69,7 +69,9 @@ export default function Cadastro() {
 
   // dados basicos
   const [nome, setNome] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
+  const [idade, setIdade] = useState('')
   const [senha, setSenha] = useState('')
   const [confirmSenha, setConfirmSenha] = useState('')
 
@@ -98,6 +100,8 @@ export default function Cadastro() {
     // etapa 0: dados basicos
     if (step === 0) {
       if (!nome.trim()) e.nome = 'Nome obrigatório.'
+      if (!username.trim()) e.username = 'Username obrigatório.'
+      if (!idade.trim()) e.idade = 'Idade obrigatória.'
       // regex simples, so confere se tem algo@algo.algo
       if (!email.trim()) e.email = 'E-mail obrigatório.'
       else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'E-mail inválido.'
@@ -233,7 +237,9 @@ export default function Cadastro() {
 
                 {/* campos, cada um mostra o proprio erro se tiver */}
                 <Campo id="nome" label="Nome completo" type="text" placeholder="Seu nome completo" value={nome} onChange={setNome} error={errors.nome} />
+                <Campo id="username" label="Username" type="text" placeholder="Seu nome para a plataforma" value={username} onChange={setUsername} error={errors.username} />
                 <Campo id="email" label="E-mail" type="email" placeholder="seuemail@exemplo.com" value={email} onChange={setEmail} error={errors.email} />
+                <Campo id="idade" label="Idade" type="number" placeholder="20" min="0" max="100" value={idade} onChange={setIdade} error={errors.idade} />
                 <Campo id="senha" label="Senha" type="password" placeholder="••••••••" value={senha} onChange={setSenha} error={errors.senha} />
                 <Campo id="csenha" label="Confirmar senha" type="password" placeholder="••••••••" value={confirmSenha} onChange={setConfirmSenha} error={errors.confirmSenha} />
 
