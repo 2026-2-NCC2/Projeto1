@@ -1,4 +1,4 @@
-/*import mysql from 'mysql2/promise'
+import mysql from 'mysql2/promise'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -26,22 +26,4 @@ async function testConnection() {
 
 testConnection()
 
-export default pool*/
-
-import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
-
-// ==========================================
-// CONEXÃO NOVA: SQLite (Para rodar na escola)
-// ==========================================
-const pool = await open({
-    filename: './banco.db',
-    driver: sqlite3.Database
-});
-
-// Ativa o suporte para as chaves estrangeiras (ON DELETE CASCADE)
-await pool.run('PRAGMA foreign_keys = ON');
-
-console.log('Conectado ao SQLite com sucesso!');
-
-export default pool;
+export default pool
