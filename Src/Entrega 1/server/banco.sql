@@ -8,7 +8,7 @@ CREATE TABLE usuario (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    perfil ENUM('organizador', 'fornecedor', 'administrador') NOT NULL,
+    perfil ENUM('cliente', 'organizador', 'fornecedor', 'administrador') NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=INNODB;
 

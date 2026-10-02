@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
+import { cadastrarUsuario } from '../services/api'
 
 // tipos de conta que a pessoa pode escolher no cadastro
 // id = valor que vai pro back-end / emoji, titulo e desc = o que aparece no card
 const ROLES = [
-  { id: 'usuario', emoji: '👤', titulo: 'Usuário', desc: 'Compre e troque ingressos de eventos.' },
+  { id: 'cliente', emoji: '👤', titulo: 'Usuário', desc: 'Compre e troque ingressos de eventos.' },
   { id: 'organizador', emoji: '🎪', titulo: 'Organizador', desc: 'Crie e gerencie seus eventos.' },
   { id: 'fornecedor', emoji: '🏢', titulo: 'Fornecedor', desc: 'Ofereça serviços para organizadores.' }
 ]
@@ -67,6 +68,10 @@ export default function Cadastro() {
   const [role, setRole] = useState('')  // tipo de conta escolhido
   const [done, setDone] = useState(false) // true quando termina o cadastro
 
+  //api related
+  const [apiLoading, setApiLoading] = useState(false) // true enquanto espera a resposta do backend
+  const [apiError, setApiError] = useState('')        // mensagem de erro geral da API
+
   // dados basicos
   const [nome, setNome] = useState('')
   const [username, setUsername] = useState('')
@@ -74,6 +79,7 @@ export default function Cadastro() {
   const [idade, setIdade] = useState('')
   const [senha, setSenha] = useState('')
   const [confirmSenha, setConfirmSenha] = useState('')
+ 
 
   // dados da empresa (organizador e fornecedor)
   const [empresa, setEmpresa] = useState('')
@@ -94,6 +100,8 @@ export default function Cadastro() {
   // valida os campos da etapa atual e devolve um objeto com os erros
   // se voltar vazio e porque ta tudo certo
   function validate() {
+
+
     // comeca vazio, e cada campo com problema ganha uma chave aqui (ex: e.email = 'E-mail inválido.')
     const e = {}
 
@@ -102,6 +110,8 @@ export default function Cadastro() {
       if (!nome.trim()) e.nome = 'Nome obrigatório.'
       if (!username.trim()) e.username = 'Username obrigatório.'
       if (!idade.trim()) e.idade = 'Idade obrigatória.'
+      else if (Number(idade) < 0) e.idade = 'Idade não pode ser negativa.'
+      else if (Number(idade) > 120) e.idade = 'Idade inválida.'
       // regex simples, so confere se tem algo@algo.algo
       if (!email.trim()) e.email = 'E-mail obrigatório.'
       else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'E-mail inválido.'
@@ -112,7 +122,7 @@ export default function Cadastro() {
     }
 
     // etapa 2: dados da empresa (usuario comum nao passa por aqui)
-    if (step === 2 && role !== 'usuario') {
+    if (step === 2 && role !== 'cliente') {
       if (!empresa.trim()) e.empresa = 'Nome da empresa obrigatório.'
       if (!cnpj.trim()) e.cnpj = 'CNPJ obrigatório.'
       // organizador precisa preencher pelo menos uma area
@@ -129,6 +139,33 @@ export default function Cadastro() {
     return e
   }
 
+
+  async function finalizarCadastro() {
+    setApiError('')
+    setApiLoading(true)
+    try {
+      await cadastrarUsuario({
+        nome,
+        username,
+        email,
+        idade: Number(idade),
+        senha,
+        perfil: role, // 'cliente' | 'organizador' | 'fornecedor'
+      })
+      setDone(true)
+    } catch (err) {
+      if (err.status === 409) {
+        // e-mail já cadastrado: volta pra etapa 0 e mostra o erro no campo certo
+        setStep(0)
+        setErrors((prev) => ({ ...prev, email: 'E-mail já cadastrado.' }))
+      } else {
+        setApiError('Não foi possível concluir o cadastro. Tente novamente em instantes.')
+      }
+    } finally {
+      setApiLoading(false)
+    }
+  }
+  
   // roda quando clica no botao de continuar
   function handleNext() {
     const errs = validate()
@@ -138,9 +175,9 @@ export default function Cadastro() {
     setErrors({})
 
     // se for a ultima etapa daquele tipo de conta, finaliza o cadastro
-    if (step === 1 && role === 'usuario') { setDone(true); return }
-    if (step === 2 && role === 'organizador') { setDone(true); return }
-    if (step === 3 && role === 'fornecedor') { setDone(true); return }
+    if (step === 1 && role === 'cliente') { finalizarCadastro(); return }
+    if (step === 2 && role === 'organizador') { finalizarCadastro(); return }
+    if (step === 3 && role === 'fornecedor') { finalizarCadastro(); return }
 
     // senao vai pra proxima etapa
     setStep(s => s + 1)
@@ -156,7 +193,7 @@ export default function Cadastro() {
   
   // tela final, aparece depois que termina o cadastro
   if (done) {
-    const isUser = role === 'usuario' // usuario comum ja entra direto, os outros precisam de aprovacao
+    const isUser = role === 'cliente' // usuario comum ja entra direto, os outros precisam de aprovacao
 
     return (
       // fundo azul escuro ocupando a tela toda, com o card centralizado
@@ -283,7 +320,7 @@ export default function Cadastro() {
                   <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)}>Voltar</button>
                   {/* fica desativado ate escolher um tipo, e pro usuario comum ja vira "Concluir" */}
                   <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white hover:bg-indigo-600 disabled:bg-slate-200 disabled:cursor-not-allowed" onClick={handleNext} disabled={!role}>
-                    {role === 'usuario' ? 'Concluir' : 'Próximo'}
+                    {role === 'cliente' ? 'Concluir' : 'Próximo'}
                   </button>
                 </div>
               </>
