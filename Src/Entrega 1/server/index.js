@@ -57,7 +57,7 @@ app.get("/usuarios", async (req,res)=>{
     try{
         // No SQLite com a biblioteca 'sqlite', o retorno direto já é o array de linhas, 
         // então usamos apenas "resultado" em vez de "[resultado]"
-        const resultado = await pool.al l("SELECT * FROM usuario;")
+        const resultado = await pool.all("SELECT * FROM usuario;")
         res.json(resultado)
     }
     catch(erro){
