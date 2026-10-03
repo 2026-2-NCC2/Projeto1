@@ -18,3 +18,21 @@ export async function cadastrarUsuario(dados) {
 
   return data
 }
+
+export async function loginUsuario(dados) {
+  const response = await fetch(`${api_url}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dados),
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const erro = new Error(data.erro || 'Erro ao entrar.')
+    erro.status = response.status
+    throw erro
+  }
+
+  return data
+}
