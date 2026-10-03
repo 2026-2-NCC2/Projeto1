@@ -6,6 +6,9 @@ const PAINEL_TABS = [
   { key: 'meus', label: 'Meus Eventos' },
 ]
 
+const usuario = JSON.parse(localStorage.getItem('usuario'))
+const perfil = usuario?.perfil // 'cliente' | 'organizador' | 'fornecedor' | 'administrador'
+
 export default function Header() {
   const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -40,17 +43,21 @@ export default function Header() {
 
           {noPainel && (
             <div className="flex gap-1.5 max-[540px]:w-full" aria-label="Abas do painel">
-              {PAINEL_TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  className={`cursor-pointer rounded-full border px-[11px] py-2 text-xs font-semibold max-[540px]:px-[9px] max-[540px]:py-[7px] ${activeTab === tab.key ? 'border-[#e3e6ef] bg-[#f6f7fb] text-[#1e4fa0]' : 'border-transparent bg-transparent text-[#5b6178]'}`}
-                  aria-pressed={activeTab === tab.key}
-                  onClick={() => handleTabClick(tab.key)}
-                >
-                  {tab.label}
-                </button>
-              ))}
+              {perfil==="organizador" &&(
+                <div className="flex gap-1.5">
+                  {PAINEL_TABS.map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      className={`cursor-pointer rounded-full border px-[11px] py-2 text-xs font-semibold max-[540px]:px-[9px] max-[540px]:py-[7px] ${activeTab === tab.key ? 'border-[#e3e6ef] bg-[#f6f7fb] text-[#1e4fa0]' : 'border-transparent bg-transparent text-[#5b6178]'}`}
+                      aria-pressed={activeTab === tab.key}
+                      onClick={() => handleTabClick(tab.key)}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </nav>
@@ -59,9 +66,14 @@ export default function Header() {
           {paginaDeConta && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/">Voltar ao início</Link>}
           {criandoEvento && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/PainelDeEventos">Voltar ao painel</Link>}
           {noPainel && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/">Início</Link>}
-          {areaDoOrganizador && (
+          {areaDoOrganizador && perfil==="organizador" ? (
             <span className="text-[13px] font-bold text-[#161a2e]">
               Organizador
+              <Link to="/" className="ml-[7px] text-[#1e4fa0] no-underline">(Sair)</Link>
+            </span>
+          ): (
+            <span className="text-[13px] font-bold text-[#161a2e]">
+              Usuário
               <Link to="/" className="ml-[7px] text-[#1e4fa0] no-underline">(Sair)</Link>
             </span>
           )}

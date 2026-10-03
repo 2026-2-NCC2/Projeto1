@@ -47,7 +47,9 @@ const IconSearch    = () => <svg width="16" height="16" {...svgProps}><circle cx
 const IconArrowLeft = () => <svg width="16" height="16" {...svgProps}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
 
 // id do organizador "logado", por enquanto fixo ate ter login de verdade
-const ORGANIZADOR_LOGADO_ID = 99;
+const usuario =  JSON.parse(localStorage.getItem("usuario"))
+const perfil = usuario?.perfil
+const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario
 
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
@@ -168,12 +170,14 @@ export default function PainelDeEventos() {
                 </p>
               </div>
               {/* botao que leva pro formulario de criar evento */}
-              <Link
-                to="/criar-evento/evento"
-                className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]"
-              >
-                <IconPlus /> Criar Evento
-              </Link>
+              {perfil==="organizador" &&(
+                <Link
+                  to="/criar-evento/evento"
+                  className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]"
+                >
+                  <IconPlus /> Criar Evento
+                </Link>
+              )}
             </div>
           </div>
 

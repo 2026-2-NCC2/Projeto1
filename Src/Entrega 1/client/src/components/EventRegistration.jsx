@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Wizard } from './Wizard.jsx';
 // as 4 etapas do cadastro de evento
@@ -11,12 +11,17 @@ import './eventRegistration.css';
 // nome de cada etapa na url, na ordem (ex: /criar-evento/publico-lotes)
 const steps = ['evento', 'publico-lotes', 'custos-independentes', 'itens-custos'];
 
+// usuario logado, vem do login (salvo no localStorage)
+const usuario = JSON.parse(localStorage.getItem('usuario'));
+const perfil = usuario?.perfil;
+
 // pagina que controla o formulario de criar evento
 // guarda os dados de todas as etapas aqui, pra nao perder quando troca de etapa
 export default function EventRegistration() {
   // pega a etapa da url (o :etapa da rota)
   const { etapa } = useParams();
   const navigate = useNavigate();
+
   // descobre o numero da etapa, se a url nao bater com nenhuma cai na etapa 1
   const index = steps.indexOf(etapa);
   const step = index < 0 ? 1 : index + 1;
@@ -26,6 +31,16 @@ export default function EventRegistration() {
   const [independentCosts, setIndependentCosts] = useState([]);
   // true quando clica em finalizar, mostra a mensagem de concluido
   const [finished, setFinished] = useState(false);
+
+  // so organizador pode criar evento, qualquer outro perfil (ou deslogado) volta pro painel
+  // fica em useEffect pra nao chamar navigate() durante o render (e manter os hooks sempre na mesma ordem)
+  useEffect(() => {
+    if (perfil !== 'organizador') {
+      navigate('/PainelDeEventos');
+    }
+  }, [navigate]);
+
+  if (perfil !== 'organizador') return null;
 
   // vai pra etapa pelo numero, esconde a mensagem de concluido e volta pro topo
   function goTo(number) {
