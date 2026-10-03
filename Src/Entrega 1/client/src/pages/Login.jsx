@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Footer from '../components/Footer'
 import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
+import { loginUsuario } from '../services/api'
 
 // pagina de login
 function Login() {
@@ -9,6 +10,8 @@ function Login() {
   const [senha, setSenha] = useState('')
   const [erros, setErros] = useState({}) // mensagens de erro dos campos
   const navigate = useNavigate()         // pra mudar de pagina pelo codigo
+
+  const [apiLoading, setApiLoading] = useState(false)
 
   // valida os campos e devolve os erros encontrados
   // se voltar vazio e porque ta tudo certo
@@ -26,7 +29,7 @@ function Login() {
   }
 
   // roda quando clica em "Login"
-  function handleLogin() {
+  async function handleLogin() {
     const errosEncontrados = validar()
     // se tiver erro, mostra nos campos e para aqui
     if (Object.keys(errosEncontrados).length > 0) {
@@ -34,9 +37,19 @@ function Login() {
       return
     }
     setErros({})
+    setApiLoading(true)
+    try{
+      const usuario = await loginUsuario({email, senha})
+      localStorage.setItem('usuario', JSON.stringify(usuario)) // { id_usuario, nome, email, perfil }
+      navigate('/PainelDeEventos')
+    } catch(err){
+      setErros({ senha: 'E-mail ou senha inválidos.' })
+    } finally{
+      setApiLoading(false)
+    }
     // por enquanto so mostra no console e volta pra home, depois vai chamar a API
     console.log('Dados válidos! Enviando...', { email, senha }) // corrigido: "nome" nao existia aqui
-    navigate('/')
+    
   }
 
   return (

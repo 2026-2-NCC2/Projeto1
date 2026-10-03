@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
+import { cadastrarUsuario } from '../services/api'
 
 // tipos de conta que a pessoa pode escolher no cadastro
-// id = valor que vai pro back-end / emoji, titulo e desc = o que aparece no card
+// id = valor que vai pro back-end (bate com o ENUM da tabela usuario.perfil) / emoji, titulo e desc = o que aparece no card
 const ROLES = [
-  { id: 'usuario', emoji: '👤', titulo: 'Usuário', desc: 'Compre e troque ingressos de eventos.' },
+  { id: 'cliente', emoji: '👤', titulo: 'Usuário', desc: 'Compre e troque ingressos de eventos.' },
   { id: 'organizador', emoji: '🎪', titulo: 'Organizador', desc: 'Crie e gerencie seus eventos.' },
   { id: 'fornecedor', emoji: '🏢', titulo: 'Fornecedor', desc: 'Ofereça serviços para organizadores.' }
 ]
@@ -83,6 +84,10 @@ export default function Cadastro() {
 
   const [errors, setErrors] = useState({}) // mensagens de erro dos campos
 
+  // estado da chamada pro backend
+  const [apiLoading, setApiLoading] = useState(false) // true enquanto espera a resposta do /api/cadastro
+  const [apiError, setApiError] = useState('')        // mensagem de erro geral da API (ex: erro 500)
+
   // codigo aleatorio do cadastro (ex: TT-A1B2C3), a funcao no useState faz ele ser gerado so uma vez
   const [code] = useState(() => 'TT-' + Math.random().toString(36).substr(2, 6).toUpperCase())
   const [areaFor, setAreaFor] = useState('')
@@ -90,7 +95,7 @@ export default function Cadastro() {
   // quantidade de etapas muda conforme o tipo de conta
   // fornecedor tem a etapa de servicos a mais
   const totalSteps = role === 'fornecedor' ? 4 : role === 'organizador' ? 3 : 2
-  
+
   // valida os campos da etapa atual e devolve um objeto com os erros
   // se voltar vazio e porque ta tudo certo
   function validate() {
@@ -101,7 +106,13 @@ export default function Cadastro() {
     if (step === 0) {
       if (!nome.trim()) e.nome = 'Nome obrigatório.'
       if (!username.trim()) e.username = 'Username obrigatório.'
+
+      // idade: obrigatoria, nao pode ser negativa e tem que ser um numero plausivel
       if (!idade.trim()) e.idade = 'Idade obrigatória.'
+      else if (Number.isNaN(Number(idade))) e.idade = 'Idade inválida.'
+      else if (Number(idade) < 0) e.idade = 'Idade não pode ser negativa.'
+      else if (Number(idade) > 120) e.idade = 'Idade inválida.'
+
       // regex simples, so confere se tem algo@algo.algo
       if (!email.trim()) e.email = 'E-mail obrigatório.'
       else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'E-mail inválido.'
@@ -111,8 +122,8 @@ export default function Cadastro() {
       else if (senha !== confirmSenha) e.confirmSenha = 'As senhas não coincidem.'
     }
 
-    // etapa 2: dados da empresa (usuario comum nao passa por aqui)
-    if (step === 2 && role !== 'usuario') {
+    // etapa 2: dados da empresa (cliente nao passa por aqui)
+    if (step === 2 && role !== 'cliente') {
       if (!empresa.trim()) e.empresa = 'Nome da empresa obrigatório.'
       if (!cnpj.trim()) e.cnpj = 'CNPJ obrigatório.'
       // organizador precisa preencher pelo menos uma area
@@ -129,6 +140,33 @@ export default function Cadastro() {
     return e
   }
 
+  // envia os dados pro backend (POST /api/cadastro) e so marca como concluido se der certo
+  async function finalizarCadastro() {
+    setApiError('')
+    setApiLoading(true)
+    try {
+      await cadastrarUsuario({
+        nome,
+        username,
+        email,
+        idade: Number(idade),
+        senha,
+        perfil: role, // 'cliente' | 'organizador' | 'fornecedor'
+      })
+      setDone(true)
+    } catch (err) {
+      if (err.status === 409) {
+        // e-mail ja cadastrado: volta pra etapa 0 e mostra o erro no campo certo
+        setStep(0)
+        setErrors((prev) => ({ ...prev, email: 'E-mail já cadastrado.' }))
+      } else {
+        setApiError('Não foi possível concluir o cadastro. Tente novamente em instantes.')
+      }
+    } finally {
+      setApiLoading(false)
+    }
+  }
+
   // roda quando clica no botao de continuar
   function handleNext() {
     const errs = validate()
@@ -137,10 +175,10 @@ export default function Cadastro() {
     // se passou, limpa os erros antigos
     setErrors({})
 
-    // se for a ultima etapa daquele tipo de conta, finaliza o cadastro
-    if (step === 1 && role === 'usuario') { setDone(true); return }
-    if (step === 2 && role === 'organizador') { setDone(true); return }
-    if (step === 3 && role === 'fornecedor') { setDone(true); return }
+    // se for a ultima etapa daquele tipo de conta, finaliza o cadastro (chama a API)
+    if (step === 1 && role === 'cliente') { finalizarCadastro(); return }
+    if (step === 2 && role === 'organizador') { finalizarCadastro(); return }
+    if (step === 3 && role === 'fornecedor') { finalizarCadastro(); return }
 
     // senao vai pra proxima etapa
     setStep(s => s + 1)
@@ -153,10 +191,10 @@ export default function Cadastro() {
   const addArea = () => setAreas(p => [...p, ''])                                        // adiciona um campo novo vazio
   const removeArea = i => setAreas(p => p.filter((_, idx) => idx !== i))                 // remove o campo da posicao i
   const updateArea = (i, v) => setAreas(p => p.map((a, idx) => idx === i ? v : a))       // atualiza o texto do campo i
-  
+
   // tela final, aparece depois que termina o cadastro
   if (done) {
-    const isUser = role === 'usuario' // usuario comum ja entra direto, os outros precisam de aprovacao
+    const isUser = role === 'cliente' // cliente ja entra direto, os outros precisam de aprovacao
 
     return (
       // fundo azul escuro ocupando a tela toda, com o card centralizado
@@ -171,7 +209,7 @@ export default function Cadastro() {
 
             <h2 className="text-3xl font-bold tracking-tight mb-2">Cadastro Realizado!</h2>
 
-            {/* mensagem muda: usuario ja ta pronto, organizador/fornecedor ficou pendente */}
+            {/* mensagem muda: cliente ja ta pronto, organizador/fornecedor ficou pendente */}
             <p className="text-slate-500 text-[15px] mb-6">
               {isUser ? 'Bem-vindo ao TrocaTicket! Sua conta está pronta.' : <><strong>{role === 'organizador' ? 'Organizador' : 'Fornecedor'}</strong>: sua solicitação foi enviada.</>}
             </p>
@@ -278,12 +316,15 @@ export default function Cadastro() {
                   ))}
                 </div>
 
+                {/* erro geral da API (ex: backend fora do ar) */}
+                {apiError && <p className="text-red-500 font-medium text-sm mb-4">{apiError}</p>}
+
                 {/* botoes de voltar e avancar, no celular o avancar fica em cima */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)}>Voltar</button>
-                  {/* fica desativado ate escolher um tipo, e pro usuario comum ja vira "Concluir" */}
-                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white hover:bg-indigo-600 disabled:bg-slate-200 disabled:cursor-not-allowed" onClick={handleNext} disabled={!role}>
-                    {role === 'usuario' ? 'Concluir' : 'Próximo'}
+                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+                  {/* fica desativado ate escolher um tipo ou enquanto envia, e pro cliente ja vira "Concluir" */}
+                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white hover:bg-indigo-600 disabled:bg-slate-200 disabled:cursor-not-allowed" onClick={handleNext} disabled={!role || apiLoading}>
+                    {apiLoading ? 'Enviando...' : (role === 'cliente' ? 'Concluir' : 'Próximo')}
                   </button>
                 </div>
               </>
@@ -321,10 +362,15 @@ export default function Cadastro() {
                 {/* adiciona mais um campo de area */}
                 <button type="button" className="border border-dashed border-[#1A2E4A] text-[#1A2E4A] p-2.5 rounded-xl font-semibold text-sm mt-2 w-full" onClick={addArea}>+ Outra área</button>
 
+                {/* erro geral da API */}
+                {apiError && <p className="text-red-500 font-medium text-sm mt-4">{apiError}</p>}
+
                 {/* voltar e finalizar (organizador termina aqui) */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)}>Voltar</button>
-                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white" onClick={handleNext}>Criar solicitação</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white disabled:bg-slate-200 disabled:cursor-not-allowed" onClick={handleNext} disabled={apiLoading}>
+                    {apiLoading ? 'Enviando...' : 'Criar solicitação'}
+                  </button>
                 </div>
               </>
             )}
@@ -422,11 +468,16 @@ export default function Cadastro() {
                     onChange={setAreaFor}
                   />
                 </div>
-              
+
+                {/* erro geral da API */}
+                {apiError && <p className="text-red-500 font-medium text-sm mb-2">{apiError}</p>}
+
                 {/* voltar e finalizar (fornecedor termina aqui) */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)}>Voltar</button>
-                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white" onClick={handleNext}>Criar solicitação</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-white text-slate-500 border border-slate-200" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-[15px] font-semibold rounded-xl bg-[#1A2E4A] text-white disabled:bg-slate-200 disabled:cursor-not-allowed" onClick={handleNext} disabled={apiLoading}>
+                    {apiLoading ? 'Enviando...' : 'Criar solicitação'}
+                  </button>
                 </div>
               </>
             )}

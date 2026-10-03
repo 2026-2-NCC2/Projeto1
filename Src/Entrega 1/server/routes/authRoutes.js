@@ -53,4 +53,41 @@ router.delete("/deleteUsers/:id", async (req,res) =>{
     }
 })
 
+
+router.post("/login", async (req,res)=>{
+
+    const { email, senha } = req.body
+    
+    if (!email || !senha) {
+        return res.status(400).json({ erro: 'E-mail e senha são obrigatórios.' })
+    }
+
+    try {
+        const [resultado] = await pool.query(`SELECT id_usuario, nome, email, senha, perfil FROM usuario WHERE email=?`,
+        [email]
+    )
+
+    const [usuario] = resultado
+
+    if (!usuario) {
+        return res.status(401).json({ erro: 'E-mail ou senha inválidos.' })
+    }
+    const senhaValida = await bcrypt.compare(senha, usuario.senha)
+    if (!senhaValida) {
+        return res.status(401).json({ erro: 'E-mail ou senha inválidos.' })
+    }
+
+    return res.status(200).json({
+        id_usuario: usuario.id_usuario,
+        nome: usuario.nome,
+        email: usuario.email,
+        perfil: usuario.perfil,
+    })
+
+    } catch (error) {
+        console.error(erro)
+        return res.status(500).json({ erro: 'Erro interno.' })
+    }
+    
+})
 export default router
