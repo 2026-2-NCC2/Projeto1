@@ -1,8 +1,8 @@
-const api_url = "hhtp://localhost:3000/api"
+const api_url = "http://localhost:3000/api"
 
 // lança um erro com status e a mensagem vinda do backend, pra quem chamar poder tratar por status
 export async function cadastrarUsuario(dados) {
-  const response = await fetch(`${API_URL}/cadastro`, {
+  const response = await fetch(`${api_url}/cadastro`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(dados),
