@@ -1,0 +1,87 @@
+/* botao base, as outras classes mudam tamanho e cor */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* espaco entre o texto e o spinner/icone */
+  gap: var(--space-2);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  /* animacao suave quando muda cor, sombra ou opacidade */
+  transition: background var(--transition), box-shadow var(--transition), opacity var(--transition);
+  /* impede o texto de quebrar linha */
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+/* Tamanhos */
+/* pequeno, medio, grande e largura total */
+.btn--sm { padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); }
+.btn--md { padding: 10px var(--space-5); font-size: var(--font-size-sm); }
+.btn--lg { padding: var(--space-4) var(--space-8); font-size: var(--font-size-base); }
+.btn--full { width: 100%; }
+
+/* Variantes */
+/* verde com texto azul (botao principal, ex: "Aprovar") */
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-primary);
+}
+/* o :not(:disabled) faz o hover nao funcionar quando o botao ta desativado */
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-accent-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+/* azul com texto branco */
+.btn--secondary {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+.btn--secondary:hover:not(:disabled) {
+  background: var(--color-primary-light);
+}
+
+/* sem fundo, so com borda */
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1.5px solid var(--color-border);
+}
+.btn--ghost:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* vermelho (ex: "Rejeitar") */
+.btn--danger {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+.btn--danger:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+/* Estados */
+/* desativado fica mais apagado e com cursor de bloqueado */
+.btn:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+/* carregando: nao deixa clicar de novo */
+.btn--loading {
+  pointer-events: none;
+}
+
+/* Spinner */
+/* bolinha girando: borda na cor do texto com a parte de cima transparente */
+.btn__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
