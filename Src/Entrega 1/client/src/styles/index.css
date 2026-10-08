@@ -48,28 +48,54 @@
      Os componentes AdminDashboard e AprovarCadastros usam var(--color-*)
      com os nomes abaixo. Estes aliases mapeiam para a paleta do projeto. */
   :root {
-    /* cores principais */
-    --color-primary:       #1A2E4A;
-    --color-primary-light: #253D61;
-    --color-accent:        #7ED957;
-    --color-accent-dark:   #62B940;
-    /* fundo, cards e bordas */
-    --color-bg:            #F7F8FA;
-    --color-surface:       #FFFFFF;
-    --color-border:        #E2E6EA;
-    /* textos */
-    --color-text:          #1A2E4A;
-    --color-text-muted:    #6B7A8D;
-    --color-text-light:    #A0AABB;
-    /* cores dos status (rejeitado, aviso, aprovado, pendente) com a versao clarinha pro fundo */
-    --color-danger:        #E53E3E;
-    --color-danger-light:  #FFF5F5;
-    --color-warning:       #D69E2E;
-    --color-warning-light: #FFFFF0;
-    --color-success:       #38A169;
-    --color-success-light: #F0FFF4;
-    --color-pending:       #805AD5;
-    --color-pending-light: #FAF5FF;
+    :root {
+      /* Cores da marca (extraídas do logo) */
+      --color-brand-blue:     #1E4FA3;   /* "Troca" */
+      --color-brand-orange:   #FF7A1A;   /* "Ticket" */
+      --color-brand-cyan:     #3BA8E8;   /* início do ingresso azul */
+      --color-brand-purple:   #7B4FD6;   /* transição do gradiente */
+      --color-brand-pink:     #F2338C;   /* base rosa do símbolo */
+      --color-brand-gold:     #FFA43A;   /* topo do ingresso laranja */
+  
+      /* Gradientes do símbolo */
+      --gradient-ticket-blue:   linear-gradient(135deg, #3BA8E8 0%, #7B4FD6 100%);
+      --gradient-ticket-orange: linear-gradient(135deg, #FFA43A 0%, #F2338C 100%);
+      --gradient-brand:         linear-gradient(135deg, #3BA8E8 0%, #7B4FD6 40%, #F2338C 75%, #FF7A1A 100%);
+  
+      /* Texto e fundo */
+      --color-primary:        #1E4FA3;
+      --color-primary-dark:   #163A7A;
+      --color-accent:         #FF7A1A;
+      --color-accent-dark:    #E5650A;
+      --color-bg:             #FFFFFF;
+      --color-surface:        #F7F9FC;
+      --color-border:         #E3E8F0;
+      --color-text:           #1B2A41;
+      --color-text-muted:     #6B7A90;
+      --color-text-light:     #A0AABB;
+  
+      /* Status */
+      --color-danger:         #E53E3E;
+      --color-danger-light:   #FFF5F5;
+      --color-warning:        #D69E2E;
+      --color-warning-light:  #FFFFF0;
+      --color-success:        #38A169;
+      --color-success-light:  #F0FFF4;
+      --color-pending:        #805AD5;
+      --color-pending-light:  #FAF5FF;
+  }
+  
+  .logo-troca {
+      color: var(--color-brand-blue);
+  }
+  
+  .logo-ticket {
+      color: var(--color-brand-orange);
+  }
+  
+  .logo-symbol {
+      background: var(--gradient-brand);
+  }
 
     /* sombras pequena, media e grande */
     --shadow-sm: 0 1px 3px rgba(26,46,74,0.08);
