@@ -34,12 +34,12 @@ function AdminNav() {
   const { pathname } = useLocation();
   return (
     // fica fixa no topo quando rola a pagina
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-white/10 bg-[#0d1b2e] px-6 md:px-10">
+    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
       {/* logo, volta pra home */}
       <Link to="/" className="flex items-center gap-2 no-underline">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-[#7ED957] text-sm font-black text-[#0d1b2e]">T</span>
-        <span className="text-sm font-extrabold tracking-tight text-white">
-          TrocaTicket <span className="font-normal text-white/40">· Admin</span>
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
+        <span className="text-sm font-extrabold tracking-tight text-tt-branco">
+          TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
         </span>
       </Link>
 
@@ -52,7 +52,7 @@ function AdminNav() {
             // link ativo fica mais claro, os outros mais apagados
             <Link key={to} to={to}
               className={`rounded-lg px-3 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
-                active ? 'bg-white/10 text-white' : 'text-white/50 hover:bg-white/5 hover:text-white/80'
+                active ? 'bg-tt-branco/10 text-tt-branco' : 'text-tt-branco/50 hover:bg-tt-branco/5 hover:text-tt-branco/80'
               }`}>
               {label}
             </Link>
@@ -62,7 +62,7 @@ function AdminNav() {
 
       {/* botao de sair, por enquanto so leva pro login */}
       <Link to="/Login"
-        className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/60 no-underline transition-colors hover:border-white/40 hover:text-white">
+        className="rounded-lg border border-tt-branco/20 px-3 py-1.5 text-xs font-semibold text-tt-branco/60 no-underline transition-colors hover:border-tt-branco/40 hover:text-tt-branco">
         Sair
       </Link>
     </nav>
@@ -73,10 +73,10 @@ function AdminNav() {
 // botoes de filtro da lista de cadastros
 // key = status que vai filtrar / label = texto do botao / active = cor quando ta selecionado
 const FILTROS = [
-  { key: 'todos',     label: 'Todos',      active: 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' },
-  { key: 'pendente',  label: 'Pendentes',  active: 'bg-[var(--color-pending)] text-white border-[var(--color-pending)]' },
-  { key: 'aprovado',  label: 'Aprovados',  active: 'bg-[var(--color-success)] text-white border-[var(--color-success)]' },
-  { key: 'rejeitado', label: 'Rejeitados', active: 'bg-[var(--color-danger)] text-white border-[var(--color-danger)]'   },
+  { key: 'todos',     label: 'Todos',      active: 'bg-[var(--color-primary)] text-tt-branco border-[var(--color-primary)]' },
+  { key: 'pendente',  label: 'Pendentes',  active: 'bg-[var(--color-pending)] text-tt-branco border-[var(--color-pending)]' },
+  { key: 'aprovado',  label: 'Aprovados',  active: 'bg-[var(--color-success)] text-tt-branco border-[var(--color-success)]' },
+  { key: 'rejeitado', label: 'Rejeitados', active: 'bg-[var(--color-danger)] text-tt-branco border-[var(--color-danger)]'   },
 ];
 
 // ─── Componente principal ─────────────────────────────────────────────────────
@@ -123,9 +123,9 @@ export default function AprovarCadastros() {
       <div className="bg-[var(--color-primary)] px-6 pb-12 pt-8 md:px-10">
         {/* centraliza o conteudo */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#7ED957]">Administração</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-white md:text-4xl">Aprovar Cadastros</h1>
-          <p className="mt-1.5 text-sm text-white/50">Gerencie solicitações de organizadores e fornecedores.</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-tt-laranja-principal">Administração</p>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-tt-branco md:text-4xl">Aprovar Cadastros</h1>
+          <p className="mt-1.5 text-sm text-tt-branco/50">Gerencie solicitações de organizadores e fornecedores.</p>
         </div>
       </div>
 
@@ -143,13 +143,13 @@ export default function AprovarCadastros() {
                 className={`flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-150 ${
                   filtro === f.key
                     ? f.active
-                    : 'border-[var(--color-border)] bg-white text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]'
+                    : 'border-[var(--color-border)] bg-tt-branco text-[var(--color-text-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]'
                 }`}>
                 {f.label}
                 {/* contador do lado do nome, menos no "Todos" */}
                 {f.key !== 'todos' && (
                   <span className={`min-w-[18px] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold ${
-                    filtro === f.key ? 'bg-white/25 text-white' : 'bg-[var(--color-border)] text-[var(--color-text-muted)]'
+                    filtro === f.key ? 'bg-tt-branco/25 text-tt-branco' : 'bg-[var(--color-border)] text-[var(--color-text-muted)]'
                   }`}>{contadores[f.key] ?? 0}</span>
                 )}
               </button>
@@ -164,7 +164,7 @@ export default function AprovarCadastros() {
             </span>
             {/* pl-9 deixa espaco pra lupa, no foco a borda e a sombra mudam de cor */}
             <input
-              className="w-full rounded-xl border border-[var(--color-border)] bg-white py-2 pl-9 pr-4 text-sm text-[var(--color-text)] outline-none transition-all placeholder:text-[var(--color-text-light)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_rgba(26,46,74,.10)]"
+              className="w-full rounded-xl border border-[var(--color-border)] bg-tt-branco py-2 pl-9 pr-4 text-sm text-[var(--color-text)] outline-none transition-all placeholder:text-[var(--color-text-light)] focus:border-[var(--color-primary)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--tt-azul-principal)_10%,transparent)]"
               placeholder="Buscar por nome, empresa ou e-mail..."
               value={busca}
               // atualiza a busca a cada letra digitada
@@ -180,7 +180,7 @@ export default function AprovarCadastros() {
 
         {/* Estado vazio - aparece quando o filtro ou a busca nao acha nada */}
         {lista.length === 0 && (
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[var(--color-border)] bg-white px-6 py-16 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[var(--color-border)] bg-tt-branco px-6 py-16 text-center">
             <p className="font-semibold text-[var(--color-primary)]">Nenhum cadastro encontrado</p>
             {/* se tiver busca sugere mudar o texto, senao avisa que ta tudo processado */}
             <p className="text-sm text-[var(--color-text-muted)]">
@@ -192,7 +192,7 @@ export default function AprovarCadastros() {
         {/* Tabela - so aparece se tiver algum cadastro na lista */}
         {lista.length > 0 && (
           // caixa branca em volta da tabela
-          <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-sm)]">
+          <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-tt-branco shadow-[var(--shadow-sm)]">
             {/* deixa rolar pro lado no celular */}
             <div className="overflow-x-auto">
               {/* min-w impede a tabela de ficar espremida demais */}
@@ -210,7 +210,7 @@ export default function AprovarCadastros() {
                   {lista.map(c => (
                     // pendentes ficam com fundo roxinho pra chamar atencao
                     <tr key={c.id}
-                      className={`border-b border-[var(--color-border)] transition-colors last:border-b-0 hover:bg-[#f8fafc] ${c.status === 'pendente' ? 'bg-[#faf5ff]' : ''}`}>
+                      className={`border-b border-[var(--color-border)] transition-colors last:border-b-0 hover:bg-tt-cinza-claro ${c.status === 'pendente' ? 'bg-tt-lilas-claro' : ''}`}>
                       {/* nome e empresa na mesma celula */}
                       <td className="px-5 py-4">
                         <p className="font-semibold text-[var(--color-primary)]">{c.nome}</p>

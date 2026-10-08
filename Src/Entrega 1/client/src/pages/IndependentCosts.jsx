@@ -54,25 +54,25 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
           <CurrencyInput value={draft.value} onChange={patch('value')} />
         </Field>
         {/* botao de adicionar, fica alinhado na direita */}
-        <button type="button" className="-mt-1 min-h-[42px] cursor-pointer justify-self-end rounded-[10px] border-0 bg-[#12275c] px-4 py-2.5 text-[.78rem] font-extrabold text-white transition-transform duration-150 hover:-translate-y-px" onClick={addCost}>+ Adicionar outro tipo de custo</button>
+        <button type="button" className="-mt-1 min-h-[42px] cursor-pointer justify-self-end rounded-[10px] border-0 bg-tt-azul-principal px-4 py-2.5 text-[.78rem] font-extrabold text-tt-branco transition-transform duration-150 hover:-translate-y-px" onClick={addCost}>+ Adicionar outro tipo de custo</button>
       </div>
 
       {/* lista dos custos ja adicionados, so aparece se tiver algum */}
       {costs.length > 0 && (
-        <div className="mt-7 border-t border-[#e7dfcd] pt-6">
-          <h2 className="mb-3 mt-0 text-[.95rem] text-[#07082e]">Custos adicionados</h2>
+        <div className="mt-7 border-t border-tt-azul-marinho/12 pt-6">
+          <h2 className="mb-3 mt-0 text-[.95rem] text-tt-azul-marinho">Custos adicionados</h2>
           {costs.map((cost) => (
             // no celular o valor e o botao ficam um embaixo do outro
-            <div className="flex items-center justify-between gap-[18px] border-b border-[#e7dfcd] py-3 max-[460px]:items-start" key={cost.id}>
+            <div className="flex items-center justify-between gap-[18px] border-b border-tt-azul-marinho/12 py-3 max-[460px]:items-start" key={cost.id}>
               {/* tipo e descricao na esquerda */}
               <div className="grid gap-[3px]">
                 <strong>{cost.type}</strong>
-                <span className="text-[.75rem] text-[#6b6455]">{cost.description}</span>
+                <span className="text-[.75rem] text-tt-grafite/70">{cost.description}</span>
               </div>
               {/* valor e botao de remover na direita */}
               <div className="flex items-center gap-2.5 whitespace-nowrap max-[460px]:flex-col max-[460px]:items-end">
                 <strong className="text-[.8rem]">R$ {cost.value}</strong>
-                <button type="button" className="size-[30px] cursor-pointer rounded-lg border-0 bg-[#f5efe3] font-black text-[#786e5c] hover:bg-[#f2dfd9] hover:text-[#a53c30]" onClick={() => removeCost(cost.id)} aria-label="Remover custo">×</button>
+                <button type="button" className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal" onClick={() => removeCost(cost.id)} aria-label="Remover custo">×</button>
               </div>
             </div>
           ))}

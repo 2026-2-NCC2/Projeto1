@@ -38,7 +38,7 @@
 .field__input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(26,46,74,0.10);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-azul-principal) 12%, transparent);
 }
 
 /* campo com erro fica com borda vermelha */
@@ -48,7 +48,7 @@
 
 /* e a sombra do foco tambem fica vermelha */
 .field--error .field__input:focus {
-  box-shadow: 0 0 0 3px rgba(229,62,62,0.12);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-rosa-principal) 12%, transparent);
 }
 
 /* dica pequena embaixo do campo */

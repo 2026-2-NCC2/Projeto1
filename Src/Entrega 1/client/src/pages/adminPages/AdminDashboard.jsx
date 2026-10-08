@@ -48,17 +48,17 @@ function AdminNav() {
     // justify-between joga a logo pra esquerda e os links pra direita
     // no celular o espacamento lateral e menor (px-6) e no desktop aumenta (md:px-10)
 
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-white/10 bg-[#0d1b2e] px-6 md:px-10">
+    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
       {/* Logo - clicando nela volta pra home do site */}
       {/* usei Link do react-router em vez de <a> pra nao recarregar a pagina inteira */}
       <Link to="/" className="flex items-center gap-2 no-underline">
         {/* bolinha verde com o T, que e a "marca" do TrocaTicket */}
         {/* grid + place-items-center centraliza a letra certinho dentro do circulo */}
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-[#7ED957] text-sm font-black text-[#0d1b2e]">T</span>
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
         {/* nome do site em branco e o "Admin" mais apagado (white/40) */}
         {/* pra deixar claro que ta na area administrativa sem chamar muita atencao */}
-        <span className="text-sm font-extrabold tracking-tight text-white">
-          TrocaTicket <span className="font-normal text-white/40">· Admin</span>
+        <span className="text-sm font-extrabold tracking-tight text-tt-branco">
+          TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
         </span>
       </Link>
 
@@ -75,8 +75,8 @@ function AdminNav() {
               // ativo = fundo mais claro e texto branco / inativo = mais apagado, clareia no hover
               className={`rounded-lg px-3 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
                 active
-                  ? 'bg-white/10 text-white'
-                  : 'text-white/50 hover:bg-white/5 hover:text-white/80'
+                  ? 'bg-tt-branco/10 text-tt-branco'
+                  : 'text-tt-branco/50 hover:bg-tt-branco/5 hover:text-tt-branco/80'
               }`}
             >
               {label}
@@ -89,7 +89,7 @@ function AdminNav() {
       <Link
         to="/Login"
         // borda clarinha que fica mais forte no hover
-        className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white/60 no-underline transition-colors hover:border-white/40 hover:text-white"
+        className="rounded-lg border border-tt-branco/20 px-3 py-1.5 text-xs font-semibold text-tt-branco/60 no-underline transition-colors hover:border-tt-branco/40 hover:text-tt-branco"
       >
         Sair
       </Link>
@@ -101,7 +101,7 @@ function AdminNav() {
 // card dos numeros do dashboard, reaproveitado pros 4 status
 function StatCard({ label, value, icon, accentColor, bgClass }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-sm)]">
+    <div className="relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-tt-branco p-5 shadow-[var(--shadow-sm)]">
       {/* faixa colorida na lateral, cor muda por card */}
       <span className="absolute left-0 top-0 h-full w-1 rounded-l-2xl" style={{ background: accentColor }} />
       <div className="flex items-start justify-between gap-3">
@@ -124,10 +124,10 @@ function QuickCard({ to, icon, titulo, desc, badge }) {
     // o card inteiro e um link, group deixa os filhos reagirem ao hover
     <Link
       to={to}
-      className="group flex items-center gap-4 rounded-2xl border border-[var(--color-border)] bg-white px-5 py-4 no-underline shadow-[var(--shadow-sm)] transition-all duration-200 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-md)]"
+      className="group flex items-center gap-4 rounded-2xl border border-[var(--color-border)] bg-tt-branco px-5 py-4 no-underline shadow-[var(--shadow-sm)] transition-all duration-200 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-md)]"
     >
       {/* icone, muda de cor no hover */}
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#f0f4fa] text-xl transition-colors duration-200 group-hover:bg-[var(--color-primary)] group-hover:text-white">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-tt-cinza-claro text-xl transition-colors duration-200 group-hover:bg-[var(--color-primary)] group-hover:text-tt-branco">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
@@ -135,7 +135,7 @@ function QuickCard({ to, icon, titulo, desc, badge }) {
           {titulo}
           {/* bolinha com a quantidade, so aparece se tiver algo pendente */}
           {badge > 0 && (
-            <span className="rounded-full bg-[var(--color-pending)] px-2 py-0.5 text-[10px] font-bold text-white">{badge}</span>
+            <span className="rounded-full bg-[var(--color-pending)] px-2 py-0.5 text-[10px] font-bold text-tt-branco">{badge}</span>
           )}
         </p>
         {/* descricao, truncate corta com ... se for grande */}
@@ -168,9 +168,9 @@ export default function AdminDashboard() {
       <div className="bg-[var(--color-primary)] px-6 pb-12 pt-8 md:px-10">
         {/* max-w centraliza o conteudo pra nao esticar demais em tela grande */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#7ED957]">Administração</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-white md:text-4xl">Painel Administrativo</h1>
-          <p className="mt-1.5 text-sm text-white/50">Gerencie a plataforma TrocaTicket.</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-tt-laranja-principal">Administração</p>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-tt-branco md:text-4xl">Painel Administrativo</h1>
+          <p className="mt-1.5 text-sm text-tt-branco/50">Gerencie a plataforma TrocaTicket.</p>
         </div>
       </div>
 
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
           {/* um card pra cada status, cada um com sua cor e icone */}
           <StatCard label="Total de cadastros" value={stats.total}
             icon={<span className="text-[var(--color-primary)]"><IconUsers /></span>}
-            accentColor="var(--color-primary)" bgClass="bg-[#eef1f7]" />
+            accentColor="var(--color-primary)" bgClass="bg-tt-cinza-claro" />
           <StatCard label="Pendentes" value={stats.pendentes}
             icon={<span className="text-[var(--color-pending)]"><IconClock /></span>}
             accentColor="var(--color-pending)" bgClass="bg-[var(--color-pending-light)]" />
@@ -227,7 +227,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* caixa branca em volta da tabela */}
-          <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-white shadow-[var(--shadow-sm)]">
+          <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-tt-branco shadow-[var(--shadow-sm)]">
             {/* overflow-x-auto deixa rolar pro lado no celular quando a tabela nao cabe */}
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
                     // os pendentes ficam com fundo roxinho pra chamar atencao
                     // last:border-b-0 tira a borda da ultima linha
                     <tr key={c.id}
-                      className={`border-b border-[var(--color-border)] transition-colors last:border-b-0 hover:bg-[#f8fafc] ${c.status === 'pendente' ? 'bg-[#faf5ff]' : ''}`}>
+                      className={`border-b border-[var(--color-border)] transition-colors last:border-b-0 hover:bg-tt-cinza-claro ${c.status === 'pendente' ? 'bg-tt-lilas-claro' : ''}`}>
                       {/* nome em cima e empresa embaixo, na mesma celula */}
                       <td className="px-5 py-3.5">
                         <p className="font-semibold text-[var(--color-primary)]">{c.nome}</p>

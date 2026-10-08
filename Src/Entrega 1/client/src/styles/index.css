@@ -2,22 +2,85 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
-/* cores e fonte do projeto, viram classes do tailwind (ex: bg-navy, text-verde, border-borda) */
-@theme {
+/* ── Paleta oficial Troca Ticket ──
+   Todas as cores do site saem daqui. Nao use hex, rgb() ou cores nomeadas fora deste bloco:
+   pra suavizar uma cor use opacidade (ex: text-tt-grafite/70 ou color-mix sobre o token). */
+:root {
+  /* azuis */
+  --tt-azul-principal: #1261A0;   /* botoes principais, links */
+  --tt-azul-vivo: #168FE2;        /* destaques e acoes */
+  --tt-azul-claro: #38BDF8;       /* icones, detalhes */
+  --tt-azul-suave: #E0F2FE;       /* fundos e cards */
+
+  /* roxos */
+  --tt-roxo-principal: #6D3FD1;   /* destaques secundarios */
+  --tt-roxo-vivo: #7C3AED;        /* gradientes e elementos ativos */
+  --tt-roxo-suave: #A78BFA;       /* hover e elementos secundarios */
+  --tt-lilas-claro: #EDE9FE;      /* backgrounds */
+
+  /* rosas */
+  --tt-rosa-principal: #E91E8C;   /* destaques, notificacoes, erros */
+  --tt-rosa-vivo: #F72585;        /* CTA e elementos chamativos */
+  --tt-rosa-suave: #F9A8D4;       /* elementos decorativos */
+  --tt-rosa-claro: #FCE7F3;       /* backgrounds */
+
+  /* laranjas e dourado */
+  --tt-laranja-principal: #F97316; /* CTA, vendas, acoes */
+  --tt-laranja-vivo: #FF8A1F;      /* hover e destaque */
+  --tt-ambar: #F59E0B;             /* alertas e informacoes */
+  --tt-laranja-claro: #FFEDD5;     /* backgrounds */
+
+  /* neutros */
+  --tt-azul-marinho: #172554;     /* titulos e textos fortes */
+  --tt-grafite: #1F2937;          /* textos principais */
+  --tt-cinza-claro: #F3F4F6;      /* fundo de paginas e cards */
+  --tt-branco: #FFFFFF;           /* fundo principal */
+
+  /* sucesso (fora das 20 cores, adicionado de proposito: a paleta nao tem verde) */
+  --tt-verde-sucesso: #15803D;
+  --tt-verde-claro: #DCFCE7;
+
+  /* gradientes permitidos (nao crie outros) */
+  --tt-gradiente-principal: linear-gradient(135deg, #1261A0, #6D3FD1, #E91E8C, #F97316);
+  --tt-gradiente-azul-roxo: linear-gradient(135deg, #168FE2, #6D3FD1);
+  --tt-gradiente-rosa-laranja: linear-gradient(135deg, #E91E8C, #F97316);
+}
+
+/* fonte e cores viram classes do tailwind (ex: bg-tt-azul-principal, text-tt-grafite/70) */
+@theme inline {
   --font-sans: 'Inter', sans-serif;
 
-  /* azuis */
-  --color-navy:       #1A2E4A;
-  --color-navy-deep:  #0d1b2e;
-  --color-navy-2:     #1a2f4e;
-  /* verdes */
-  --color-verde:      #7ED957;
-  --color-verde-hover:#62B940;
-  --color-brand:      #4ade80;
-  --color-brand-dark: #15803d;
-  /* cinza do texto secundario e cor das bordas */
-  --color-muted:      #6B7A8D;
-  --color-borda:      #E2E6EA;
+  --color-tt-azul-principal: var(--tt-azul-principal);
+  --color-tt-azul-vivo: var(--tt-azul-vivo);
+  --color-tt-azul-claro: var(--tt-azul-claro);
+  --color-tt-azul-suave: var(--tt-azul-suave);
+  --color-tt-roxo-principal: var(--tt-roxo-principal);
+  --color-tt-roxo-vivo: var(--tt-roxo-vivo);
+  --color-tt-roxo-suave: var(--tt-roxo-suave);
+  --color-tt-lilas-claro: var(--tt-lilas-claro);
+  --color-tt-rosa-principal: var(--tt-rosa-principal);
+  --color-tt-rosa-vivo: var(--tt-rosa-vivo);
+  --color-tt-rosa-suave: var(--tt-rosa-suave);
+  --color-tt-rosa-claro: var(--tt-rosa-claro);
+  --color-tt-laranja-principal: var(--tt-laranja-principal);
+  --color-tt-laranja-vivo: var(--tt-laranja-vivo);
+  --color-tt-ambar: var(--tt-ambar);
+  --color-tt-laranja-claro: var(--tt-laranja-claro);
+  --color-tt-azul-marinho: var(--tt-azul-marinho);
+  --color-tt-grafite: var(--tt-grafite);
+  --color-tt-cinza-claro: var(--tt-cinza-claro);
+  --color-tt-branco: var(--tt-branco);
+  --color-tt-verde-sucesso: var(--tt-verde-sucesso);
+  --color-tt-verde-claro: var(--tt-verde-claro);
+
+  /* sombras do tailwind (shadow-sm, shadow-md...) em azul marinho, em vez do preto padrao */
+  --shadow-2xs: 0 1px color-mix(in srgb, var(--tt-azul-marinho) 5%, transparent);
+  --shadow-xs: 0 1px 2px 0 color-mix(in srgb, var(--tt-azul-marinho) 5%, transparent);
+  --shadow-sm: 0 1px 3px 0 color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 1px 2px -1px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
+  --shadow-md: 0 4px 6px -1px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 2px 4px -2px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
+  --shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
+  --shadow-xl: 0 20px 25px -5px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 8px 10px -6px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
+  --shadow-2xl: 0 25px 50px -12px color-mix(in srgb, var(--tt-azul-marinho) 25%, transparent);
 }
 
 /* estilos base que valem pro site todo */
@@ -25,16 +88,14 @@
   /* padding e borda entram no tamanho do elemento */
   * { box-sizing: border-box; }
 
-  html { background: #fffaef; }
+  html { background: var(--tt-cinza-claro); }
 
-  /* fundo creme com um brilho laranja bem fraco no canto de cima */
+  /* fundo cinza claro e texto grafite */
   body {
     margin: 0;
     min-width: 320px;
-    color: #060c1c;
-    background:
-      radial-gradient(circle at 0% 0%, rgba(255, 164, 0, .09), transparent 28rem),
-      linear-gradient(180deg, #fffdf7 0%, #fffaef 100%);
+    color: var(--tt-grafite);
+    background: var(--tt-cinza-claro);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
@@ -44,62 +105,42 @@
   /* tira o quadrado azul que aparece ao tocar no celular */
   button, a { -webkit-tap-highlight-color: transparent; }
 
-  /* ── Tokens de compatibilidade para as telas Admin ──
-     Os componentes AdminDashboard e AprovarCadastros usam var(--color-*)
-     com os nomes abaixo. Estes aliases mapeiam para a paleta do projeto. */
+  /* ── Tokens de compatibilidade ──
+     As telas Admin e os componentes de ui/ usam var(--color-*) com os nomes abaixo.
+     Sao apelidos dos tokens da paleta, nao crie cores novas aqui. */
   :root {
-    :root {
-      /* Cores da marca (extraídas do logo) */
-      --color-brand-blue:     #1E4FA3;   /* "Troca" */
-      --color-brand-orange:   #FF7A1A;   /* "Ticket" */
-      --color-brand-cyan:     #3BA8E8;   /* início do ingresso azul */
-      --color-brand-purple:   #7B4FD6;   /* transição do gradiente */
-      --color-brand-pink:     #F2338C;   /* base rosa do símbolo */
-      --color-brand-gold:     #FFA43A;   /* topo do ingresso laranja */
-  
-      /* Gradientes do símbolo */
-      --gradient-ticket-blue:   linear-gradient(135deg, #3BA8E8 0%, #7B4FD6 100%);
-      --gradient-ticket-orange: linear-gradient(135deg, #FFA43A 0%, #F2338C 100%);
-      --gradient-brand:         linear-gradient(135deg, #3BA8E8 0%, #7B4FD6 40%, #F2338C 75%, #FF7A1A 100%);
-  
-      /* Texto e fundo */
-      --color-primary:        #1E4FA3;
-      --color-primary-dark:   #163A7A;
-      --color-accent:         #FF7A1A;
-      --color-accent-dark:    #E5650A;
-      --color-bg:             #FFFFFF;
-      --color-surface:        #F7F9FC;
-      --color-border:         #E3E8F0;
-      --color-text:           #1B2A41;
-      --color-text-muted:     #6B7A90;
-      --color-text-light:     #A0AABB;
-  
-      /* Status */
-      --color-danger:         #E53E3E;
-      --color-danger-light:   #FFF5F5;
-      --color-warning:        #D69E2E;
-      --color-warning-light:  #FFFFF0;
-      --color-success:        #38A169;
-      --color-success-light:  #F0FFF4;
-      --color-pending:        #805AD5;
-      --color-pending-light:  #FAF5FF;
-  }
-  
-  .logo-troca {
-      color: var(--color-brand-blue);
-  }
-  
-  .logo-ticket {
-      color: var(--color-brand-orange);
-  }
-  
-  .logo-symbol {
-      background: var(--gradient-brand);
-  }
+    --color-primary:       var(--tt-azul-principal);
+    --color-primary-light: var(--tt-azul-vivo);
+    --color-primary-dark:  var(--tt-azul-marinho);
+    --color-accent:        var(--tt-laranja-principal);
+    --color-accent-dark:   var(--tt-laranja-vivo);
+    --color-white:         var(--tt-branco);
+    /* fundo, cards e bordas */
+    --color-bg:            var(--tt-cinza-claro);
+    --color-surface:       var(--tt-branco);
+    --color-border:        color-mix(in srgb, var(--tt-azul-marinho) 12%, transparent);
+    /* textos */
+    --color-text:          var(--tt-grafite);
+    --color-text-muted:    color-mix(in srgb, var(--tt-grafite) 70%, transparent);
+    --color-text-light:    color-mix(in srgb, var(--tt-grafite) 45%, transparent);
+    /* status: erro em rosa, aviso em ambar, sucesso em verde, pendente em roxo */
+    --color-danger:        var(--tt-rosa-principal);
+    --color-danger-light:  var(--tt-rosa-claro);
+    --color-warning:       var(--tt-ambar);
+    --color-warning-light: var(--tt-laranja-claro);
+    --color-success:       var(--tt-verde-sucesso);
+    --color-success-light: var(--tt-verde-claro);
+    --color-pending:       var(--tt-roxo-principal);
+    --color-pending-light: var(--tt-lilas-claro);
 
     /* sombras pequena, media e grande */
-    --shadow-sm: 0 1px 3px rgba(26,46,74,0.08);
-    --shadow-md: 0 4px 12px rgba(26,46,74,0.10);
-    --shadow-lg: 0 8px 24px rgba(26,46,74,0.14);
+    --shadow-sm: 0 1px 3px color-mix(in srgb, var(--tt-azul-marinho) 8%, transparent);
+    --shadow-md: 0 4px 12px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
+    --shadow-lg: 0 8px 24px color-mix(in srgb, var(--tt-azul-marinho) 14%, transparent);
   }
+
+  /* cores das partes do logo */
+  .logo-troca  { color: var(--tt-azul-principal); }
+  .logo-ticket { color: var(--tt-laranja-principal); }
+  .logo-symbol { background: var(--tt-gradiente-principal); }
 }

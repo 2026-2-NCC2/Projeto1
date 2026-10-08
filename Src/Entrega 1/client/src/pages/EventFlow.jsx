@@ -83,9 +83,9 @@ export default function EventFlow() {
     <PageShell>
       {/* topo com fundo em degrade, titulo e aviso de rascunho */}
       {/* no celular fica um embaixo do outro, a partir de 761px fica lado a lado */}
-      <section className="flex min-h-[150px] flex-col items-start justify-between gap-6 bg-[linear-gradient(125deg,#331166_0%,#12275c_62%,#07082e_100%)] px-[18px] pb-11 pt-[26px] text-white min-[461px]:px-[max(24px,calc((100vw-1132px)/2))] min-[761px]:min-h-[170px] min-[761px]:flex-row min-[761px]:items-center min-[761px]:py-[34px]">
+      <section className="flex min-h-[150px] flex-col items-start justify-between gap-6 bg-[image:var(--tt-gradiente-azul-roxo)] px-[18px] pb-11 pt-[26px] text-tt-branco min-[461px]:px-[max(24px,calc((100vw-1132px)/2))] min-[761px]:min-h-[170px] min-[761px]:flex-row min-[761px]:items-center min-[761px]:py-[34px]">
         <div>
-          <span className="text-[.72rem] font-extrabold uppercase tracking-[.13em] text-[#e6c896]">
+          <span className="text-[.72rem] font-extrabold uppercase tracking-[.13em] text-tt-laranja-vivo">
             Área do organizador
           </span>
 
@@ -93,15 +93,15 @@ export default function EventFlow() {
             Crie seu evento no TrocaTicket
           </h2>
 
-          <p className="m-0 text-white/70">
+          <p className="m-0 text-tt-branco/70">
             Configure informações, lotes e custos em poucos passos.
           </p>
         </div>
 
         {/* aviso de rascunho, aparece depois que a pessoa mexe em algum campo (some no celular) */}
         {hasDraft && (
-          <div className="hidden whitespace-nowrap rounded-full border border-white/15 bg-white/[.07] px-3.5 py-2.5 text-[.76rem] font-bold min-[761px]:block">
-            <span className="mr-1 text-[#3f8a5b]">●</span>
+          <div className="hidden whitespace-nowrap rounded-full border border-tt-branco/15 bg-tt-branco/[.07] px-3.5 py-2.5 text-[.76rem] font-bold min-[761px]:block">
+            <span className="mr-1 text-tt-verde-sucesso">●</span>
             Rascunho salvo
           </div>
         )}
@@ -125,7 +125,7 @@ export default function EventFlow() {
       >
         {/* mensagem de sucesso depois de finalizar */}
         {success && (
-          <div className="mb-[18px] flex flex-wrap items-center gap-x-3.5 gap-y-2 rounded-xl border border-[rgba(63,138,91,.32)] bg-[#edf8f0] px-[15px] py-[13px] text-[.77rem] text-[#285f3b]">
+          <div className="mb-[18px] flex flex-wrap items-center gap-x-3.5 gap-y-2 rounded-xl border border-[color-mix(in_srgb,var(--tt-verde-sucesso)_32%,transparent)] bg-tt-verde-claro px-[15px] py-[13px] text-[.77rem] text-tt-verde-sucesso">
             <strong>
               Evento configurado!
             </strong>
