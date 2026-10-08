@@ -31,7 +31,7 @@ function ValidacaoEmail() {
 
   return (
     // formulario ocupando a tela toda com o campo centralizado
-    <form onSubmit={enviarValidacao} className="min-h-screen bg-tt-azul-marinho flex items-center justify-center p-4">
+    <form onSubmit={enviarValidacao} className="min-h-screen bg-tt-cinza-claro flex items-center justify-center p-4">
       {/* campo de email, o name precisa ser igual a chave do formData */}
       <input
         type="email"
@@ -40,7 +40,7 @@ function ValidacaoEmail() {
         value={formData.email}
         onChange={handleChange}
         required
-        className="w-full max-w-[440px] px-3.5 py-2.5 rounded-md text-sm text-tt-azul-marinho bg-tt-branco outline-none"
+        className="w-full max-w-[440px] px-4 py-3 rounded-full border border-tt-azul-marinho/12 text-sm text-tt-azul-marinho bg-tt-branco outline-none focus:border-tt-azul-principal"
       />
     </form>
   )

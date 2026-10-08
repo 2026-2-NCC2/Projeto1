@@ -43,22 +43,21 @@ function AdminNav() {
   const { pathname } = useLocation();
 
   return (
-    // sticky + top-0 deixa a navbar grudada no topo quando rola a pagina
-    // z-50 garante que ela fique por cima do resto do conteudo
+    // barra clara logo abaixo do cabecalho do site
     // justify-between joga a logo pra esquerda e os links pra direita
     // no celular o espacamento lateral e menor (px-6) e no desktop aumenta (md:px-10)
 
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
+    <nav className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-tt-azul-marinho/12 bg-tt-branco px-6 py-2 md:px-10">
       {/* Logo - clicando nela volta pra home do site */}
       {/* usei Link do react-router em vez de <a> pra nao recarregar a pagina inteira */}
       <Link to="/" className="flex items-center gap-2 no-underline">
-        {/* bolinha verde com o T, que e a "marca" do TrocaTicket */}
+        {/* bolinha azul com o T, que e a "marca" do TrocaTicket */}
         {/* grid + place-items-center centraliza a letra certinho dentro do circulo */}
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
-        {/* nome do site em branco e o "Admin" mais apagado (white/40) */}
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-azul-suave text-sm font-black text-tt-azul-principal">T</span>
+        {/* nome do site em azul marinho e o "Admin" mais apagado */}
         {/* pra deixar claro que ta na area administrativa sem chamar muita atencao */}
-        <span className="text-sm font-extrabold tracking-tight text-tt-branco">
-          TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
+        <span className="text-sm font-extrabold tracking-tight text-tt-azul-marinho">
+          TrocaTicket <span className="font-normal text-tt-grafite/60">· Admin</span>
         </span>
       </Link>
 
@@ -72,11 +71,11 @@ function AdminNav() {
             <Link
               key={to}
               to={to}
-              // ativo = fundo mais claro e texto branco / inativo = mais apagado, clareia no hover
-              className={`rounded-lg px-3 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
+              // ativo = fundo cinza e texto azul / inativo = mais apagado, fica azul no hover
+              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
                 active
-                  ? 'bg-tt-branco/10 text-tt-branco'
-                  : 'text-tt-branco/50 hover:bg-tt-branco/5 hover:text-tt-branco/80'
+                  ? 'bg-tt-cinza-claro text-tt-azul-principal'
+                  : 'text-tt-grafite/75 hover:text-tt-azul-principal'
               }`}
             >
               {label}
@@ -89,7 +88,7 @@ function AdminNav() {
       <Link
         to="/Login"
         // borda clarinha que fica mais forte no hover
-        className="rounded-lg border border-tt-branco/20 px-3 py-1.5 text-xs font-semibold text-tt-branco/60 no-underline transition-colors hover:border-tt-branco/40 hover:text-tt-branco"
+        className="rounded-full border border-tt-azul-marinho/12 px-4 py-1.5 text-xs font-bold text-tt-azul-marinho no-underline transition-colors hover:border-tt-azul-principal hover:text-tt-azul-principal"
       >
         Sair
       </Link>
@@ -164,22 +163,22 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[var(--color-bg)]">
       <AdminNav />
 
-      {/* Hero - faixa azul do topo com o titulo da pagina */}
-      <div className="bg-[var(--color-primary)] px-6 pb-12 pt-8 md:px-10">
+      {/* Hero - faixa clara do topo com o titulo da pagina */}
+      <div className="border-b border-tt-azul-marinho/12 bg-tt-branco px-6 pb-10 pt-9 md:px-10">
         {/* max-w centraliza o conteudo pra nao esticar demais em tela grande */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-tt-laranja-principal">Administração</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-tt-branco md:text-4xl">Painel Administrativo</h1>
-          <p className="mt-1.5 text-sm text-tt-branco/50">Gerencie a plataforma TrocaTicket.</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-tt-azul-principal">Administração</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-tt-azul-marinho md:text-4xl">Painel Administrativo</h1>
+          <p className="mt-1.5 text-sm text-tt-grafite/75">Gerencie a plataforma TrocaTicket.</p>
         </div>
       </div>
 
       {/* conteudo principal da pagina */}
       <div className="mx-auto max-w-[1100px] px-6 pb-16 md:px-10">
 
-        {/* Stat cards - o -mt-6 puxa eles pra cima, ficando em cima da faixa azul */}
+        {/* Stat cards - um card pra cada numero */}
         {/* 2 colunas no celular e 4 em tela grande */}
-        <div className="-mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {/* um card pra cada status, cada um com sua cor e icone */}
           <StatCard label="Total de cadastros" value={stats.total}
             icon={<span className="text-[var(--color-primary)]"><IconUsers /></span>}
@@ -197,7 +196,7 @@ export default function AdminDashboard() {
 
         {/* Acesso rapido - atalhos pras outras paginas do admin */}
         <section className="mt-10">
-          <h2 className="mb-4 text-lg font-bold text-[var(--color-primary)]">Acesso rápido</h2>
+          <h2 className="mb-4 text-lg font-bold text-tt-azul-marinho">Acesso rápido</h2>
           <div className="flex flex-col gap-3">
             {/* o badge mostra quantos cadastros tao esperando aprovacao */}
             <QuickCard to="/AprovarCadastros" icon="✅"
@@ -218,7 +217,7 @@ export default function AdminDashboard() {
         <section className="mt-10">
           {/* titulo de um lado e link "ver todos" do outro */}
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-[var(--color-primary)]">Cadastros recentes</h2>
+            <h2 className="text-lg font-bold text-tt-azul-marinho">Cadastros recentes</h2>
             {/* leva pra pagina com a lista completa */}
             <Link to="/AprovarCadastros"
               className="text-sm font-semibold text-[var(--color-primary)] underline underline-offset-2 no-underline hover:opacity-75">

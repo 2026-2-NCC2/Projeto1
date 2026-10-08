@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import MapaEvento from "../components/MapaEvento";
+import Footer from "../components/Footer";
 
 // ─── Dados de exemplo iniciais ────────────────────────────────────────────────
 // eventos falsos pra testar a tela enquanto a API nao ta pronta
@@ -49,6 +51,10 @@ const IconArrowLeft = () => <svg width="16" height="16" {...svgProps}><line x1="
 // id do organizador "logado", por enquanto fixo ate ter login de verdade
 const ORGANIZADOR_LOGADO_ID = 99;
 
+// classes dos campos do modal de criar/editar (iguais em todos os campos)
+const labelModal = "mb-1.5 block text-xs font-bold text-tt-azul-marinho";
+const inputModal = "w-full rounded-xl border border-tt-azul-marinho/12 bg-tt-branco p-2.5 text-sm text-tt-azul-marinho outline-none transition focus:border-tt-azul-principal focus:ring-[3px] focus:ring-tt-azul-suave";
+
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
   // ── Aba ativa vem do query param gerenciado pelo Header ──────────────────
@@ -73,6 +79,8 @@ export default function PainelDeEventos() {
   const [formEndereco, setFormEndereco]     = useState("");
   const [formStatus, setFormStatus]         = useState("Publicado");
   const [formTicket, setFormTicket]         = useState("");
+  // true enquanto o card de detalhes faz a animacao de cair ao excluir
+  const [excluindo, setExcluindo]           = useState(false);
 
   // ── Filtragem (usa activeTab vindo da URL) ────────────────────────────────
   // o evento so aparece se passar nos 3 filtros: aba, status e busca
@@ -136,15 +144,23 @@ export default function PainelDeEventos() {
     setModalAberto(false);
   }
 
-  // remove o evento depois de confirmar e volta pra lista
-  function excluirEvento(id) {
+  // depois de confirmar, so liga a animacao de "cair" (animate__hinge) no card
+  // o evento so e removido quando a animacao termina (no onAnimationEnd do card)
+  function excluirEvento() {
     if (confirm("Tem certeza que deseja remover este evento?")) {
-      setEventos(eventos.filter((ev) => ev.id !== id));
-      setTelaAtual("painel");
-      setEventoSel(null);
+      setExcluindo(true);
     }
   }
 
+  // roda quando o card termina de cair: remove o evento e volta pra lista
+  function finalizarExclusao(e) {
+    // ignora animacoes de elementos de dentro do card
+    if (!excluindo || e.target !== e.currentTarget) return;
+    setEventos(eventos.filter((ev) => ev.id !== eventoSelecionado.id));
+    setExcluindo(false);
+    setTelaAtual("painel");
+    setEventoSel(null);
+  }
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-tt-cinza-claro text-tt-azul-marinho">
@@ -152,40 +168,40 @@ export default function PainelDeEventos() {
       {/* ── TELA: LISTAGEM ── */}
       {telaAtual === "painel" && (
         <>
-          {/* Hero sub-header */}
+          {/* Hero sub-header, no mesmo estilo claro da pagina inicial */}
           {/* titulo muda conforme a aba, e embaixo mostra o total e quantos estao publicados */}
-          <div className="bg-tt-azul-marinho pt-7 pb-9">
-            <div className="max-w-[1200px] mx-auto px-8 flex flex-wrap items-end justify-between gap-4">
+          <section className="border-b border-tt-azul-marinho/12 bg-tt-branco">
+            <div className="mx-auto flex w-[calc(100%_-_48px)] max-w-[1180px] flex-wrap items-end justify-between gap-4 py-10 max-[760px]:w-[calc(100%_-_36px)] max-[760px]:py-8">
               <div>
-                <p className="text-tt-laranja-principal text-[12px] font-semibold tracking-[1px] uppercase mb-1">
-                  {activeTab === "meus" ? "Seus Eventos" : "Geral"}
-                </p>
-                <h1 className="text-tt-branco text-[26px] font-extrabold tracking-[-0.5px]">
-                  {activeTab === "meus" ? "Meus Eventos Criados" : "Painel de Eventos"}
+                <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">
+                  {activeTab === "meus" ? "Seus eventos" : "Explore"}
+                </span>
+                <h1 className="mb-0 mt-2 text-[clamp(28px,3.4vw,40px)] font-extrabold leading-[1.1] tracking-[-0.045em] text-tt-azul-marinho">
+                  {activeTab === "meus" ? "Meus eventos criados" : "Painel de eventos"}
                 </h1>
-                <p className="text-tt-branco/45 text-[13px] mt-1.5">
+                <p className="mt-2 text-sm text-tt-grafite/75">
                   {eventos.length} eventos cadastrados · {eventos.filter((e) => e.status_publicacao === "Publicado").length} publicados
                 </p>
               </div>
               {/* botao que leva pro formulario de criar evento */}
               <Link
                 to="/criar-evento/evento"
-                className="flex items-center gap-2 bg-tt-laranja-principal text-tt-azul-marinho rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_color-mix(in_srgb,var(--tt-laranja-principal)_35%,transparent)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_color-mix(in_srgb,var(--tt-laranja-principal)_45%,transparent)]"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-azul-principal"
               >
-                <IconPlus /> Criar Evento
+                <IconPlus /> Criar evento
               </Link>
             </div>
-          </div>
+          </section>
 
           {/* Barra de filtros */}
-          <div className="max-w-[1200px] mx-auto px-8 pt-6 flex flex-wrap items-center gap-3">
-            {/* campo de busca com a lupa dentro */}
-            <div className="relative flex-[1_1_240px] max-w-[340px]">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tt-grafite/50 flex"><IconSearch /></span>
+          <div className="mx-auto flex w-[calc(100%_-_48px)] max-w-[1180px] flex-wrap items-center gap-3 pt-7 max-[760px]:w-[calc(100%_-_36px)]">
+            {/* campo de busca com a lupa dentro, em formato de pilula igual ao da pagina inicial */}
+            <div className="relative flex-[1_1_240px] max-w-[360px]">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-tt-grafite/60 flex"><IconSearch /></span>
               <input
-                className="w-full py-[9px] pr-3 pl-[38px] rounded-[10px] border border-tt-azul-marinho/12 bg-tt-branco text-[13px] text-tt-azul-marinho outline-none transition focus:border-tt-azul-claro focus:ring-[3px] focus:ring-tt-azul-vivo/[0.12]"
+                className="w-full rounded-full border border-tt-azul-marinho/12 bg-tt-branco py-[10px] pl-[42px] pr-4 text-[13px] text-tt-azul-marinho outline-none shadow-[0_8px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_6%,transparent)] transition placeholder:text-tt-grafite/60 focus:border-tt-azul-principal"
                 type="text"
-                placeholder="Buscar evento..."
+                placeholder="Buscar evento ou local..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
               />
@@ -197,10 +213,10 @@ export default function PainelDeEventos() {
                 <button
                   key={s}
                   onClick={() => setFiltroStatus(s)}
-                  className={`rounded-[20px] border px-4 py-1.5 text-xs cursor-pointer transition ${
+                  className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
                     filtroStatus === s
-                      ? "bg-tt-azul-marinho text-tt-laranja-principal border-tt-azul-marinho font-semibold"
-                      : "bg-tt-branco text-tt-grafite/70 border-tt-azul-marinho/12 font-normal hover:border-tt-azul-marinho/20 hover:text-tt-azul-marinho"
+                      ? "border-tt-azul-marinho bg-tt-azul-marinho text-tt-branco"
+                      : "border-tt-azul-marinho/12 bg-tt-branco text-tt-grafite/75 hover:border-tt-azul-principal hover:text-tt-azul-principal"
                   }`}
                 >
                   {s}
@@ -208,19 +224,19 @@ export default function PainelDeEventos() {
               ))}
             </div>
             {/* quantidade de resultados, coloca o "s" so se for mais de um */}
-            <span className="ml-auto text-xs text-tt-grafite/50 whitespace-nowrap">
+            <span className="ml-auto whitespace-nowrap text-xs text-tt-grafite/60">
               {eventosFiltrados.length} resultado{eventosFiltrados.length !== 1 ? "s" : ""}
             </span>
           </div>
 
           {/* Grid de cards */}
-          {/* cabe quantos cards de 320px der na largura da tela */}
-          <main className="max-w-[1200px] mx-auto px-8 pt-6 pb-12 grid gap-6 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+          {/* cabe quantos cards de 300px der na largura da tela */}
+          <main className="mx-auto grid w-[calc(100%_-_48px)] max-w-[1180px] grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[18px] pb-[72px] pt-6 max-[760px]:w-[calc(100%_-_36px)]">
             {/* se nenhum evento passar nos filtros mostra a mensagem, senao mostra os cards */}
             {eventosFiltrados.length === 0 ? (
-              <div className="col-span-full text-center py-20 text-tt-grafite/50">
-                <div className="text-5xl mb-4">🎟️</div>
-                <p className="text-base font-semibold text-tt-grafite/85 mb-1.5">Nenhum evento encontrado</p>
+              <div className="col-span-full rounded-[18px] border border-dashed border-tt-azul-marinho/12 bg-tt-branco py-20 text-center text-tt-grafite/60">
+                <div className="mb-4 text-5xl">🎟️</div>
+                <p className="mb-1.5 text-base font-bold text-tt-azul-marinho">Nenhum evento encontrado</p>
                 <p className="text-[13px]">Ajuste seus filtros de busca ou crie um novo evento.</p>
               </div>
             ) : (
@@ -230,29 +246,29 @@ export default function PainelDeEventos() {
                 return (
                   <article
                     key={ev.id}
-                    className={`bg-tt-branco rounded-2xl overflow-hidden flex flex-col cursor-pointer shadow-[0_4px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_13%,transparent)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_32px_color-mix(in_srgb,var(--tt-azul-marinho)_20%,transparent)] ${enc ? "opacity-[0.72]" : ""}`}
+                    className={`flex flex-col overflow-hidden rounded-[18px] border border-tt-azul-marinho/12 bg-tt-branco shadow-[0_1px_2px_color-mix(in_srgb,var(--tt-azul-marinho)_4%,transparent)] transition duration-150 hover:-translate-y-[3px] hover:shadow-[0_12px_28px_color-mix(in_srgb,var(--tt-azul-marinho)_10%,transparent)] ${enc ? "opacity-[0.72]" : ""}`}
                   >
-                    {/* banner do card com degrade na cor do evento */}
+                    {/* banner do card com a cor do evento */}
                     {/* o before e o after desenham os circulos decorativos no canto */}
                     <div
-                      className="relative overflow-hidden h-[110px] flex items-end px-4 py-3 before:content-[''] before:absolute before:top-3.5 before:right-4 before:size-12 before:rounded-full before:border-2 before:border-tt-laranja-principal/25 after:content-[''] after:absolute after:top-[24px] after:right-[26px] after:size-7 after:rounded-full after:bg-tt-laranja-principal/12"
+                      className="relative flex h-[104px] items-end overflow-hidden px-4 py-3 before:absolute before:right-4 before:top-3.5 before:size-12 before:rounded-full before:border-2 before:border-tt-branco/30 before:content-[''] after:absolute after:right-[26px] after:top-[24px] after:size-7 after:rounded-full after:bg-tt-branco/15 after:content-['']"
                       style={{ background: ev.banner_color }}
                     >
                       {/* etiqueta de status */}
-                      <span className={`relative z-1 text-[11px] font-semibold px-2.5 py-[3px] rounded-[20px] tracking-[0.2px] ${BADGE_CLASS[ev.status_publicacao] || "bg-tt-cinza-claro"}`}>
+                      <span className={`relative z-1 rounded-full px-2.5 py-[3px] text-[11px] font-semibold tracking-[0.2px] ${BADGE_CLASS[ev.status_publicacao] || "bg-tt-cinza-claro"}`}>
                         {ev.status_publicacao}
                       </span>
                     </div>
 
                     {/* conteudo do card: titulo, organizador, data, local, ticket e pendencias */}
-                    <div className="flex-1 flex flex-col gap-2 px-[18px] pt-4 pb-[18px]">
-                      <h2 className="text-base font-bold text-tt-azul-marinho leading-tight line-clamp-1">{ev.titulo}</h2>
-                      <div className="text-[11.5px] text-tt-grafite/50 -mt-1">
-                        Por: <strong className="text-tt-grafite/70 font-semibold">{ev.organizador_nome}</strong>
+                    <div className="flex flex-1 flex-col gap-2 px-5 pb-5 pt-4">
+                      <h2 className="line-clamp-1 text-base font-bold leading-tight text-tt-azul-marinho">{ev.titulo}</h2>
+                      <div className="-mt-1 text-xs text-tt-grafite/60">
+                        Por: <strong className="font-semibold text-tt-grafite/75">{ev.organizador_nome}</strong>
                       </div>
-                      <div className="flex flex-col gap-1.5 mt-1">
-                        <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex"><IconCalendar /></span>
+                      <div className="mt-1 flex flex-col gap-1.5">
+                        <div className="flex items-center gap-1.5 text-xs text-tt-grafite/75">
+                          <span className="flex text-tt-azul-principal"><IconCalendar /></span>
                           {/* se for um dia so mostra uma data, senao mostra inicio → fim */}
                           <span className="truncate">
                             {ev.data_inicio === ev.data_fim
@@ -260,29 +276,29 @@ export default function PainelDeEventos() {
                               : `${formatDate(ev.data_inicio)} → ${formatDate(ev.data_fim)}`}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex"><IconPin /></span>
+                        <div className="flex items-center gap-1.5 text-xs text-tt-grafite/75">
+                          <span className="flex text-tt-azul-principal"><IconPin /></span>
                           <span className="truncate">{ev.endereco}</span>
                         </div>
                       </div>
-                      <hr className="border-0 border-t border-tt-azul-marinho/12 my-1" />
+                      <hr className="my-1 border-0 border-t border-tt-azul-marinho/12" />
                       {/* ticket estimado e pendencias lado a lado */}
-                      <div className="flex justify-between items-start">
+                      <div className="flex items-start justify-between">
                         <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
-                            <span className="text-tt-laranja-principal flex"><IconTicket /></span>Ticket
+                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/60">
+                            <span className="flex text-tt-azul-principal"><IconTicket /></span>Ticket
                           </span>
                           <span className="text-sm font-bold text-tt-azul-principal">{formatCurrency(ev.ticket_estimado)}</span>
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">Pendências</span>
+                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/60">Pendências</span>
                           <span className="text-sm font-bold text-tt-azul-marinho">{ev.itens_pendentes}</span>
                         </div>
                       </div>
                       {/* abre a tela de detalhes desse evento */}
                       <button
                         onClick={() => { setEventoSel(ev); setTelaAtual("detalhes"); }}
-                        className="mt-2 w-full py-[9px] rounded-lg text-[13px] font-semibold tracking-[0.2px] bg-tt-azul-marinho text-tt-laranja-principal hover:bg-tt-azul-vivo transition-colors"
+                        className="mt-2 w-full cursor-pointer rounded-full bg-tt-azul-marinho py-[10px] text-[13px] font-bold text-tt-branco transition hover:bg-tt-azul-principal"
                       >
                         Ver detalhes →
                       </button>
@@ -298,40 +314,45 @@ export default function PainelDeEventos() {
       {/* ── TELA: DETALHES ── */}
       {/* so aparece se tiver um evento selecionado */}
       {telaAtual === "detalhes" && eventoSelecionado && (
-        <div className="max-w-[800px] mx-auto px-4 py-8">
+        <div className="mx-auto w-[calc(100%_-_48px)] max-w-[800px] py-10 max-[760px]:w-[calc(100%_-_36px)]">
           {/* volta pra lista e limpa o evento selecionado */}
           <button
             onClick={() => { setTelaAtual("painel"); setEventoSel(null); }}
-            className="flex items-center gap-2 text-sm text-tt-grafite/70 hover:text-tt-azul-marinho mb-6 transition-colors font-medium"
+            className="mb-6 flex cursor-pointer items-center gap-2 text-[13px] font-bold text-tt-azul-principal transition-colors hover:text-tt-azul-marinho"
           >
             <IconArrowLeft /> Voltar para a lista
           </button>
 
-          <div className="bg-tt-branco rounded-2xl overflow-hidden shadow-xl border border-tt-azul-marinho/8">
-            {/* banner maior com a cor do evento e o status */}
+          {/* ao excluir, ganha as classes do Animate.css e "despenca" pendurado pelo canto (hinge) */}
+          <div
+            onAnimationEnd={finalizarExclusao}
+            className={`overflow-hidden rounded-[20px] border border-tt-azul-marinho/12 bg-tt-branco shadow-[0_12px_28px_color-mix(in_srgb,var(--tt-azul-marinho)_8%,transparent)] ${excluindo ? "animate__animated animate__hinge pointer-events-none" : ""}`}
+          >
+            {/* banner com a cor do evento e o status */}
             <div
-              className="h-[160px] flex items-end p-6"
+              className="flex h-[150px] items-end p-6"
               style={{ background: eventoSelecionado.banner_color }}
             >
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}>
+              <span className={`rounded-full px-3 py-1 text-xs font-bold ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}>
                 {eventoSelecionado.status_publicacao}
               </span>
             </div>
 
-            <div className="p-8">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-tt-azul-marinho tracking-tight">
+            <div className="p-8 max-[480px]:p-5">
+              <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Detalhes do evento</span>
+              <h1 className="mb-0 mt-2 text-[clamp(26px,3.4vw,34px)] font-extrabold leading-[1.15] tracking-[-0.04em] text-tt-azul-marinho">
                 {eventoSelecionado.titulo}
               </h1>
-              <p className="text-sm text-tt-grafite/70 mt-1">
+              <p className="mt-1.5 text-sm text-tt-grafite/75">
                 Organizado por: <span className="font-semibold text-tt-azul-marinho">{eventoSelecionado.organizador_nome}</span>
               </p>
 
               {/* caixa com data, local, ticket e pendencias (1 coluna no celular e 2 em tela maior) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6 p-4 bg-tt-cinza-claro rounded-xl border border-tt-azul-marinho/8">
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho"><IconCalendar /></span>
+              <div className="my-6 grid grid-cols-1 gap-4 rounded-2xl border border-tt-azul-marinho/12 bg-tt-cinza-claro p-4 sm:grid-cols-2">
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="rounded-xl bg-tt-azul-suave p-2.5 text-tt-azul-principal"><IconCalendar /></span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Data do Evento</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-tt-grafite/60">Data do evento</p>
                     <p className="font-medium text-tt-azul-marinho">
                       {eventoSelecionado.data_inicio === eventoSelecionado.data_fim
                         ? formatDate(eventoSelecionado.data_inicio)
@@ -339,42 +360,47 @@ export default function PainelDeEventos() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho"><IconPin /></span>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Localização</p>
-                    <p className="font-medium text-tt-azul-marinho truncate max-w-[260px]">{eventoSelecionado.endereco}</p>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="rounded-xl bg-tt-azul-suave p-2.5 text-tt-azul-principal"><IconPin /></span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-tt-grafite/60">Localização</p>
+                    <p className="truncate font-medium text-tt-azul-marinho">{eventoSelecionado.endereco}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-principal"><IconTicket /></span>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="rounded-xl bg-tt-azul-suave p-2.5 text-tt-azul-principal"><IconTicket /></span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Ticket Médio Estimado</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-tt-grafite/60">Ticket médio estimado</p>
                     <p className="font-bold text-tt-azul-principal">{formatCurrency(eventoSelecionado.ticket_estimado)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho"><IconPending /></span>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="rounded-xl bg-tt-azul-suave p-2.5 text-tt-azul-principal"><IconPending /></span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Tarefas Pendentes</p>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-tt-grafite/60">Tarefas pendentes</p>
                     <p className="font-medium text-tt-azul-marinho">{eventoSelecionado.itens_pendentes} itens registrados</p>
                   </div>
                 </div>
               </div>
 
+              {/* mapa com a localizacao do evento (OpenStreetMap), dentro do card */}
+              <div className="mb-6">
+                <MapaEvento endereco={eventoSelecionado.endereco} />
+              </div>
+
               {/* botoes de excluir e editar */}
-              <div className="flex gap-3 justify-end pt-4 border-t border-tt-azul-marinho/8">
+              <div className="flex flex-wrap justify-end gap-3 border-t border-tt-azul-marinho/12 pt-5">
                 <button
-                  onClick={() => excluirEvento(eventoSelecionado.id)}
-                  className="px-5 py-2.5 rounded-xl border border-tt-rosa-suave text-tt-rosa-principal font-semibold text-sm hover:bg-tt-rosa-claro transition"
+                  onClick={excluirEvento}
+                  className="cursor-pointer rounded-full border border-tt-rosa-suave px-5 py-3 text-[13px] font-bold text-tt-rosa-principal transition hover:bg-tt-rosa-claro"
                 >
-                  Excluir Evento
+                  Excluir evento
                 </button>
                 <button
                   onClick={() => abrirModalEditar(eventoSelecionado)}
-                  className="px-5 py-2.5 rounded-xl bg-tt-azul-marinho text-tt-laranja-principal font-semibold text-sm hover:bg-tt-azul-vivo transition"
+                  className="cursor-pointer rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco transition hover:-translate-y-px hover:bg-tt-azul-principal"
                 >
-                  Editar Evento
+                  Editar evento
                 </button>
               </div>
             </div>
@@ -385,47 +411,50 @@ export default function PainelDeEventos() {
       {/* ── MODAL CRIAR / EDITAR ── */}
       {/* fundo escuro por cima da tela toda com o formulario no meio */}
       {modalAberto && (
-        <div className="fixed inset-0 z-[200] bg-tt-azul-marinho/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-tt-branco rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-tt-azul-marinho/8">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-tt-azul-marinho/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-[20px] border border-tt-azul-marinho/12 bg-tt-branco p-7 shadow-2xl max-[480px]:p-5">
             {/* titulo muda se ta criando ou editando */}
-            <h2 className="text-xl font-bold text-tt-azul-marinho mb-4">
-              {modoModal === "criar" ? "Criar Novo Evento" : "Editar Dados do Evento"}
+            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">
+              {modoModal === "criar" ? "Novo evento" : "Edição"}
+            </span>
+            <h2 className="mb-5 mt-1 text-xl font-extrabold tracking-[-0.03em] text-tt-azul-marinho">
+              {modoModal === "criar" ? "Criar novo evento" : "Editar dados do evento"}
             </h2>
             {/* ao enviar chama o salvarFormulario */}
             <form onSubmit={salvarFormulario} className="space-y-4">
               {/* titulo */}
               <div>
-                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Título do Evento *</label>
+                <label className={labelModal}>Título do evento *</label>
                 <input type="text" required value={formTitulo} onChange={(e) => setFormTitulo(e.target.value)}
-                  className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  className={inputModal}
                   placeholder="Ex: Lollapalooza 2026" />
               </div>
               {/* datas lado a lado, so a de inicio e obrigatoria */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Data Início *</label>
+                  <label className={labelModal}>Data início *</label>
                   <input type="date" required value={formInicio} onChange={(e) => setFormInicio(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal" />
+                    className={inputModal} />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Data Fim</label>
+                  <label className={labelModal}>Data fim</label>
                   <input type="date" value={formFim} onChange={(e) => setFormFim(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal" />
+                    className={inputModal} />
                 </div>
               </div>
               {/* endereco */}
               <div>
-                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Endereço / Local *</label>
+                <label className={labelModal}>Endereço / Local *</label>
                 <input type="text" required value={formEndereco} onChange={(e) => setFormEndereco(e.target.value)}
-                  className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  className={inputModal}
                   placeholder="Ex: Allianz Parque, São Paulo" />
               </div>
               {/* status e ticket lado a lado */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Status de Publicação</label>
+                  <label className={labelModal}>Status de publicação</label>
                   <select value={formStatus} onChange={(e) => setFormStatus(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-laranja-principal">
+                    className={inputModal}>
                     <option value="Publicado">Publicado</option>
                     <option value="Rascunho">Rascunho</option>
                     <option value="Encerrado">Encerrado</option>
@@ -433,27 +462,30 @@ export default function PainelDeEventos() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Ticket Estimado (R$)</label>
+                  <label className={labelModal}>Ticket estimado (R$)</label>
                   <input type="number" value={formTicket} onChange={(e) => setFormTicket(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                    className={inputModal}
                     placeholder="890" />
                 </div>
               </div>
               {/* cancelar fecha sem salvar / salvar envia o form */}
-              <div className="flex gap-2 justify-end pt-4 border-t border-tt-azul-marinho/8">
+              <div className="flex justify-end gap-2 border-t border-tt-azul-marinho/12 pt-5">
                 <button type="button" onClick={() => setModalAberto(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-tt-grafite/70 hover:bg-tt-cinza-claro">
+                  className="cursor-pointer rounded-full px-5 py-3 text-[13px] font-bold text-tt-grafite/75 transition hover:bg-tt-cinza-claro">
                   Cancelar
                 </button>
                 <button type="submit"
-                  className="px-5 py-2 bg-tt-laranja-principal text-tt-azul-marinho font-bold rounded-xl text-sm hover:opacity-90">
-                  Salvar Mudanças
+                  className="cursor-pointer rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco transition hover:bg-tt-azul-principal">
+                  Salvar mudanças
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      {/* rodape igual ao da pagina inicial */}
+      <Footer />
     </div>
   );
 }

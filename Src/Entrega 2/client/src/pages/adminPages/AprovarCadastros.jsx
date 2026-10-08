@@ -33,13 +33,13 @@ function AdminNav() {
   // rota atual, pra saber qual link destacar
   const { pathname } = useLocation();
   return (
-    // fica fixa no topo quando rola a pagina
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
+    // barra clara logo abaixo do cabecalho do site
+    <nav className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-tt-azul-marinho/12 bg-tt-branco px-6 py-2 md:px-10">
       {/* logo, volta pra home */}
       <Link to="/" className="flex items-center gap-2 no-underline">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
-        <span className="text-sm font-extrabold tracking-tight text-tt-branco">
-          TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-azul-suave text-sm font-black text-tt-azul-principal">T</span>
+        <span className="text-sm font-extrabold tracking-tight text-tt-azul-marinho">
+          TrocaTicket <span className="font-normal text-tt-grafite/60">· Admin</span>
         </span>
       </Link>
 
@@ -51,8 +51,8 @@ function AdminNav() {
           return (
             // link ativo fica mais claro, os outros mais apagados
             <Link key={to} to={to}
-              className={`rounded-lg px-3 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
-                active ? 'bg-tt-branco/10 text-tt-branco' : 'text-tt-branco/50 hover:bg-tt-branco/5 hover:text-tt-branco/80'
+              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
+                active ? 'bg-tt-cinza-claro text-tt-azul-principal' : 'text-tt-grafite/75 hover:text-tt-azul-principal'
               }`}>
               {label}
             </Link>
@@ -62,7 +62,7 @@ function AdminNav() {
 
       {/* botao de sair, por enquanto so leva pro login */}
       <Link to="/Login"
-        className="rounded-lg border border-tt-branco/20 px-3 py-1.5 text-xs font-semibold text-tt-branco/60 no-underline transition-colors hover:border-tt-branco/40 hover:text-tt-branco">
+        className="rounded-full border border-tt-azul-marinho/12 px-4 py-1.5 text-xs font-bold text-tt-azul-marinho no-underline transition-colors hover:border-tt-azul-principal hover:text-tt-azul-principal">
         Sair
       </Link>
     </nav>
@@ -119,13 +119,13 @@ export default function AprovarCadastros() {
     <div className="min-h-screen bg-[var(--color-bg)]">
       <AdminNav />
 
-      {/* Hero - faixa azul do topo com o titulo */}
-      <div className="bg-[var(--color-primary)] px-6 pb-12 pt-8 md:px-10">
+      {/* Hero - faixa clara do topo com o titulo */}
+      <div className="border-b border-tt-azul-marinho/12 bg-tt-branco px-6 pb-10 pt-9 md:px-10">
         {/* centraliza o conteudo */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-tt-laranja-principal">Administração</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-tt-branco md:text-4xl">Aprovar Cadastros</h1>
-          <p className="mt-1.5 text-sm text-tt-branco/50">Gerencie solicitações de organizadores e fornecedores.</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-tt-azul-principal">Administração</p>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-tt-azul-marinho md:text-4xl">Aprovar Cadastros</h1>
+          <p className="mt-1.5 text-sm text-tt-grafite/75">Gerencie solicitações de organizadores e fornecedores.</p>
         </div>
       </div>
 

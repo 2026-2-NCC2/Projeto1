@@ -14,5 +14,5 @@
 .badge--danger   { background: var(--color-danger-light);  color: var(--color-danger);  }
 .badge--pending  { background: var(--color-pending-light); color: var(--color-pending); }
 .badge--primary  { background: color-mix(in srgb, var(--tt-azul-principal) 10%, transparent);         color: var(--color-primary); }
-.badge--accent   { background: color-mix(in srgb, var(--tt-laranja-principal) 18%, transparent);       color: var(--tt-azul-principal); }
+.badge--accent   { background: color-mix(in srgb, var( --tt-verde-claro) 18%, transparent);       color: var(--tt-azul-principal); }
 .badge--muted    { background: var(--color-border);        color: var(--color-text-muted); }
