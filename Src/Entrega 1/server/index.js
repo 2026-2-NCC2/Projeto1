@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import pool from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
+import eventoRoutes from './routes/eventoRoutes.js'
 
 const app = express()
 const port = 3000
@@ -29,6 +30,8 @@ app.get("/usuarios", async (req,res)=>{
 
 // Registra todas as rotas de auth com o prefixo /api
 app.use('/api', authRoutes)
+// Registra as rotas de evento com o prefixo /api
+app.use('/api', eventoRoutes)
 
 app.listen(port, () => {
     console.log(`backend rodando na porta ${port}`)
