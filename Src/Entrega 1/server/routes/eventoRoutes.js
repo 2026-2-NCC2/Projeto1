@@ -1,7 +1,64 @@
-import event from 'express'
-import cors from 'cors'
+import express from 'express'
 import pool from './config/db.js'
+import { EventRegistration } from '../../client/src/components/EventRegistration.jsx'
 
-const event = event()
+const event = express()
+event.post('/eventos', async (req, res) => {
+    const { name, 
+            date, 
+            startTime, 
+            endTime, 
+            location, 
+            city } = req.body
 
-event.post('/event_register')
+    if (!name || !date || !startTime || !endTime || !location || !city) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios." })
+    }
+
+    try {
+        const [resultado] = await pool.query(
+            `INSERT INTO evento (titulo_evento, data_evento, data_inicio, data_fim, endereco) VALUES (?, ?, ?, ?, ?, ?)`, [name, date, startTime, endTime, location, city]
+        )
+
+        return res.status(201).json({ ok: true, id: resultado.insertId })
+    } catch (erro) {
+        console.error(erro)
+        return res.status(500).json({erro: 'Erro interno'})
+    }
+})
+
+event.post('/lote', async (req, res) => {
+    const { minBatchAmount, maxBatchAmount, minPublic, maxPublic } = req.body
+
+    if (!minBatchAmount || ! maxBatchAmount || !minPublic || !maxPublic) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios." })
+    }
+
+    try {
+        const [resultado] = await pool.query(`INSERT INTO usuario (qtd_lote_minimo, qtd_lote_maximo, publico_minimo, publico_maximo) VALUES (?, ?, ?, ?)`, [minBatchAmount, maxBatchAmount, minPublic, maxPublic]
+    )
+        
+        return res.status(201).json({ ok: true, id: resultado.insertId })
+    } catch (erro) {
+        console.error(erro)
+        return res.status(500).json({erro: 'Erro interno'})
+    }
+})
+
+event.post('/custos-independentes', async (req, res) => {
+    const { costCategory, description, cost } = req.body
+
+    if (!costCategory || !description || !cost) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios." })
+    }
+
+    try {
+        const [resultado] = await pool.query(`INSERT INTO custoindependente (tipo_custo, descricao, valor) VALUES (?, ?, ?)`, [costCategory, description, cost]
+    )
+
+        return res.status(201).json({ ok: true, id: resultado.insertId })
+    } catch (erro) {
+        console.error(erro)
+        return res.status(500).json({erro: 'Erro interno'})
+    }
+})
