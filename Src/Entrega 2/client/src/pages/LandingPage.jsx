@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Footer from '../components/Footer'
 import { Link } from 'react-router-dom'
 
@@ -14,6 +15,27 @@ const ETAPAS = [
 ]
 
 function LandingPage() {
+  // animacao do ingresso: 'parado' -> 'caindo' (hinge) -> 'voltando' (backInDown) -> 'parado'
+  const [animTicket, setAnimTicket] = useState('parado')
+
+  // clicar (ou apertar Enter/espaco) no ingresso faz ele cair, se ja nao estiver animando
+  function animarTicket() {
+    if (animTicket === 'parado') setAnimTicket('caindo')
+  }
+
+  // quando uma animacao termina passa pra proxima etapa
+  function fimAnimacaoTicket(e) {
+    if (e.target !== e.currentTarget) return
+    setAnimTicket(animTicket === 'caindo' ? 'voltando' : 'parado')
+  }
+
+  // classes do Animate.css de cada etapa
+  const classeAnimTicket = {
+    parado: '',
+    caindo: 'animate__animated animate__hinge',
+    voltando: 'animate__animated animate__backInDown',
+  }[animTicket]
+
   return (
     <main className="bg-tt-branco text-tt-azul-marinho">
       <section className="overflow-hidden bg-tt-cinza-claro">
@@ -44,9 +66,20 @@ function LandingPage() {
             </div>
           </div>
 
-          <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]" aria-label="Ilustração de um ingresso digital" role="img">
+          <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]">
             <div className="absolute -z-10 aspect-square w-[min(330px,80%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-15 blur-[3px]" />
-            <div className="w-[min(330px,86%)] rotate-[5deg] rounded-[20px] border border-tt-branco/60 bg-[image:var(--tt-gradiente-azul-roxo)] p-[22px] text-tt-branco shadow-[0_25px_60px_color-mix(in_srgb,var(--tt-azul-principal)_25%,transparent)] max-[760px]:w-[min(300px,78%)]">
+            {/* ingresso clicavel: ao clicar ele despenca (animate__hinge) e depois volta descendo */}
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Ingresso digital ilustrativo, clique para animar"
+              title="Clique no ingresso"
+              onClick={animarTicket}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); animarTicket() } }}
+              onAnimationEnd={fimAnimacaoTicket}
+              className={`${classeAnimTicket} w-[min(330px,86%)] cursor-pointer rotate-[5deg] rounded-[20px] outline-none focus-visible:ring-4 focus-visible:ring-tt-azul-suave max-[760px]:w-[min(300px,78%)]`}
+            >
+            <div className="rounded-[20px] border border-tt-branco/60 bg-[image:var(--tt-gradiente-azul-roxo)] p-[22px] text-tt-branco shadow-[0_25px_60px_color-mix(in_srgb,var(--tt-azul-principal)_25%,transparent)]">
               <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
                 <span className="grid size-[34px] place-items-center rounded-[11px] bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-principal">TT</span>
                 <span>SEU PRÓXIMO EVENTO</span>
@@ -59,6 +92,7 @@ function LandingPage() {
                 <span>VIVA A EXPERIÊNCIA</span>
                 <span className="h-[23px] w-[66px] bg-[repeating-linear-gradient(90deg,var(--tt-branco)_0_2px,transparent_2px_4px,var(--tt-branco)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
               </div>
+            </div>
             </div>
             <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border border-tt-azul-marinho/12 bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-grafite/75 shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-azul-marinho)_8%,transparent)] max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
           </div>
