@@ -17,8 +17,19 @@ event.post('/eventos', async (req, res) => {
 
     try {
         const [resultado] = await pool.query(
-            `INSERT INTO evento (titulo_evento, data_evento, data_inicio, data_fim, endereco) VALUES (?, ?, ?, ?, ?, ?)`, [name, date, startTime, endTime, location, city]
-        )
+    `INSERT INTO evento
+     (id_organizador_fk, titulo_evento, data_evento,
+      data_inicio, data_fim, endereco)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [
+        idOrganizador,
+        name,
+        date,
+        `${date} ${startTime}`,
+        `${date} ${endTime}`,
+        `${location}, ${city}`
+    ]
+)
 
         return res.status(201).json({ ok: true, id: resultado.insertId })
     } catch (erro) {
@@ -35,8 +46,15 @@ event.post('/lote', async (req, res) => {
     }
 
     try {
-        const [resultado] = await pool.query(`INSERT INTO usuario (qtd_lote_minimo, qtd_lote_maximo, publico_minimo, publico_maximo) VALUES (?, ?, ?, ?)`, [minBatchAmount, maxBatchAmount, minPublic, maxPublic]
-    )
+        const [resultado] = await pool.query(
+    `UPDATE evento
+     SET qtd_lote_minimo = ?,
+         qtd_lote_maximo = ?,
+         publico_minimo = ?,
+         publico_maximo = ?
+     WHERE id_evento = ?`,
+    [minBatchAmount, maxBatchAmount, minPublic, maxPublic, idEvento]
+)
         
         return res.status(201).json({ ok: true, id: resultado.insertId })
     } catch (erro) {
@@ -53,8 +71,12 @@ event.post('/custos-independentes', async (req, res) => {
     }
 
     try {
-        const [resultado] = await pool.query(`INSERT INTO custoindependente (tipo_custo, descricao, valor) VALUES (?, ?, ?)`, [costCategory, description, cost]
-    )
+        const [resultado] = await pool.query(
+    `INSERT INTO custoindependente
+     (id_evento_fk, tipo_custo, descricao, valor)
+     VALUES (?, ?, ?, ?)`,
+    [idEvento, costCategory, description, cost]
+)
 
         return res.status(201).json({ ok: true, id: resultado.insertId })
     } catch (erro) {

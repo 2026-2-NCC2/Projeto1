@@ -9,19 +9,35 @@ const initialDraft = { type: 'Fiscal', description: '', value: '' };
 export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
   // o que ta sendo digitado antes de adicionar
   const [draft, setDraft] = useState(initialDraft);
-  // atualiza qualquer campo do rascunho pelo nome
-  const patch = (key) => (e) => setDraft((prev) => ({ ...prev, [key]: e.target.value }));
+  const [errors, setErrors] = useState({});
+// atualiza qualquer campo do rascunho pelo nome
+  const patch = (key) => (e) => {
+  setDraft((prev) => ({ ...prev, [key]: e.target.value }));
+  setErrors((prev) => ({ ...prev, [key]: '' }));
+};
 
   // adiciona o custo na lista
-  function addCost() {
-    // nao adiciona se faltar descricao ou valor
-    if (!draft.description.trim() || !draft.value.trim()) return;
-    // coloca o custo novo no fim da lista com um id unico
-    setCosts((prev) => [...prev, { ...draft, id: crypto.randomUUID() }]);
-    // limpa o formulario
-    setDraft(initialDraft);
+ function addCost() {
+  const value = String(draft.value ?? '').trim();
+
+  // Só valida se o valor estiver preenchido
+  if (value && !/^\d+(?:[.,]\d{1,2})?$/.test(value)) {
+    setErrors({ value: 'caractere invalido.' });
+    return;
   }
 
+  setErrors({});
+
+  // Sem descrição ou valor, não adiciona nada e não mostra erro
+  if (!draft.description.trim() || !value) return;
+
+  setCosts((prev) => [
+    ...prev,
+    { ...draft, value, id: crypto.randomUUID() },
+  ]);
+
+  setDraft(initialDraft);
+}
   // remove um custo da lista pelo id
   function removeCost(id) {
     setCosts((prev) => prev.filter((cost) => cost.id !== id));
@@ -47,12 +63,14 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
             <option>Outro</option>
           </Select>
         </Field>
-        <Field label="Descrição">
-          <Textarea rows="4" value={draft.description} onChange={patch('description')} placeholder="Ex: Taxa municipal para realização do evento" />
-        </Field>
-        <Field label="Valor da despesa">
-          <CurrencyInput value={draft.value} onChange={patch('value')} />
-        </Field>
+       <Field label="Descrição" error={errors.description}>
+        <Textarea
+           rows="4"  value={draft.description} onChange={patch('description')}  placeholder="Ex: Taxa municipal para realização do evento" />
+      </Field>
+        <Field label="Valor da despesa" error={errors.value}>
+        <CurrencyInput
+          value={draft.value} onChange={patch('value')} />
+      </Field>
         {/* botao de adicionar, fica alinhado na direita */}
         <button type="button" className="-mt-1 min-h-[42px] cursor-pointer justify-self-end rounded-[10px] border-0 bg-tt-azul-principal px-4 py-2.5 text-[.78rem] font-extrabold text-tt-branco transition-transform duration-150 hover:-translate-y-px" onClick={addCost}>+ Adicionar outro tipo de custo</button>
       </div>
