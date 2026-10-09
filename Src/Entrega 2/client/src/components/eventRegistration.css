@@ -3,6 +3,7 @@
 @scope (.event-registration) {
 /* cores e sombra usadas nessa parte do site (mesmos azuis da pagina inicial; nomes antigos mantidos) */
 :scope {
+  /* apelidos antigos das cores: os nomes (purple, gold...) ficaram, mas apontam pras cores atuais do site */
   --purple: var(--tt-azul-vivo);
   --midnight: var(--tt-azul-marinho);
   --midnight-2: var(--tt-azul-principal);
@@ -22,6 +23,7 @@
 }
 
 /* estilos base: fundo branco e fonte Inter */
+/* padding e borda entram no tamanho do elemento */
 * { box-sizing: border-box; }
 :scope { background: var(--cream); }
 :scope {
@@ -32,10 +34,12 @@
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+/* campos de formulario usam a mesma fonte do site */
 button, input, textarea, select { font: inherit; }
+/* tira o quadrado azul que aparece ao tocar no celular */
 button, a { -webkit-tap-highlight-color: transparent; }
 
-/* cabecalho escuro fixo no topo com a logo e o link da conta */
+/* cabecalho escuro antigo com a logo e o link da conta (SOBRA: nao e mais usado, o topo do site agora e a Navbar) */
 .site-header {
   background: var(--midnight);
   color: var(--tt-branco);
@@ -44,6 +48,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   z-index: 30;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--tt-branco) 8%, transparent);
 }
+/* parte de dentro do cabecalho antigo (sobra) */
 .header-inner {
   max-width: 1180px;
   min-height: 72px;
@@ -53,13 +58,15 @@ button, a { -webkit-tap-highlight-color: transparent; }
   align-items: center;
   justify-content: space-between;
 }
+/* logo + nome do cabecalho antigo (sobra) */
 .brand { color: var(--tt-branco); text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 850; letter-spacing: -.025em; font-size: 1.15rem; }
-/* bolinha dourada da logo */
+/* bolinha colorida da logo (sobra, nao e usada) */
 .brand-mark {
   width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
   color: var(--tt-branco); background: var(--tt-gradiente-principal);
   box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--tt-branco) 18%, transparent);
 }
+/* link da conta no cabecalho antigo (sobra) */
 .account-link { color: var(--cream); text-decoration: none; font-size: .84rem; font-weight: 750; border-bottom: 1px solid color-mix(in srgb, var(--tt-branco) 35%, transparent); }
 .account-link:hover { color: var(--gold); }
 
@@ -71,21 +78,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
   color: var(--midnight);
   border-bottom: 1px solid var(--line);
   min-height: 170px;
+  /* espaco nos lados: no minimo 24px, e em tela grande centraliza o texto */
   padding: 34px max(24px, calc((100vw - 1132px) / 2));
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
 }
+/* titulo da faixa */
 .hero-strip h2 { margin: 8px 0 6px; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 800; line-height: 1.1; letter-spacing: -.045em; color: var(--midnight); }
+/* subtitulo da faixa */
 .hero-strip p { margin: 0; color: color-mix(in srgb, var(--tt-grafite) 75%, transparent); }
 /* textinho pequeno em cima do titulo */
 .hero-kicker { color: var(--tt-roxo-principal); text-transform: uppercase; font-size: .75rem; font-weight: 800; letter-spacing: .1em; }
-/* etiqueta "Rascunho salvo" com a bolinha verde */
+/* etiqueta "Rascunho salvo" com a bolinha verde (sobra, nao e usada) */
 .hero-badge { white-space: nowrap; border: 1px solid color-mix(in srgb, var(--tt-branco) 16%, transparent); background: color-mix(in srgb, var(--tt-branco) 7%, transparent); padding: 10px 14px; border-radius: 999px; font-size: .76rem; font-weight: 760; }
 .hero-badge span { color: var(--ok); margin-right: 4px; }
 
-/* barra de etapas (1 2 3 4), o margin negativo faz ela subir em cima da faixa do topo */
+/* barra de etapas antiga em css (SOBRA: hoje o Wizard.jsx faz isso com Tailwind) */
 .wizard {
   width: min(760px, calc(100% - 36px));
   margin: -24px auto 36px;
@@ -99,21 +109,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
   position: relative;
   z-index: 5;
 }
+/* cada etapa: bolinha em cima e nome embaixo */
 .wizard-item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-/* bolinha de cada etapa: feita fica dourada e clicavel, a atual ganha um anel em volta */
+/* bolinha de cada etapa: feita fica azul e clicavel, a atual ganha um anel em volta */
 .wizard-dot {
   width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--cream-dim); background: var(--tt-branco);
   color: var(--muted); display: grid; place-items: center; font-weight: 850; font-size: .75rem; cursor: default; position: relative; z-index: 2;
 }
 .wizard-dot.done { background: var(--gold); border-color: var(--gold); color: var(--midnight); cursor: pointer; }
 .wizard-dot.active { border-color: var(--gold); color: var(--midnight); box-shadow: 0 0 0 6px var(--tt-azul-suave); }
-/* linha que liga uma bolinha na outra, fica dourada quando a etapa ja foi feita */
+/* linha que liga uma bolinha na outra, fica azul quando a etapa ja foi feita */
 .wizard-line { position: absolute; height: 2px; top: 15px; left: calc(50% + 22px); width: calc(100% - 44px); background: var(--line); z-index: 1; }
 .wizard-line.done { background: var(--gold); }
+/* nome embaixo de cada bolinha */
 .wizard-label { font-size: .69rem; color: color-mix(in srgb, var(--tt-grafite) 60%, transparent); font-weight: 720; text-align: center; }
 .wizard-label.active, .wizard-label.done { color: var(--ink); }
 
 /* card branco de cada etapa do formulario (cabecalho, corpo e rodape) */
+/* area onde fica o card da etapa (no maximo 900px, centralizada) */
 .content-wrap { width: min(900px, calc(100% - 36px)); margin: 0 auto 80px; }
 .form-card {
   background: var(--tt-branco);
@@ -125,57 +138,81 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 /* faixinha no topo do card, removida pra ficar limpo como os cards da pagina inicial */
 .card-accent { display: none; }
+/* cabecalho do card */
 .form-card-header { padding: 30px 34px 22px; border-bottom: 1px solid var(--line); }
 /* "Etapa X de 4" */
 .eyebrow { color: var(--tt-roxo-principal); text-transform: uppercase; font-size: .7rem; font-weight: 850; letter-spacing: .12em; }
+/* titulo do card */
 .form-card-header h1 { margin: 5px 0 8px; color: var(--midnight); font-size: clamp(1.55rem, 3vw, 2rem); font-weight: 800; letter-spacing: -.04em; }
+/* subtitulo do card */
 .form-card-header p { margin: 0; color: var(--muted); line-height: 1.55; font-size: .94rem; }
+/* meio do card (os campos) */
 .form-card-body { padding: 30px 34px; }
+/* rodape do card (os botoes), com fundo cinza */
 .form-card-footer { padding: 20px 34px 28px; border-top: 1px solid var(--line); background: var(--tt-cinza-claro); }
 /* grade dos campos, com opcao de 2 colunas */
 .form-grid { display: grid; gap: 20px; }
+/* com a classe two-cols os campos ficam em 2 colunas */
 .form-grid.two-cols { grid-template-columns: repeat(2, minmax(0,1fr)); }
 /* campo: label, asterisco, dica e erro */
 .field { display: flex; flex-direction: column; gap: 8px; }
+/* texto do campo */
 .field-label { font-size: .76rem; font-weight: 800; color: var(--midnight); }
+/* asterisco de obrigatorio */
 .required { color: var(--gold-dark); margin-left: 3px; }
+/* dica embaixo do campo */
 .field-hint { color: color-mix(in srgb, var(--tt-grafite) 60%, transparent); font-size: .72rem; line-height: 1.35; }
+/* mensagem de erro em rosa */
 .field-error { color: var(--tt-rosa-principal); font-size: .72rem; font-weight: 700; }
-/* visual padrao de todos os inputs, no foco a borda fica dourada */
+/* visual padrao de todos os inputs, no foco a borda fica azul */
 .control, .money-input, .inline-add input, .inline-money {
   width: 100%; border: 1px solid color-mix(in srgb, var(--tt-azul-marinho) 20%, transparent); background: var(--tt-branco); border-radius: 10px; min-height: 44px;
   color: var(--ink); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
+/* espaco interno e sem contorno padrao do navegador */
 .control { padding: 10px 12px; outline: none; }
+/* cor do texto de exemplo (placeholder) */
 .control::placeholder, .money-input input::placeholder, .inline-add input::placeholder { color: color-mix(in srgb, var(--tt-grafite) 45%, transparent); }
+/* ao clicar no campo: borda azul e um brilho azul clarinho em volta */
 .control:focus, .money-input:focus-within, .inline-add input:focus, .inline-money:focus-within { border-color: var(--gold); box-shadow: 0 0 0 4px var(--tt-azul-suave); outline: none; }
+/* caixa de texto grande: so estica pra baixo */
 .textarea { min-height: 110px; resize: vertical; }
 /* campo de dinheiro com o "R$" grudado na esquerda */
 .money-input { display: flex; align-items: center; overflow: hidden; }
+/* o "R$" com fundo cinza */
 .money-input > span, .inline-money > span { align-self: stretch; display: grid; place-items: center; padding: 0 12px; color: var(--muted); background: var(--tt-cinza-claro); border-right: 1px solid var(--line); font-weight: 800; font-size: .8rem; }
+/* o campo do valor ao lado do R$ */
 .money-input input, .inline-money input { flex: 1; min-width: 0; border: 0; outline: 0; padding: 10px 12px; background: transparent; }
 /* linha dos botoes de voltar e avancar */
 .action-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 /* botoes: base, principal em degrade roxo/rosa, secundario branco, escuro, pequeno e de icone */
 .btn { border: 0; border-radius: var(--radius-lg, 8px); min-height: 42px; padding: 10px 20px; font-weight: 700; font-size: .8rem; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
+/* todo botao sobe 1px ao passar o mouse */
 .btn:hover { transform: translateY(-1px); }
+/* botao principal (avancar/finalizar): degrade roxo -> rosa */
 .btn-primary { color: var(--tt-branco); background: var(--tt-gradiente-botao); display: inline-flex; align-items: center; gap: 9px; }
+/* ao passar o mouse fica mais claro */
 .btn-primary:hover { filter: brightness(1.1); }
+/* botao secundario (voltar/cancelar): branco com borda */
 .btn-secondary { color: var(--midnight); background: var(--tt-branco); border: 1px solid color-mix(in srgb, var(--tt-azul-marinho) 20%, transparent); }
 .btn-secondary:hover { border-color: var(--tt-azul-principal); color: var(--tt-azul-principal); }
+/* botoes sobrando de versoes antigas (nao usados): escuro, pequeno e de adicionar */
 .btn-ghost { color: var(--tt-branco); background: var(--midnight-2); justify-self: end; }
 .btn-small { min-height: 38px; color: var(--tt-branco); background: var(--tt-gradiente-botao); padding-inline: 16px; }
 .btn-small:hover { filter: brightness(1.1); }
 .add-button { margin-top: -4px; }
 /* botao do x de remover, fica avermelhado no hover */
+/* (sobra, nao e usado) */
 .icon-button { width: 30px; height: 30px; border: 0; border-radius: 8px; background: var(--tt-cinza-claro); color: color-mix(in srgb, var(--tt-grafite) 70%, transparent); font-weight: 900; cursor: pointer; }
 .icon-button:hover { background: var(--tt-rosa-claro); color: var(--tt-rosa-principal); }
-/* caixa de aviso amarelinha com o "i" */
+/* caixa de aviso laranja clarinha com o "i" */
 .info-banner { display: flex; gap: 12px; padding: 14px 16px; background: var(--tt-laranja-claro); border: 1px solid color-mix(in srgb, var(--tt-ambar) 40%, transparent); border-radius: 12px; margin-top: 22px; color: color-mix(in srgb, var(--tt-grafite) 85%, transparent); }
+/* texto do aviso */
 .info-banner p { margin: 0; font-size: .78rem; line-height: 1.5; }
+/* bolinha com o "i" */
 .info-icon { flex: 0 0 auto; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; color: var(--tt-branco); background: var(--gold); font-weight: 900; font-family: Georgia, serif; }
 
-/* lista de custos independentes ja adicionados (etapa 3) */
+/* lista de custos independentes ja adicionados (SOBRA: a etapa 3 hoje usa Tailwind) */
 .cost-list { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 24px; }
 .cost-list h2 { margin: 0 0 12px; font-size: .95rem; color: var(--midnight); }
 .cost-row { display: flex; justify-content: space-between; gap: 18px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
@@ -184,7 +221,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .cost-row-right { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
 .cost-row-right strong { font-size: .8rem; }
 
-/* resumo dos 3 totais (etapa 4), o ultimo fica escuro com o valor dourado */
+/* resumo dos 3 totais da etapa 4 (SOBRA: hoje feito com Tailwind no CostItems.jsx) */
 .budget-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
 .budget-summary > div { padding: 15px 16px; background: var(--tt-cinza-claro); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 4px; }
 .budget-summary span { color: var(--muted); font-size: .68rem; font-weight: 720; }
@@ -193,7 +230,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .budget-summary .budget-total span { color: color-mix(in srgb, var(--tt-branco) 64%, transparent); }
 .budget-summary .budget-total strong { color: var(--tt-azul-claro); }
 
-/* sanfona das categorias de custo (etapa 4) */
+/* sanfona das categorias de custo da etapa 4 (SOBRA: hoje feita com Tailwind; ate o fim desse bloco nada e usado) */
 .accordion-list { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
 /* borda entre uma categoria e outra */
 .cost-group + .cost-group { border-top: 1px solid var(--line); }
@@ -213,6 +250,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .cost-table-head { background: var(--tt-cinza-claro); color: var(--muted); font-size: .61rem; font-weight: 820; text-transform: uppercase; letter-spacing: .03em; }
 .cost-table-row { background: var(--tt-branco); font-size: .72rem; border-top: 1px solid var(--line); }
 /* formulario de adicionar item numa linha so */
+/* formulario de adicionar item numa linha so (sobra) */
 .inline-add { display: grid; grid-template-columns: minmax(160px, 2fr) 82px 150px auto; gap: 8px; }
 .inline-add input { min-height: 38px; padding: 8px 10px; outline: 0; font-size: .72rem; }
 .inline-money { min-height: 38px; display: flex; overflow: hidden; }
@@ -224,11 +262,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* tablet e celular (ate 760px) */
 @media (max-width: 760px) {
   /* faixa do topo fica em coluna e some o aviso de rascunho */
+  /* so muda os espacos e o tamanho, o resto continua igual */
   .hero-strip { min-height: 150px; align-items: flex-start; flex-direction: column; padding-top: 26px; padding-bottom: 44px; }
   .hero-badge { display: none; }
+  /* barra de etapas antiga (sobra) */
   .wizard { margin-top: -22px; padding-inline: 10px; }
   .wizard-label { font-size: .6rem; }
   .wizard-line { left: calc(50% + 18px); width: calc(100% - 36px); }
+  /* menos espaco nos lados dos cards */
   .form-card-header, .form-card-body, .form-card-footer { padding-left: 20px; padding-right: 20px; }
   /* campos e totais passam pra 1 coluna */
   .form-grid.two-cols { grid-template-columns: 1fr; }
@@ -250,16 +291,20 @@ button, a { -webkit-tap-highlight-color: transparent; }
 /* celular pequeno (ate 460px) */
 @media (max-width: 460px) {
   /* cabecalho e logo menores */
+  /* cabecalho antigo (sobra) */
   .header-inner { min-height: 64px; padding-inline: 16px; }
   .brand { font-size: 1rem; }
   .brand-mark { width: 30px; height: 30px; }
   .account-link { font-size: .72rem; }
+  /* faixa do topo com menos espaco nos lados */
   .hero-strip { padding-inline: 18px; }
+  /* area do card quase da largura toda */
   .content-wrap { width: min(100% - 20px, 900px); }
   /* barra de etapas com bolinhas menores */
   .wizard { width: calc(100% - 20px); margin-bottom: 20px; }
   .wizard-dot { width: 28px; height: 28px; }
   .wizard-line { top: 13px; }
+  /* cards com cantos um pouco menores */
   .form-card { border-radius: 16px; }
   .form-card-header { padding-top: 24px; }
   /* botoes um embaixo do outro, com o de avancar em cima, ocupando a largura toda */

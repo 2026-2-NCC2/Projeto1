@@ -2,6 +2,7 @@
 // assim as paginas ficam com o mesmo visual e se precisar mudar e so mexer aqui
 export const ui = {
   // fundo cinza claro da pagina toda (igual a pagina inicial)
+  // min-h-screen = no minimo a altura da tela
   page: 'min-h-screen bg-tt-cinza-claro flex flex-col',
   // centraliza o card no meio da tela
   container: 'flex-1 flex items-center justify-center px-4 py-12',
@@ -12,12 +13,13 @@ export const ui = {
   subtitle: 'text-sm text-tt-grafite/75 mb-6',
   // bloco de cada campo (label + input + erro)
   campo: 'flex flex-col gap-1 mb-4',
+  // text-left = texto alinhado a esquerda
   label: 'text-sm font-medium text-tt-azul-marinho text-left',
   // mensagem de erro embaixo do campo
   erro: 'text-xs font-medium text-tt-rosa-principal',
   // area dos botoes, um do lado do outro
   botoes: 'grid grid-cols-2 gap-4 items-center mt-2',
-  // botao principal em pilula azul marinho (igual ao "Explorar" da pagina inicial), fica cinza quando desativado
+  // botao principal em degrade roxo -> rosa (igual ao "Explorar" da pagina inicial), fica cinza quando desativado
   btnPrimary:
     'w-full py-3 bg-[image:var(--tt-gradiente-botao)] text-tt-branco font-bold text-sm rounded-lg cursor-pointer transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] disabled:bg-tt-azul-marinho/12 disabled:text-tt-grafite/45 disabled:cursor-not-allowed',
   // botao claro de voltar, so com borda
@@ -30,5 +32,6 @@ export const ui = {
 // classe dos inputs, a borda fica vermelha se o campo tiver erro
 export const inputClass = (erro) =>
   `w-full px-3.5 py-2.5 border-[1.5px] rounded-xl text-sm text-tt-azul-marinho bg-tt-branco outline-none transition-colors focus:border-tt-azul-principal ${
+    // se tiver erro a borda fica rosa, senao fica cinza clarinha
     erro ? 'border-tt-rosa-principal' : 'border-tt-azul-marinho/12'
   }`

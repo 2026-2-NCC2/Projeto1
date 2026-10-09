@@ -1,7 +1,14 @@
+// ATENCAO: arquivo antigo que NAO e usado (nenhuma rota abre essa pagina).
+// o fluxo de criar evento que funciona hoje e o components/EventRegistration.jsx.
+// 
+// useState = guarda os dados de cada etapa
 import { useState } from 'react';
+// useLocation = pagina atual / useNavigate = troca de pagina pelo codigo
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// casca antiga com cabecalho (tambem nao e mais usada)
 import { PageShell } from '../components/Layout.jsx';
+// barra de etapas (1 - 2 - 3 - 4)
 import { Wizard } from '../components/Wizard.jsx';
 
 // as 4 etapas do cadastro de evento
@@ -21,7 +28,9 @@ const routes = [
 // pagina que controla o fluxo inteiro de criar evento
 // guarda os dados de todas as etapas aqui, pra nao perder quando troca de etapa
 export default function EventFlow() {
+  // funcao pra trocar de pagina
   const navigate = useNavigate();
+  // informacoes da pagina atual
   const location = useLocation();
 
   // descobre a etapa atual pela rota, se a rota nao estiver na lista cai na etapa 1
@@ -60,6 +69,7 @@ export default function EventFlow() {
     // esconde a mensagem de sucesso se voltar pra alguma etapa
     setSuccess(false);
 
+    // muda pra rota da etapa escolhida
     navigate(routes[bounded - 1]);
 
     // volta pro topo da pagina com animacao
@@ -71,8 +81,10 @@ export default function EventFlow() {
 
   // roda quando clica em "Finalizar cadastro" na ultima etapa
   function handleFinish() {
+    // mostra a mensagem de sucesso
     setSuccess(true);
 
+    // volta pro topo da pagina com animacao
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
@@ -80,10 +92,12 @@ export default function EventFlow() {
   }
 
   return (
+    // casca com cabecalho em volta da pagina
     <PageShell>
       {/* topo com fundo em degrade, titulo e aviso de rascunho */}
       {/* no celular fica um embaixo do outro, a partir de 761px fica lado a lado */}
       <section className="flex min-h-[150px] flex-col items-start justify-between gap-6 bg-[image:var(--tt-gradiente-azul-roxo)] px-[18px] pb-11 pt-[26px] text-tt-branco min-[461px]:px-[max(24px,calc((100vw-1132px)/2))] min-[761px]:min-h-[170px] min-[761px]:flex-row min-[761px]:items-center min-[761px]:py-[34px]">
+        {/* etiqueta, titulo e subtitulo */}
         <div>
           <span className="text-[.72rem] font-extrabold uppercase tracking-[.13em] text-tt-laranja-vivo">
             Área do organizador
@@ -126,6 +140,7 @@ export default function EventFlow() {
         {/* mensagem de sucesso depois de finalizar */}
         {success && (
           <div className="mb-[18px] flex flex-wrap items-center gap-x-3.5 gap-y-2 rounded-xl border border-[color-mix(in_srgb,var(--tt-verde-sucesso)_32%,transparent)] bg-tt-verde-claro px-[15px] py-[13px] text-[.77rem] text-tt-verde-sucesso">
+            {/* titulo e texto da mensagem */}
             <strong>
               Evento configurado!
             </strong>

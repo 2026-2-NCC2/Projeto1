@@ -1,46 +1,73 @@
+// ATENCAO: este cabecalho antigo NAO e mais usado. Hoje o topo do site e a Navbar (components/Navbar.jsx).
+// ficou guardado so como referencia.
+// 
+// Link = link sem recarregar a pagina / useLocation = diz em qual pagina a pessoa esta
+// useSearchParams = le e muda o que vem depois do ? na url (ex: ?tab=meus)
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
+// imagem da logo
 import logo from '../assets/branding/logos/logo_navbar_web.png'
 
+// as duas abas que aparecem no painel de eventos
 const PAINEL_TABS = [
   { key: 'painel', label: 'Painel de Eventos' },
   { key: 'meus', label: 'Meus Eventos' },
 ]
 
+// cabecalho do site (versao antiga)
 export default function Header() {
+  // pagina atual (ex: /Login)
   const { pathname } = useLocation()
+  // parametros da url (ex: ?tab=meus)
   const [searchParams, setSearchParams] = useSearchParams()
+  // pagina atual em minusculo, pra comparar sem se preocupar com maiusculas
   const path = pathname.toLowerCase()
+  // true se estiver no login ou no cadastro
   const paginaDeConta = ['/cadastro', '/login', '/teladeescolha'].includes(path)
+  // true se estiver criando um evento
   const criandoEvento = path.startsWith('/criar-evento')
+  // true se estiver no painel de eventos
   const noPainel = path === '/paineldeeventos'
+  // true se for uma pagina do organizador (painel ou criar evento)
   const areaDoOrganizador = noPainel || criandoEvento
+  // aba escolhida (se nao tiver nenhuma na url, usa 'painel')
   const activeTab = searchParams.get('tab') || 'painel'
 
+  // troca a aba mudando o ?tab= da url
   function handleTabClick(key) {
     setSearchParams({ tab: key })
   }
 
+  // o que aparece na tela
   return (
+    // cabecalho branco que fica grudado no topo
     <header className="sticky top-0 z-20 border-b border-tt-azul-marinho/11 bg-tt-branco/95 backdrop-blur-[12px]">
+      {/* conteudo centralizado: logo, links do meio e links da conta */}
       <div className="mx-auto flex min-h-[72px] w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-6 max-[900px]:w-[calc(100%_-_36px)] max-[900px]:max-w-[700px] max-[900px]:flex-wrap max-[900px]:gap-x-4 max-[900px]:gap-y-0 max-[900px]:py-3 max-[540px]:w-[calc(100%_-_28px)] max-[540px]:gap-x-3 max-[540px]:gap-y-[9px]">
+        {/* logo + nome, leva pra pagina inicial */}
         <Link to="/" className="flex shrink-0 items-center gap-[9px] text-[18px] font-extrabold tracking-[-0.04em] text-tt-azul-marinho no-underline max-[540px]:text-base" aria-label="TrocaTicket, início">
           <img src={logo} alt="" className="size-[34px] object-contain max-[540px]:size-[30px]" />
           <span>Troca<span className="text-tt-azul-principal">Ticket</span></span>
         </Link>
 
+        {/* links do meio */}
         <nav className="flex flex-1 items-center justify-center gap-[22px] max-[900px]:order-3 max-[900px]:w-full max-[900px]:flex-[1_0_100%] max-[900px]:justify-start max-[900px]:gap-[18px] max-[540px]:flex-wrap max-[540px]:gap-x-4 max-[540px]:gap-y-[6px]" aria-label="Navegação principal">
+          {/* link Eventos (fica sublinhado de laranja quando esta no painel) */}
           <Link
             to="/PainelDeEventos"
             className={`text-[13px] font-semibold no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs ${noPainel ? 'py-[25px] shadow-[inset_0_-2px_var(--tt-laranja-principal)] text-tt-azul-principal max-[900px]:py-2' : 'text-tt-grafite/75'}`}
           >
             Eventos
           </Link>
+          {/* na pagina inicial aparecem tambem links pras secoes da propria pagina */}
           {path === '/' && <a className="text-[13px] font-semibold text-tt-grafite/75 no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs" href="#categorias">Categorias</a>}
           {path === '/' && <a className="text-[13px] font-semibold text-tt-grafite/75 no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs" href="#como-funciona">Como funciona</a>}
 
+          {/* no painel aparecem as abas "Painel de Eventos" e "Meus Eventos" */}
           {noPainel && (
             <div className="flex gap-1.5 max-[540px]:w-full" aria-label="Abas do painel">
+              {/* um botao pra cada aba da lista PAINEL_TABS */}
               {PAINEL_TABS.map((tab) => (
+                // a aba escolhida fica com fundo cinza
                 <button
                   key={tab.key}
                   type="button"
@@ -55,16 +82,20 @@ export default function Header() {
           )}
         </nav>
 
+        {/* links da direita (conta) */}
         <nav className="flex shrink-0 items-center gap-4 max-[900px]:ml-auto max-[540px]:gap-[10px]" aria-label="Conta">
+          {/* cada link so aparece na pagina certa */}
           {paginaDeConta && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/">Voltar ao início</Link>}
           {criandoEvento && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/PainelDeEventos">Voltar ao painel</Link>}
           {noPainel && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/">Início</Link>}
+          {/* nas paginas do organizador mostra "Organizador (Sair)" */}
           {areaDoOrganizador && (
             <span className="text-[13px] font-bold text-tt-azul-marinho">
               Organizador
               <Link to="/" className="ml-[7px] text-tt-azul-principal no-underline">(Sair)</Link>
             </span>
           )}
+          {/* nas outras paginas mostra Entrar e Criar conta */}
           {!paginaDeConta && !criandoEvento && !noPainel && (
             <>
               <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/Login">Entrar</Link>

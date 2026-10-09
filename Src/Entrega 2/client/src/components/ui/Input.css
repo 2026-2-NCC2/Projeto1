@@ -1,5 +1,6 @@
 /* bloco de um campo do formulario (label + input + dica/erro) um embaixo do outro */
 .field {
+  /* um embaixo do outro, com espacinho entre eles */
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -7,6 +8,7 @@
 
 /* texto em cima do campo */
 .field__label {
+  /* letra media */
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--color-text);
@@ -19,12 +21,17 @@
 
 /* o input em si */
 .field__input {
+  /* ocupa a largura toda */
   width: 100%;
+  /* espaco interno */
   padding: 10px var(--space-4);
+  /* borda cinza clarinha */
   border: 1.5px solid var(--color-border);
+  /* cantos arredondados (8px) */
   border-radius: var(--radius-lg, 8px);
   color: var(--color-text);
   background: var(--color-white);
+  /* muda a borda e a sombra suavemente */
   transition: border-color var(--transition), box-shadow var(--transition);
   line-height: 1.5;
 }
@@ -36,6 +43,7 @@
 
 /* quando clica no campo: borda azul e uma sombra clarinha em volta */
 .field__input:focus {
+  /* tira o contorno padrao do navegador */
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--tt-azul-principal) 12%, transparent);

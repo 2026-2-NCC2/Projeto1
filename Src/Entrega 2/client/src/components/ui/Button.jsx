@@ -5,7 +5,9 @@
  * Componentes recebem "props" — dados externos.
  * Um componente bem projetado é flexível via props.
  */
+// React = biblioteca usada pra montar as telas
 import React from 'react';
+// estilos do botao
 import './Button.css';
 
 // botao usado no site todo, o visual muda conforme as props
@@ -41,6 +43,7 @@ export default function Button({
     >
       {/* carregando mostra o spinner + "Aguarde...", senao mostra o conteudo normal */}
       {loading ? (
+        // <></> = agrupa o spinner e o texto sem criar uma div a mais
         <>
           <span className="btn__spinner" aria-hidden="true" />
           <span>Aguarde...</span>

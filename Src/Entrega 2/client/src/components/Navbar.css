@@ -1,44 +1,56 @@
 /* barra fixa no topo, no degrade azul -> roxo -> rosa da marca */
 .navbar {
+  /* sticky + top 0 = a barra gruda no topo quando a pagina rola */
   position: sticky;
   top: 0;
+  /* z-index alto = fica por cima do resto do conteudo */
   z-index: 100;
   background: var(--tt-gradiente-marca);
+  /* linha clarinha embaixo da barra */
   box-shadow: 0 1px 0 color-mix(in srgb, var(--tt-branco) 8%, transparent);
 }
 
+/* parte de dentro da barra: logo, links e botoes lado a lado */
 .navbar__inner {
   display: flex;
   align-items: center;
   gap: var(--space-6);
+  /* nao passa de 1200px de largura e fica centralizada */
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--space-6);
+  /* altura da barra */
   height: 60px;
 }
 
 /* Logo */
 .navbar__logo {
+  /* simbolo e nome lado a lado */
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  /* nao deixa a logo encolher quando falta espaco */
   flex-shrink: 0;
+  /* tira o sublinhado do link */
   text-decoration: none;
 }
 
 /* quadradinho branco com o simbolo da logo dentro */
 .navbar__logo-icon {
+  /* relative = a imagem de dentro se posiciona em relacao a este quadrado */
   position: relative;
   width: 36px;
   height: 36px;
   border-radius: 10px;
   background: var(--color-white);
+  /* esconde o que passar pra fora do quadrado */
   overflow: hidden;
   box-shadow: 0 2px 8px color-mix(in srgb, var(--tt-azul-marinho) 25%, transparent);
 }
 
 /* a imagem tem bastante margem em volta do simbolo, entao fica maior que a caixa e o excesso e cortado */
 .navbar__logo-icon img {
+  /* as 4 linhas abaixo colocam a imagem bem no centro do quadrado */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -49,6 +61,7 @@
   object-fit: contain;
 }
 
+/* nome "TrocaTicket" em branco ao lado do simbolo */
 .navbar__logo-name {
   font-size: var(--font-size-lg);
   font-weight: 700;
@@ -58,12 +71,15 @@
 
 /* Links de navegacao */
 .navbar__nav {
+  /* links um do lado do outro */
   display: flex;
   align-items: center;
   gap: var(--space-1);
+  /* ocupa o espaco que sobrar no meio da barra */
   flex: 1;
 }
 
+/* cada link do menu: branco meio transparente */
 .navbar__link {
   padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-sm);
@@ -71,9 +87,11 @@
   color: color-mix(in srgb, var(--tt-branco) 70%, transparent);
   border-radius: var(--radius-lg, 8px);
   text-decoration: none;
+  /* muda de cor suavemente */
   transition: color var(--transition), background var(--transition);
 }
 
+/* ao passar o mouse: fica branco com um fundo clarinho */
 .navbar__link:hover {
   color: var(--color-white);
   background: color-mix(in srgb, var(--tt-branco) 8%, transparent);
@@ -87,13 +105,16 @@
 }
 
 /* Acoes */
+/* area da direita: botoes Entrar/Criar conta ou o nome do usuario */
 .navbar__actions {
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  /* empurra essa area toda pra direita */
   margin-left: auto;
 }
 
+/* estilo comum dos botoes Entrar e Criar conta */
 .navbar__btn {
   padding: 7px 16px;
   border-radius: var(--radius-lg, 8px);
@@ -108,6 +129,7 @@
   color: color-mix(in srgb, var(--tt-branco) 85%, transparent);
   border: 1.5px solid color-mix(in srgb, var(--tt-branco) 25%, transparent);
 }
+/* ao passar o mouse no Entrar */
 .navbar__btn--ghost:hover {
   background: color-mix(in srgb, var(--tt-branco) 8%, transparent);
   border-color: color-mix(in srgb, var(--tt-branco) 50%, transparent);
@@ -119,23 +141,27 @@
   background: var(--color-white);
   color: var(--tt-roxo-principal);
 }
+/* ao passar o mouse no Criar conta: fundo lilas */
 .navbar__btn--primary:hover {
   background: var(--tt-lilas-claro);
 }
 
 /* Usuario logado */
+/* nome e botao Sair lado a lado */
 .navbar__user {
   display: flex;
   align-items: center;
   gap: var(--space-4);
 }
 
+/* primeiro nome do usuario */
 .navbar__user-name {
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: color-mix(in srgb, var(--tt-branco) 85%, transparent);
 }
 
+/* botao Sair: so com borda branca */
 .navbar__logout {
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -146,11 +172,13 @@
   cursor: pointer;
   transition: background var(--transition);
 }
+/* ao passar o mouse no Sair */
 .navbar__logout:hover {
   background: color-mix(in srgb, var(--tt-branco) 15%, transparent);
 }
 
 /* Hamburguer */
+/* o botao de 3 risquinhos fica escondido no computador (so aparece no celular) */
 .navbar__hamburger {
   display: none;
   flex-direction: column;
@@ -160,6 +188,7 @@
   cursor: pointer;
 }
 
+/* cada um dos 3 risquinhos */
 .navbar__hamburger span {
   display: block;
   height: 2px;
@@ -170,19 +199,25 @@
 }
 
 /* vira um X quando o menu ta aberto */
+/* risco de cima desce e gira */
 .navbar__hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+/* risco do meio some */
 .navbar__hamburger.is-open span:nth-child(2) { opacity: 0; }
+/* risco de baixo sobe e gira pro outro lado */
 .navbar__hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* Menu mobile */
+/* caixa que abre embaixo da barra com os links (so no celular) */
 .navbar__mobile {
   background: var(--tt-gradiente-marca);
   border-top: 1px solid color-mix(in srgb, var(--tt-branco) 10%, transparent);
   padding: var(--space-4) var(--space-6);
   display: flex;
+  /* links um embaixo do outro */
   flex-direction: column;
 }
 
+/* cada link do menu do celular */
 .navbar__mobile-link {
   padding: var(--space-3) 0;
   font-size: var(--font-size-base);
@@ -192,34 +227,45 @@
   text-decoration: none;
 }
 
+/* link da pagina atual no menu do celular fica em negrito */
 .navbar__mobile-link.navbar__link--active {
   color: var(--color-white);
   background: none;
   font-weight: 700;
 }
 
+/* botao Sair no menu do celular */
 .navbar__mobile-logout {
   color: var(--color-white);
   text-align: left;
   cursor: pointer;
 }
 
+/* link Criar conta no menu do celular, em destaque */
 .navbar__mobile-cta {
   color: var(--color-white);
   font-weight: 700;
 }
 
 /* menu mobile aparece suavemente */
+/* fade-in = classe usada no menu do celular / navbar-fade-in = a animacao em si */
 .fade-in { animation: navbar-fade-in 0.18s ease; }
 @keyframes navbar-fade-in {
+  /* comeca invisivel e um pouquinho mais pra cima... */
   from { opacity: 0; transform: translateY(-4px); }
+  /* ...e termina visivel no lugar certo */
   to   { opacity: 1; transform: none; }
 }
 
 /* Responsivo */
+/* telas de ate 768px (celular e tablet pequeno) */
 @media (max-width: 768px) {
+  /* esconde os links do meio */
   .navbar__nav { display: none; }
+  /* esconde os botoes Entrar e Criar conta */
   .navbar__actions .navbar__btn { display: none; }
+  /* esconde o nome e o Sair */
   .navbar__user { display: none; }
+  /* mostra o botao de 3 risquinhos (tudo isso vai pro menu do celular) */
   .navbar__hamburger { display: flex; }
 }

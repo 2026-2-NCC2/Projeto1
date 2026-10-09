@@ -1,4 +1,6 @@
+// useState = guarda o que foi digitado
 import { useState } from 'react'
+// yup = biblioteca que confere se os dados seguem regras (ex: formato de e-mail)
 import * as yup from 'yup'
 
 // componente de teste pra validar email usando a biblioteca yup
@@ -22,6 +24,7 @@ function ValidacaoEmail() {
     e.preventDefault()
     // tenta validar, se der erro cai no catch e mostra no console
     try {
+      // confere o formData com as regras; se passar, mostra 'validado' no console
       await verify.validate(formData)
       console.log('validado')
     } catch (err) { // corrigido: "err" não estava declarado
@@ -46,4 +49,5 @@ function ValidacaoEmail() {
   )
 }
 
+// deixa a pagina disponivel pras rotas
 export default ValidacaoEmail

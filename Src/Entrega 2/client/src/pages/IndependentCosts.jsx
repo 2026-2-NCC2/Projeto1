@@ -1,4 +1,6 @@
+// useState = guarda o que a pessoa esta digitando
 import { useState } from 'react';
+// pecas prontas do formulario (botoes, campo de dinheiro, campo, card, lista de opcoes e caixa de texto)
 import { ActionRow, CurrencyInput, Field, FormCard, Select, Textarea } from '../components/FormUI.jsx';
 
 // valores iniciais do formulario, usado tambem pra limpar depois de adicionar
@@ -24,6 +26,7 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
 
   // remove um custo da lista pelo id
   function removeCost(id) {
+    // filter = fica com todos os custos menos o do id que foi removido
     setCosts((prev) => prev.filter((cost) => cost.id !== id));
   }
 
@@ -47,9 +50,11 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
             <option>Outro</option>
           </Select>
         </Field>
+        {/* explicacao do custo */}
         <Field label="Descrição">
           <Textarea rows="4" value={draft.description} onChange={patch('description')} placeholder="Ex: Taxa municipal para realização do evento" />
         </Field>
+        {/* quanto custa */}
         <Field label="Valor da despesa">
           <CurrencyInput value={draft.value} onChange={patch('value')} />
         </Field>
@@ -60,7 +65,9 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
       {/* lista dos custos ja adicionados, so aparece se tiver algum */}
       {costs.length > 0 && (
         <div className="mt-7 border-t border-tt-azul-marinho/12 pt-6">
+          {/* titulo da lista */}
           <h2 className="mb-3 mt-0 text-[.95rem] text-tt-azul-marinho">Custos adicionados</h2>
+          {/* uma linha pra cada custo adicionado */}
           {costs.map((cost) => (
             // no celular o valor e o botao ficam um embaixo do outro
             <div className="flex items-center justify-between gap-[18px] border-b border-tt-azul-marinho/12 py-3 max-[460px]:items-start" key={cost.id}>
@@ -72,6 +79,7 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
               {/* valor e botao de remover na direita */}
               <div className="flex items-center gap-2.5 whitespace-nowrap max-[460px]:flex-col max-[460px]:items-end">
                 <strong className="text-[.8rem]">R$ {cost.value}</strong>
+                {/* botao × que remove esse custo */}
                 <button type="button" className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal" onClick={() => removeCost(cost.id)} aria-label="Remover custo">×</button>
               </div>
             </div>

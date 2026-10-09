@@ -1,4 +1,6 @@
+// React = biblioteca usada pra montar as telas
 import React from 'react';
+// cores e formato das etiquetas
 import './Badge.css';
 
 // liga cada status/tipo a uma cor do Badge.css
@@ -19,5 +21,6 @@ const VARIANTS = {
 export default function Badge({ label, variant }) {
   // procura a cor pelo variant, se nao achar tenta pelo proprio texto, e se nada der certo fica cinza
   const cls = VARIANTS[variant] || VARIANTS[label?.toLowerCase()] || 'badge--muted';
+  // monta a etiqueta: classe base "badge" + a classe da cor
   return <span className={`badge ${cls}`}>{label}</span>;
 }

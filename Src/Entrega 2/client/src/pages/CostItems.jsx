@@ -1,4 +1,6 @@
+// useMemo = guarda um calculo e so refaz quando os dados mudam / useState = guarda informacoes que mudam
 import { useMemo, useState } from 'react';
+// pecas prontas do formulario (botoes e card)
 import { ActionRow, FormCard } from '../components/FormUI.jsx';
 
 // converte o texto do valor em numero (ex: "1.500,00" vira 1500)
@@ -136,6 +138,7 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
                     <div className="mb-2.5 grid overflow-hidden rounded-[10px] border border-tt-azul-marinho/12">
                       {/* cabecalho da tabela, some no celular (max-[760px]:hidden) */}
                       <div className="grid grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] items-center gap-2.5 bg-tt-cinza-claro px-2.5 py-[9px] text-[.61rem] font-extrabold uppercase tracking-[.03em] text-tt-grafite/70 max-[760px]:hidden">
+                        {/* titulos das colunas */}
                         <span>Descrição</span>
                         <span>Qtd.</span>
                         <span>Unitário</span>
@@ -147,6 +150,7 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
                       {/* no celular fica em 2 colunas com o botao de remover na direita, no desktop vira as 5 colunas da tabela */}
                       {group.items.map((item) => (
                         <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 border-t border-tt-azul-marinho/12 bg-tt-branco p-3 text-[.72rem] first:border-t-0 min-[761px]:grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] min-[761px]:gap-2.5 min-[761px]:px-2.5 min-[761px]:py-[9px] [&>span:nth-child(5)]:col-start-2 [&>span:nth-child(5)]:row-[1/span_2] min-[761px]:[&>span:nth-child(5)]:col-auto min-[761px]:[&>span:nth-child(5)]:row-auto" key={item.id}>
+                          {/* descricao, quantidade e valor unitario */}
                           <span>{item.description}</span>
                           <span>{item.qty}</span>
                           <span>{formatBRL(item.unit)}</span>

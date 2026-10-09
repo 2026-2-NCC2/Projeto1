@@ -8,12 +8,16 @@ export function Wizard({ currentStep, onStepClick }) {
     // card branco com 4 colunas, o margin negativo faz ele subir em cima da faixa do topo
     <nav className="relative z-[5] mx-auto -mt-[22px] mb-5 grid w-[calc(100%-20px)] max-w-[760px] grid-cols-4 rounded-[18px] border border-tt-azul-marinho/12 bg-tt-branco px-2.5 pb-4 pt-[18px] shadow-[0_16px_45px_color-mix(in_srgb,var(--tt-azul-marinho)_12%,transparent)] min-[461px]:-mt-6 min-[461px]:mb-9 min-[461px]:w-[calc(100%-36px)] min-[761px]:px-[22px]" aria-label="Etapas do cadastro">
       {labels.map((label, index) => {
+        // numero da etapa (1 a 4)
         const step = index + 1;
         // estado da etapa: ja feita, atual ou ainda nao chegou
         const state = step < currentStep ? 'done' : step === currentStep ? 'active' : 'idle';
+        // true se ja passou dessa etapa
         const done = state === 'done';
+        // true se essa e a etapa atual
         const active = state === 'active';
         return (
+          // coluna de cada etapa: bolinha + nome
           <div className="relative flex flex-col items-center gap-2" key={label}>
             {/* bolinha: feita fica azul com ✓, a atual ganha um anel em volta, as proximas ficam cinza */}
             {/* o ?. evita erro se o onStepClick nao for passado */}
@@ -24,6 +28,7 @@ export function Wizard({ currentStep, onStepClick }) {
               aria-label={`Ir para ${label}`}
               aria-current={active ? 'step' : undefined}
             >
+              {/* etapa feita mostra ✓, as outras mostram o numero */}
               {done ? '✓' : step}
             </button>
             {/* nome da etapa, fica mais escuro nas feitas e na atual */}

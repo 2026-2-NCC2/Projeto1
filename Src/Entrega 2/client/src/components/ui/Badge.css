@@ -1,9 +1,14 @@
 /* etiqueta colorida pequena (usada no tipo e no status dos cadastros) */
 .badge {
+  /* inline-block = fica do tamanho do texto, na mesma linha */
   display: inline-block;
+  /* espaco interno (2px em cima/embaixo, 10px nos lados) */
   padding: 2px 10px;
+  /* cantos totalmente arredondados (formato de pilula) */
   border-radius: var(--radius-full);
+  /* letra pequena */
   font-size: var(--font-size-xs);
+  /* semi-negrito */
   font-weight: 600;
   /* deixa a primeira letra maiuscula (ex: "pendente" vira "Pendente") */
   text-transform: capitalize;
@@ -14,5 +19,7 @@
 .badge--danger   { background: var(--color-danger-light);  color: var(--color-danger);  }
 .badge--pending  { background: var(--color-pending-light); color: var(--color-pending); }
 .badge--primary  { background: color-mix(in srgb, var(--tt-azul-principal) 10%, transparent);         color: var(--color-primary); }
+/* usada no tipo "fornecedor" */
 .badge--accent   { background: color-mix(in srgb, var(--tt-laranja-principal) 18%, transparent);       color: var(--tt-azul-principal); }
+/* cinza, usada quando nao acha a cor certa */
 .badge--muted    { background: var(--color-border);        color: var(--color-text-muted); }

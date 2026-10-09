@@ -1,20 +1,27 @@
 /* area em volta do spinner, centraliza a bolinha e o texto um embaixo do outro */
 .spinner-wrap {
+  /* flex em coluna = bolinha em cima, texto embaixo */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* espaco entre a bolinha e o texto */
   gap: var(--space-4);
+  /* espaco em volta */
   padding: var(--space-12);
 }
 
-/* bolinha de carregamento: borda cinza com a parte de cima verde, girando sem parar */
+/* bolinha de carregamento: borda cinza com a parte de cima rosa (cor de destaque), girando sem parar */
 .spinner {
   width: 36px;
   height: 36px;
+  /* borda inteira cinza... */
   border: 3px solid var(--color-border);
+  /* ...menos a parte de cima, que fica colorida (e isso que da a impressao de girar) */
   border-top-color: var(--color-accent);
+  /* 50% = vira um circulo */
   border-radius: 50%;
+  /* gira sem parar, uma volta a cada 0,75 segundo */
   animation: spin 0.75s linear infinite;
 }
 

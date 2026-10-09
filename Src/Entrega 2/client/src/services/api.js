@@ -1,25 +1,39 @@
+// endereco do back-end (servidor Node que roda na porta 3000)
 const api_url = "http://localhost:3000/api"
 
 // lança um erro com status e a mensagem vinda do backend, pra quem chamar poder tratar por status
+// cadastra um usuario novo: manda os dados pro back-end e devolve a resposta
 export async function cadastrarUsuario(dados) {
+  // fetch = faz a requisicao pro servidor
   const response = await fetch(`${api_url}/cadastro`, {
+    // POST = enviando dados novos
     method: 'POST',
+    // avisa que o corpo vai em JSON
     headers: { 'Content-Type': 'application/json' },
+    // transforma o objeto em texto JSON
     body: JSON.stringify(dados),
   })
 
+  // le a resposta em JSON (se vier vazia ou quebrada, usa um objeto vazio)
   const data = await response.json().catch(() => ({}))
 
+  // response.ok = status 200 a 299; se nao for, deu erro
   if (!response.ok) {
+    // usa a mensagem do back-end ou uma padrao
     const erro = new Error(data.erro || 'Erro ao cadastrar.')
+    // guarda o status (ex: 409 e-mail ja existe) pra tela tratar
     erro.status = response.status
+    // throw = dispara o erro pra quem chamou (cai no catch de la)
     throw erro
   }
 
+  // deu certo: devolve os dados
   return data
 }
 
+// faz login: manda e-mail e senha e recebe o usuario
 export async function loginUsuario(dados) {
+  // mesma ideia do cadastro, mas na rota /login
   const response = await fetch(`${api_url}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -28,12 +42,14 @@ export async function loginUsuario(dados) {
 
   const data = await response.json().catch(() => ({}))
 
+  // senha errada, usuario nao existe etc.
   if (!response.ok) {
     const erro = new Error(data.erro || 'Erro ao entrar.')
     erro.status = response.status
     throw erro
   }
 
+  // deu certo: devolve { id_usuario, nome, email, perfil }
   return data
 }
 

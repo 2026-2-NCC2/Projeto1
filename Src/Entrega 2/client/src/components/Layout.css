@@ -1,10 +1,13 @@
 /* pagina em coluna: navbar, conteudo e rodape sempre la embaixo */
 .layout {
+  /* flex em coluna = navbar, conteudo e rodape um embaixo do outro */
   display: flex;
   flex-direction: column;
+  /* no minimo a altura da tela inteira */
   min-height: 100vh;
 }
 
+/* o conteudo do meio estica pra ocupar o espaco que sobrar (assim o rodape fica sempre no fim) */
 .layout__main {
   flex: 1;
 }
@@ -14,9 +17,13 @@
   background: var(--tt-gradiente-marca);
   color: color-mix(in srgb, var(--tt-branco) 75%, transparent);
   text-align: center;
+  /* espaco interno */
   padding: var(--space-6);
+  /* texto pequeno */
   font-size: var(--font-size-xs);
+  /* empurra o rodape pro fim da pagina */
   margin-top: auto;
 }
 
+/* tira o espaco padrao em volta do paragrafo */
 .layout__footer p { margin: 0; }

@@ -1,4 +1,6 @@
+// useState = guarda as mensagens de erro
 import { useState } from 'react';
+// pecas prontas do formulario (botoes, campo de dinheiro, campo, card e input)
 import { ActionRow, CurrencyInput, Field, FormCard, Input } from '../components/FormUI.jsx';
 
 // etapa do formulario de criar evento: publico e lotes
@@ -10,16 +12,20 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
   // funcao generica pra atualizar qualquer campo, e so passar o nome dele
   // quando o usuario digita, ja limpa o erro daquele campo
   const patch = (key) => (e) => {
+    // atualiza so o campo que mudou e mantem os outros
     setData((prev) => ({ ...prev, [key]: e.target.value }));
+    // apaga o erro desse campo
     setErrors((prev) => ({ ...prev, [key]: '' }));
   };
 
   // valida antes de ir pra proxima etapa
   const handleNext = () => {
+    // comeca sem erros
     const nextErrors = {};
     // String + trim pra nao aceitar campo vazio ou so com espaco
     if (!String(data.firstLot ?? '').trim()) nextErrors.firstLot = 'Campo obrigatório';
     if (!String(data.maxAudience ?? '').trim()) nextErrors.maxAudience = 'Campo obrigatório';
+    // mostra os erros na tela
     setErrors(nextErrors);
     // so avanca se nao tiver nenhum erro
     if (Object.keys(nextErrors).length === 0) onNext();
@@ -53,6 +59,7 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
       </div>
       {/* aviso explicando pra que serve o publico maximo */}
       <div className="info-banner">
+        {/* o "i" dentro de uma bolinha */}
         <span className="info-icon">i</span>
         <p>O público máximo também pode ser usado como limite inicial de ingressos. Depois você poderá dividir a quantidade por lotes e setores.</p>
       </div>
