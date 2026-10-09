@@ -1,5 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useMemo } from 'react';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 
@@ -20,54 +19,6 @@ const MOCK_CADASTROS = [
 const S = { fill:'none', stroke:'currentColor', strokeWidth:1.8, strokeLinecap:'round', strokeLinejoin:'round', viewBox:'0 0 24 24' };
 // lupa que fica dentro do campo de pesquisa
 const IconSearch = () => <svg width="15" height="15" {...S}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
-
-// ─── Navbar Admin (igual ao Dashboard) ───────────────────────────────────────
-// links do menu, mesma lista do dashboard
-const NAV_LINKS = [
-  { to: '/AdminDashboard',   label: 'Dashboard'  },
-  { to: '/AprovarCadastros', label: 'Aprovações' },
-];
-
-// navbar do admin (mesma do dashboard)
-function AdminNav() {
-  // rota atual, pra saber qual link destacar
-  const { pathname } = useLocation();
-  return (
-    // barra clara logo abaixo do cabecalho do site
-    <nav className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-tt-azul-marinho/12 bg-tt-branco px-6 py-2 md:px-10">
-      {/* logo, volta pra home */}
-      <Link to="/" className="flex items-center gap-2 no-underline">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-azul-suave text-sm font-black text-tt-azul-principal">T</span>
-        <span className="text-sm font-extrabold tracking-tight text-tt-azul-marinho">
-          TrocaTicket <span className="font-normal text-tt-grafite/60">· Admin</span>
-        </span>
-      </Link>
-
-      {/* links do menu */}
-      <div className="flex items-center gap-1">
-        {NAV_LINKS.map(({ to, label }) => {
-          // ativo se for a pagina atual
-          const active = pathname === to || (to !== '/admin' && pathname.startsWith(to));
-          return (
-            // link ativo fica mais claro, os outros mais apagados
-            <Link key={to} to={to}
-              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
-                active ? 'bg-tt-cinza-claro text-tt-azul-principal' : 'text-tt-grafite/75 hover:text-tt-azul-principal'
-              }`}>
-              {label}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* botao de sair, por enquanto so leva pro login */}
-      <Link to="/Login"
-        className="rounded-full border border-tt-azul-marinho/12 px-4 py-1.5 text-xs font-bold text-tt-azul-marinho no-underline transition-colors hover:border-tt-azul-principal hover:text-tt-azul-principal">
-        Sair
-      </Link>
-    </nav>
-  );
-}
 
 // ─── Filtros ──────────────────────────────────────────────────────────────────
 // botoes de filtro da lista de cadastros
@@ -117,13 +68,12 @@ export default function AprovarCadastros() {
   return (
     // fundo da pagina toda
     <div className="min-h-screen bg-[var(--color-bg)]">
-      <AdminNav />
 
       {/* Hero - faixa clara do topo com o titulo */}
-      <div className="border-b border-tt-azul-marinho/12 bg-tt-branco px-6 pb-10 pt-9 md:px-10">
+      <div className="border-b border-tt-azul-marinho/12 bg-[image:var(--tt-gradiente-suave)] px-6 pb-10 pt-9 md:px-10">
         {/* centraliza o conteudo */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-tt-azul-principal">Administração</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-tt-roxo-principal">Administração</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-tt-azul-marinho md:text-4xl">Aprovar Cadastros</h1>
           <p className="mt-1.5 text-sm text-tt-grafite/75">Gerencie solicitações de organizadores e fornecedores.</p>
         </div>

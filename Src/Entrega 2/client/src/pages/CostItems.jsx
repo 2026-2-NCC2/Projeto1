@@ -174,7 +174,7 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
                       <input className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5 outline-0 placeholder:text-tt-grafite/45" inputMode="decimal" placeholder="0,00" value={draft.unit} onChange={(e) => changeDraft(group.name, 'unit', e.target.value)} />
                     </div>
                     {/* botao de adicionar o item na categoria */}
-                    <button type="button" className="col-start-2 min-h-[38px] cursor-pointer rounded-full border-0 bg-tt-azul-marinho px-4 py-2.5 text-[.78rem] font-bold text-tt-branco transition duration-150 hover:-translate-y-px hover:bg-tt-azul-principal min-[761px]:col-auto" onClick={() => addItem(group.name)}>Adicionar</button>
+                    <button type="button" className="col-start-2 min-h-[38px] cursor-pointer rounded-lg border-0 bg-[image:var(--tt-gradiente-botao)] px-4 py-2.5 text-[.78rem] font-bold text-tt-branco transition duration-150 hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] min-[761px]:col-auto" onClick={() => addItem(group.name)}>Adicionar</button>
                   </div>
                 </div>
               )}

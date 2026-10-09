@@ -6,8 +6,7 @@
   /* espaco entre o texto e o spinner/icone */
   gap: var(--space-2);
   font-weight: 600;
-  /* formato de pilula, igual aos botoes da pagina inicial */
-  border-radius: 999px;
+  border-radius: var(--radius-lg, 8px);
   /* animacao suave quando muda cor, sombra ou opacidade */
   transition: background var(--transition), box-shadow var(--transition), opacity var(--transition);
   /* impede o texto de quebrar linha */
@@ -23,14 +22,14 @@
 .btn--full { width: 100%; }
 
 /* Variantes */
-/* azul marinho com texto branco (botao principal, ex: "Aprovar"), igual ao da pagina inicial */
+/* degrade roxo -> rosa com texto branco (botao principal, ex: "Aprovar") */
 .btn--primary {
-  background: var(--tt-azul-marinho);
+  background: var(--tt-gradiente-botao);
   color: var(--color-white);
 }
 /* o :not(:disabled) faz o hover nao funcionar quando o botao ta desativado */
 .btn--primary:hover:not(:disabled) {
-  background: var(--tt-azul-principal);
+  filter: brightness(1.1);
 }
 
 /* azul com texto branco */
@@ -39,7 +38,7 @@
   color: var(--color-white);
 }
 .btn--secondary:hover:not(:disabled) {
-  background: var(--color-primary-light);
+  background: var(--color-primary-dark);
 }
 
 /* sem fundo, so com borda */

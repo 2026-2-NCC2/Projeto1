@@ -1,0 +1,22 @@
+/* pagina em coluna: navbar, conteudo e rodape sempre la embaixo */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout__main {
+  flex: 1;
+}
+
+/* rodape no degrade da marca com o texto centralizado */
+.layout__footer {
+  background: var(--tt-gradiente-marca);
+  color: color-mix(in srgb, var(--tt-branco) 75%, transparent);
+  text-align: center;
+  padding: var(--space-6);
+  font-size: var(--font-size-xs);
+  margin-top: auto;
+}
+
+.layout__footer p { margin: 0; }

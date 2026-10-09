@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Footer from '../components/Footer'
 import { cadastrarUsuario } from '../services/api'
 
 // tipos de conta que a pessoa pode escolher no cadastro
@@ -245,7 +244,7 @@ export default function Cadastro() {
             </p>
 
             {/* botao que volta pra home, so o texto muda */}
-            <button className="w-full py-3 px-6 text-sm font-bold rounded-full bg-tt-azul-marinho text-tt-branco transition hover:bg-tt-azul-principal" onClick={() => navigate('/')}>
+            <button className="w-full py-3 px-6 text-sm font-bold rounded-lg bg-[image:var(--tt-gradiente-botao)] text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]" onClick={() => navigate('/')}>
               {isUser ? 'Ir para a plataforma' : 'Voltar ao início'}
             </button>
 
@@ -283,7 +282,7 @@ export default function Cadastro() {
 
                 {/* botao de avancar, passa pela validacao antes */}
                 <div className="flex justify-end gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-azul-marinho text-tt-branco transition hover:bg-tt-azul-principal" onClick={handleNext}>Próximo</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-[image:var(--tt-gradiente-botao)] text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]" onClick={handleNext}>Próximo</button>
                 </div>
 
                 {/* link pra quem ja tem conta */}
@@ -321,9 +320,9 @@ export default function Cadastro() {
 
                 {/* botoes de voltar e avancar, no celular o avancar fica em cima */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
                   {/* fica desativado ate escolher um tipo ou enquanto envia, e pro cliente ja vira "Concluir" */}
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-azul-marinho text-tt-branco transition hover:bg-tt-azul-principal disabled:bg-tt-azul-marinho/10 disabled:cursor-not-allowed" onClick={handleNext} disabled={!role || apiLoading}>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-[image:var(--tt-gradiente-botao)] text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] disabled:bg-tt-azul-marinho/10 disabled:cursor-not-allowed" onClick={handleNext} disabled={!role || apiLoading}>
                     {apiLoading ? 'Enviando...' : (role === 'cliente' ? 'Concluir' : 'Próximo')}
                   </button>
                 </div>
@@ -367,8 +366,8 @@ export default function Cadastro() {
 
                 {/* voltar e finalizar (organizador termina aqui) */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-azul-marinho text-tt-branco transition hover:bg-tt-azul-principal disabled:bg-tt-azul-marinho/10 disabled:cursor-not-allowed" onClick={handleNext} disabled={apiLoading}>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-[image:var(--tt-gradiente-botao)] text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] disabled:bg-tt-azul-marinho/10 disabled:cursor-not-allowed" onClick={handleNext} disabled={apiLoading}>
                     {apiLoading ? 'Enviando...' : 'Criar solicitação'}
                   </button>
                 </div>
@@ -391,8 +390,8 @@ export default function Cadastro() {
 
                 {/* voltar e avancar (fornecedor ainda tem a etapa de servicos) */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)}>Voltar</button>
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-azul-marinho text-tt-branco transition hover:bg-tt-azul-principal" onClick={handleNext}>Próximo</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)}>Voltar</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-[image:var(--tt-gradiente-botao)] text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]" onClick={handleNext}>Próximo</button>
                 </div>
               </>
             )}
@@ -474,8 +473,8 @@ export default function Cadastro() {
 
                 {/* voltar e finalizar (fornecedor termina aqui) */}
                 <div className="flex flex-col-reverse sm:flex-row justify-between gap-4 mt-8">
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
-                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-full bg-tt-azul-marinho text-tt-branco transition hover:bg-tt-azul-principal disabled:bg-tt-azul-marinho/10 disabled:cursor-not-allowed" onClick={handleNext} disabled={apiLoading}>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-tt-branco text-tt-azul-marinho border border-tt-azul-marinho/12 transition hover:border-tt-azul-principal hover:text-tt-azul-principal" onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+                  <button className="w-full sm:w-auto py-3 px-6 text-sm font-bold rounded-lg bg-[image:var(--tt-gradiente-botao)] text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] disabled:bg-tt-azul-marinho/10 disabled:cursor-not-allowed" onClick={handleNext} disabled={apiLoading}>
                     {apiLoading ? 'Enviando...' : 'Criar solicitação'}
                   </button>
                 </div>
@@ -487,8 +486,6 @@ export default function Cadastro() {
         </div>
       </div>
 
-      {/* rodape do site */}
-      <Footer />
     </div>
   )
 }

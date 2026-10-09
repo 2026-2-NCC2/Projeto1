@@ -19,10 +19,10 @@ export const ui = {
   botoes: 'grid grid-cols-2 gap-4 items-center mt-2',
   // botao principal em pilula azul marinho (igual ao "Explorar" da pagina inicial), fica cinza quando desativado
   btnPrimary:
-    'w-full py-3 bg-tt-azul-marinho text-tt-branco font-bold text-sm rounded-full cursor-pointer transition hover:-translate-y-px hover:bg-tt-azul-principal disabled:bg-tt-azul-marinho/12 disabled:text-tt-grafite/45 disabled:cursor-not-allowed',
+    'w-full py-3 bg-[image:var(--tt-gradiente-botao)] text-tt-branco font-bold text-sm rounded-lg cursor-pointer transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] disabled:bg-tt-azul-marinho/12 disabled:text-tt-grafite/45 disabled:cursor-not-allowed',
   // botao claro de voltar, so com borda
   btnVoltar:
-    'block w-full py-3 text-center text-tt-azul-marinho font-bold text-sm bg-tt-branco border border-tt-azul-marinho/12 rounded-full cursor-pointer no-underline transition-colors hover:border-tt-azul-principal hover:text-tt-azul-principal',
+    'block w-full py-3 text-center text-tt-azul-marinho font-bold text-sm bg-tt-branco border border-tt-azul-marinho/12 rounded-lg cursor-pointer no-underline transition-colors hover:border-tt-azul-principal hover:text-tt-azul-principal',
   // texto do rodape do card, o [&_a] estiliza os links que ficam dentro dele
   footerLink: 'text-center mt-5 text-sm text-tt-grafite/75 [&_a]:text-tt-azul-principal [&_a]:font-bold [&_a]:no-underline',
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import Footer from '../components/Footer'
 import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
 import { loginUsuario } from '../services/api'
 
@@ -88,8 +87,6 @@ function Login() {
         </div>
       </div>
 
-      {/* rodape do site */}
-      <Footer />
     </div>
   )
 }

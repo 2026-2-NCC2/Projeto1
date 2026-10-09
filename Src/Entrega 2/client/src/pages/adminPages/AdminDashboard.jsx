@@ -1,5 +1,4 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 
 // ─── Dados mock ───────────────────────────────────────────────────────────────
@@ -27,74 +26,6 @@ const IconClock  = () => <svg width="20" height="20" {...S}><circle cx="12" cy="
 const IconX      = () => <svg width="20" height="20" {...S}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>; // rejeitados
 const IconArrow  = () => <svg width="15" height="15" {...S}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>; // seta dos links (menor que os outros)
 const IconReport = () => <svg width="20" height="20" {...S}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>; // relatorios
-
-// ─── Navbar Admin ─────────────────────────────────────────────────────────────
-// Links do menu do admin. Pra adicionar uma pagina nova e so colocar mais um item aqui
-// to = rota da pagina / label = nome que aparece no menu
-const NAV_LINKS = [
-  { to: '/AdminDashboard',   label: 'Dashboard'  },
-  { to: '/AprovarCadastros', label: 'Aprovações' },
-];
-
-// barra de navegacao do topo, so aparece nas paginas do admin
-function AdminNav() {
-  // useLocation devolve a rota que o usuario ta agora (ex: '/AdminDashboard')
-  // uso o pathname pra comparar com os links e deixar destacado o da pagina atual
-  const { pathname } = useLocation();
-
-  return (
-    // barra clara logo abaixo do cabecalho do site
-    // justify-between joga a logo pra esquerda e os links pra direita
-    // no celular o espacamento lateral e menor (px-6) e no desktop aumenta (md:px-10)
-
-    <nav className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-tt-azul-marinho/12 bg-tt-branco px-6 py-2 md:px-10">
-      {/* Logo - clicando nela volta pra home do site */}
-      {/* usei Link do react-router em vez de <a> pra nao recarregar a pagina inteira */}
-      <Link to="/" className="flex items-center gap-2 no-underline">
-        {/* bolinha azul com o T, que e a "marca" do TrocaTicket */}
-        {/* grid + place-items-center centraliza a letra certinho dentro do circulo */}
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-azul-suave text-sm font-black text-tt-azul-principal">T</span>
-        {/* nome do site em azul marinho e o "Admin" mais apagado */}
-        {/* pra deixar claro que ta na area administrativa sem chamar muita atencao */}
-        <span className="text-sm font-extrabold tracking-tight text-tt-azul-marinho">
-          TrocaTicket <span className="font-normal text-tt-grafite/60">· Admin</span>
-        </span>
-      </Link>
-
-      {/* Links do menu (vem da lista NAV_LINKS) */}
-      <div className="flex items-center gap-1">
-        {NAV_LINKS.map(({ to, label }) => {
-          // link fica ativo se for a pagina atual ou uma subpagina dela
-          const active = pathname === to || (to !== '/admin' && pathname.startsWith(to));
-
-          return (
-            <Link
-              key={to}
-              to={to}
-              // ativo = fundo cinza e texto azul / inativo = mais apagado, fica azul no hover
-              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
-                active
-                  ? 'bg-tt-cinza-claro text-tt-azul-principal'
-                  : 'text-tt-grafite/75 hover:text-tt-azul-principal'
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Botao de sair: por enquanto so manda pro login */}
-      <Link
-        to="/Login"
-        // borda clarinha que fica mais forte no hover
-        className="rounded-full border border-tt-azul-marinho/12 px-4 py-1.5 text-xs font-bold text-tt-azul-marinho no-underline transition-colors hover:border-tt-azul-principal hover:text-tt-azul-principal"
-      >
-        Sair
-      </Link>
-    </nav>
-  );
-}
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 // card dos numeros do dashboard, reaproveitado pros 4 status
@@ -161,13 +92,12 @@ export default function AdminDashboard() {
   return (
     // fundo da pagina toda
     <div className="min-h-screen bg-[var(--color-bg)]">
-      <AdminNav />
 
       {/* Hero - faixa clara do topo com o titulo da pagina */}
-      <div className="border-b border-tt-azul-marinho/12 bg-tt-branco px-6 pb-10 pt-9 md:px-10">
+      <div className="border-b border-tt-azul-marinho/12 bg-[image:var(--tt-gradiente-suave)] px-6 pb-10 pt-9 md:px-10">
         {/* max-w centraliza o conteudo pra nao esticar demais em tela grande */}
         <div className="mx-auto max-w-[1100px]">
-          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-tt-azul-principal">Administração</p>
+          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-tt-roxo-principal">Administração</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.04em] text-tt-azul-marinho md:text-4xl">Painel Administrativo</h1>
           <p className="mt-1.5 text-sm text-tt-grafite/75">Gerencie a plataforma TrocaTicket.</p>
         </div>

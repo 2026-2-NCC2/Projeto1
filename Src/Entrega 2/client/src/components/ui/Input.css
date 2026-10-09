@@ -22,7 +22,7 @@
   width: 100%;
   padding: 10px var(--space-4);
   border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-lg, 8px);
   color: var(--color-text);
   background: var(--color-white);
   transition: border-color var(--transition), box-shadow var(--transition);

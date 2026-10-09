@@ -54,7 +54,7 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
           <CurrencyInput value={draft.value} onChange={patch('value')} />
         </Field>
         {/* botao de adicionar, fica alinhado na direita */}
-        <button type="button" className="-mt-1 min-h-[42px] cursor-pointer justify-self-end rounded-full border-0 bg-tt-azul-marinho px-5 py-2.5 text-[.78rem] font-bold text-tt-branco transition duration-150 hover:-translate-y-px hover:bg-tt-azul-principal" onClick={addCost}>+ Adicionar outro tipo de custo</button>
+        <button type="button" className="-mt-1 min-h-[42px] cursor-pointer justify-self-end rounded-lg border-0 bg-[image:var(--tt-gradiente-botao)] px-5 py-2.5 text-[.78rem] font-bold text-tt-branco transition duration-150 hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]" onClick={addCost}>+ Adicionar outro tipo de custo</button>
       </div>
 
       {/* lista dos custos ja adicionados, so aparece se tiver algum */}

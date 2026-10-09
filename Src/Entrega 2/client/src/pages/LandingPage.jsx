@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import Footer from '../components/Footer'
 import { Link } from 'react-router-dom'
 
 const CATEGORIAS = [
@@ -37,11 +36,11 @@ function LandingPage() {
   }[animTicket]
 
   return (
-    <main className="bg-tt-branco text-tt-azul-marinho">
-      <section className="overflow-hidden bg-tt-cinza-claro">
+    <div className="bg-tt-branco text-tt-azul-marinho">
+      <section className="overflow-hidden bg-[image:var(--tt-gradiente-suave)]">
         <div className="mx-auto grid min-h-[485px] w-[calc(100%_-_48px)] max-w-[1180px] grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] items-center gap-12 py-[68px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:grid-cols-1 max-[760px]:gap-3 max-[760px]:py-[54px] max-[760px]:pb-10">
           <div className="max-w-[620px]">
-            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Eventos e ingressos em um só lugar</span>
+            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Eventos e ingressos em um só lugar</span>
             <h1 className="my-4 text-[clamp(38px,5vw,62px)] font-extrabold leading-[1.06] tracking-[-0.055em] text-tt-azul-marinho">
               Encontre seu próximo <span className="text-tt-azul-principal">grande momento.</span>
             </h1>
@@ -49,7 +48,7 @@ function LandingPage() {
               Descubra eventos, conheça novas experiências e tenha tudo o que precisa
               para aproveitar cada momento.
             </p>
-            <div className="flex max-w-[560px] items-center gap-3 rounded-full border border-tt-azul-marinho/12 bg-tt-branco py-[7px] pl-[17px] pr-2 shadow-[0_8px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_8%,transparent)] max-[480px]:gap-2 max-[480px]:pl-3" aria-label="Busca ilustrativa">
+            <div className="flex max-w-[560px] items-center gap-3 rounded-xl border border-tt-azul-marinho/12 bg-tt-branco py-[7px] pl-[17px] pr-2 shadow-[0_8px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_8%,transparent)] max-[480px]:gap-2 max-[480px]:pl-3" aria-label="Busca ilustrativa">
               <span className="text-2xl leading-none text-tt-grafite/60" aria-hidden="true">⌕</span>
               <input
                 type="search"
@@ -58,7 +57,7 @@ function LandingPage() {
                 placeholder="Busque eventos, artistas ou lugares"
                 readOnly
               />
-              <Link to="/PainelDeEventos" className="shrink-0 rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-azul-principal max-[480px]:px-[14px] max-[480px]:py-[11px] max-[480px]:text-xs">Explorar</Link>
+              <Link to="/PainelDeEventos" className="shrink-0 rounded-lg bg-[image:var(--tt-gradiente-botao)] px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)] max-[480px]:px-[14px] max-[480px]:py-[11px] max-[480px]:text-xs">Explorar</Link>
             </div>
             <div className="mt-[18px] flex flex-wrap items-center gap-[14px] text-xs max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-1.5">
               <a className="font-bold text-tt-azul-principal no-underline" href="#categorias">Descobrir categorias</a>
@@ -94,7 +93,7 @@ function LandingPage() {
               </div>
             </div>
             </div>
-            <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border border-tt-azul-marinho/12 bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-grafite/75 shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-azul-marinho)_8%,transparent)] max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
+            <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-lg border border-tt-azul-marinho/12 bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-grafite/75 shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-azul-marinho)_8%,transparent)] max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
           </div>
         </div>
       </section>
@@ -102,7 +101,7 @@ function LandingPage() {
       <section className="mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[68px] pb-[76px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
         <div className="mb-6 flex items-end justify-between gap-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3">
           <div>
-            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Inspire-se</span>
+            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Inspire-se</span>
             <h2 className="mb-0 mt-2 text-[clamp(25px,3vw,34px)] font-extrabold leading-[1.15] tracking-[-0.04em] text-tt-azul-marinho">O que você quer viver?</h2>
           </div>
           <Link className="shrink-0 text-[13px] font-bold text-tt-azul-principal no-underline" to="/PainelDeEventos">Ver eventos <span aria-hidden="true">→</span></Link>
@@ -128,7 +127,7 @@ function LandingPage() {
         <div className="mx-auto w-[calc(100%_-_48px)] max-w-[1180px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px]">
           <div className="mb-6 flex justify-center gap-6 text-center max-[480px]:items-center max-[480px]:flex-col max-[480px]:gap-3">
             <div>
-              <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Sem complicação</span>
+              <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Sem complicação</span>
               <h2 className="mb-0 mt-2 text-[clamp(25px,3vw,34px)] font-extrabold leading-[1.15] tracking-[-0.04em] text-tt-azul-marinho">Uma jornada simples até o seu evento</h2>
             </div>
           </div>
@@ -146,15 +145,14 @@ function LandingPage() {
 
       <section className="mx-auto my-[62px] flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 rounded-[20px] border border-tt-azul-marinho/12 bg-tt-laranja-claro p-[34px_38px] max-[760px]:my-[42px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:items-start max-[760px]:flex-col max-[760px]:p-[26px]">
         <div>
-          <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Seu próximo momento começa aqui</span>
+          <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Seu próximo momento começa aqui</span>
           <h2 className="mb-0 mt-2 text-[clamp(25px,3vw,34px)] font-extrabold leading-[1.15] tracking-[-0.04em] text-tt-azul-marinho">Pronto para descobrir algo novo?</h2>
           <p className="mb-0 mt-[10px] max-w-[58ch] text-sm text-tt-grafite/75">Explore a página de eventos e encontre a próxima experiência para guardar na memória.</p>
         </div>
-        <Link to="/PainelDeEventos" className="inline-flex shrink-0 items-center gap-3 rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-azul-principal">Explorar eventos <span aria-hidden="true">→</span></Link>
+        <Link to="/PainelDeEventos" className="inline-flex shrink-0 items-center gap-3 rounded-lg bg-[image:var(--tt-gradiente-botao)] px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]">Explorar eventos <span aria-hidden="true">→</span></Link>
       </section>
 
-      <Footer />
-    </main>
+    </div>
   )
 }
 

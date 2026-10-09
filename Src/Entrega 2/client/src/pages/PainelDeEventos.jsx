@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import MapaEvento from "../components/MapaEvento";
-import Footer from "../components/Footer";
 
 // ─── Dados de exemplo iniciais ────────────────────────────────────────────────
 // eventos falsos pra testar a tela enquanto a API nao ta pronta
@@ -17,7 +16,7 @@ const EVENTOS_INICIAIS = [
 
 // cor da etiqueta de cada status
 const BADGE_CLASS = {
-  Publicado: "bg-tt-verde-claro text-tt-azul-principal",
+  Publicado: "bg-tt-verde-claro text-tt-verde-sucesso",
   Rascunho:  "bg-tt-laranja-claro text-tt-azul-marinho",
   Encerrado: "bg-tt-cinza-claro text-tt-grafite/85",
   Cancelado: "bg-tt-rosa-claro text-tt-rosa-principal",
@@ -170,10 +169,10 @@ export default function PainelDeEventos() {
         <>
           {/* Hero sub-header, no mesmo estilo claro da pagina inicial */}
           {/* titulo muda conforme a aba, e embaixo mostra o total e quantos estao publicados */}
-          <section className="border-b border-tt-azul-marinho/12 bg-tt-branco">
+          <section className="border-b border-tt-azul-marinho/12 bg-[image:var(--tt-gradiente-suave)]">
             <div className="mx-auto flex w-[calc(100%_-_48px)] max-w-[1180px] flex-wrap items-end justify-between gap-4 py-10 max-[760px]:w-[calc(100%_-_36px)] max-[760px]:py-8">
               <div>
-                <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">
+                <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">
                   {activeTab === "meus" ? "Seus eventos" : "Explore"}
                 </span>
                 <h1 className="mb-0 mt-2 text-[clamp(28px,3.4vw,40px)] font-extrabold leading-[1.1] tracking-[-0.045em] text-tt-azul-marinho">
@@ -186,7 +185,7 @@ export default function PainelDeEventos() {
               {/* botao que leva pro formulario de criar evento */}
               <Link
                 to="/criar-evento/evento"
-                className="inline-flex shrink-0 items-center gap-2 rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-azul-principal"
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[image:var(--tt-gradiente-botao)] px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]"
               >
                 <IconPlus /> Criar evento
               </Link>
@@ -199,7 +198,7 @@ export default function PainelDeEventos() {
             <div className="relative flex-[1_1_240px] max-w-[360px]">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-tt-grafite/60 flex"><IconSearch /></span>
               <input
-                className="w-full rounded-full border border-tt-azul-marinho/12 bg-tt-branco py-[10px] pl-[42px] pr-4 text-[13px] text-tt-azul-marinho outline-none shadow-[0_8px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_6%,transparent)] transition placeholder:text-tt-grafite/60 focus:border-tt-azul-principal"
+                className="w-full rounded-lg border border-tt-azul-marinho/12 bg-tt-branco py-[10px] pl-[42px] pr-4 text-[13px] text-tt-azul-marinho outline-none shadow-[0_8px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_6%,transparent)] transition placeholder:text-tt-grafite/60 focus:border-tt-azul-principal"
                 type="text"
                 placeholder="Buscar evento ou local..."
                 value={busca}
@@ -215,7 +214,7 @@ export default function PainelDeEventos() {
                   onClick={() => setFiltroStatus(s)}
                   className={`cursor-pointer rounded-full border px-4 py-1.5 text-xs font-semibold transition ${
                     filtroStatus === s
-                      ? "border-tt-azul-marinho bg-tt-azul-marinho text-tt-branco"
+                      ? "border-tt-azul-principal bg-tt-azul-principal text-tt-branco"
                       : "border-tt-azul-marinho/12 bg-tt-branco text-tt-grafite/75 hover:border-tt-azul-principal hover:text-tt-azul-principal"
                   }`}
                 >
@@ -231,7 +230,7 @@ export default function PainelDeEventos() {
 
           {/* Grid de cards */}
           {/* cabe quantos cards de 300px der na largura da tela */}
-          <main className="mx-auto grid w-[calc(100%_-_48px)] max-w-[1180px] grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[18px] pb-[72px] pt-6 max-[760px]:w-[calc(100%_-_36px)]">
+          <div className="mx-auto grid w-[calc(100%_-_48px)] max-w-[1180px] grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-[18px] pb-[72px] pt-6 max-[760px]:w-[calc(100%_-_36px)]">
             {/* se nenhum evento passar nos filtros mostra a mensagem, senao mostra os cards */}
             {eventosFiltrados.length === 0 ? (
               <div className="col-span-full rounded-[18px] border border-dashed border-tt-azul-marinho/12 bg-tt-branco py-20 text-center text-tt-grafite/60">
@@ -298,7 +297,7 @@ export default function PainelDeEventos() {
                       {/* abre a tela de detalhes desse evento */}
                       <button
                         onClick={() => { setEventoSel(ev); setTelaAtual("detalhes"); }}
-                        className="mt-2 w-full cursor-pointer rounded-full bg-tt-azul-marinho py-[10px] text-[13px] font-bold text-tt-branco transition hover:bg-tt-azul-principal"
+                        className="mt-2 w-full cursor-pointer rounded-lg bg-tt-azul-principal py-[10px] text-[13px] font-bold text-tt-branco transition hover:bg-tt-azul-profundo"
                       >
                         Ver detalhes →
                       </button>
@@ -307,7 +306,7 @@ export default function PainelDeEventos() {
                 );
               })
             )}
-          </main>
+          </div>
         </>
       )}
 
@@ -339,7 +338,7 @@ export default function PainelDeEventos() {
             </div>
 
             <div className="p-8 max-[480px]:p-5">
-              <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Detalhes do evento</span>
+              <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Detalhes do evento</span>
               <h1 className="mb-0 mt-2 text-[clamp(26px,3.4vw,34px)] font-extrabold leading-[1.15] tracking-[-0.04em] text-tt-azul-marinho">
                 {eventoSelecionado.titulo}
               </h1>
@@ -392,13 +391,13 @@ export default function PainelDeEventos() {
               <div className="flex flex-wrap justify-end gap-3 border-t border-tt-azul-marinho/12 pt-5">
                 <button
                   onClick={excluirEvento}
-                  className="cursor-pointer rounded-full border border-tt-rosa-suave px-5 py-3 text-[13px] font-bold text-tt-rosa-principal transition hover:bg-tt-rosa-claro"
+                  className="cursor-pointer rounded-lg border border-tt-rosa-suave px-5 py-3 text-[13px] font-bold text-tt-rosa-principal transition hover:bg-tt-rosa-claro"
                 >
                   Excluir evento
                 </button>
                 <button
                   onClick={() => abrirModalEditar(eventoSelecionado)}
-                  className="cursor-pointer rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco transition hover:-translate-y-px hover:bg-tt-azul-principal"
+                  className="cursor-pointer rounded-lg bg-[image:var(--tt-gradiente-botao)] px-5 py-3 text-[13px] font-bold text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]"
                 >
                   Editar evento
                 </button>
@@ -414,7 +413,7 @@ export default function PainelDeEventos() {
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-tt-azul-marinho/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-[20px] border border-tt-azul-marinho/12 bg-tt-branco p-7 shadow-2xl max-[480px]:p-5">
             {/* titulo muda se ta criando ou editando */}
-            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">
+            <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">
               {modoModal === "criar" ? "Novo evento" : "Edição"}
             </span>
             <h2 className="mb-5 mt-1 text-xl font-extrabold tracking-[-0.03em] text-tt-azul-marinho">
@@ -471,11 +470,11 @@ export default function PainelDeEventos() {
               {/* cancelar fecha sem salvar / salvar envia o form */}
               <div className="flex justify-end gap-2 border-t border-tt-azul-marinho/12 pt-5">
                 <button type="button" onClick={() => setModalAberto(false)}
-                  className="cursor-pointer rounded-full px-5 py-3 text-[13px] font-bold text-tt-grafite/75 transition hover:bg-tt-cinza-claro">
+                  className="cursor-pointer rounded-lg px-5 py-3 text-[13px] font-bold text-tt-grafite/75 transition hover:bg-tt-cinza-claro">
                   Cancelar
                 </button>
                 <button type="submit"
-                  className="cursor-pointer rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco transition hover:bg-tt-azul-principal">
+                  className="cursor-pointer rounded-lg bg-[image:var(--tt-gradiente-botao)] px-5 py-3 text-[13px] font-bold text-tt-branco transition hover:brightness-110 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--tt-rosa-principal)_30%,transparent)]">
                   Salvar mudanças
                 </button>
               </div>
@@ -484,8 +483,6 @@ export default function PainelDeEventos() {
         </div>
       )}
 
-      {/* rodape igual ao da pagina inicial */}
-      <Footer />
     </div>
   );
 }

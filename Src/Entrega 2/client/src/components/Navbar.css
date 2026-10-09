@@ -1,0 +1,225 @@
+/* barra fixa no topo, no degrade azul -> roxo -> rosa da marca */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--tt-gradiente-marca);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--tt-branco) 8%, transparent);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  height: 60px;
+}
+
+/* Logo */
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+/* quadradinho branco com o simbolo da logo dentro */
+.navbar__logo-icon {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-white);
+  overflow: hidden;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--tt-azul-marinho) 25%, transparent);
+}
+
+/* a imagem tem bastante margem em volta do simbolo, entao fica maior que a caixa e o excesso e cortado */
+.navbar__logo-icon img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  max-width: none;
+  object-fit: contain;
+}
+
+.navbar__logo-name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-white);
+  letter-spacing: -0.02em;
+}
+
+/* Links de navegacao */
+.navbar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.navbar__link {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: color-mix(in srgb, var(--tt-branco) 70%, transparent);
+  border-radius: var(--radius-lg, 8px);
+  text-decoration: none;
+  transition: color var(--transition), background var(--transition);
+}
+
+.navbar__link:hover {
+  color: var(--color-white);
+  background: color-mix(in srgb, var(--tt-branco) 8%, transparent);
+}
+
+/* link da pagina atual fica branco com um fundo clarinho */
+.navbar__link--active {
+  color: var(--color-white);
+  background: color-mix(in srgb, var(--tt-branco) 16%, transparent);
+  font-weight: 600;
+}
+
+/* Acoes */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.navbar__btn {
+  padding: 7px 16px;
+  border-radius: var(--radius-lg, 8px);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* "Entrar": so com borda clarinha */
+.navbar__btn--ghost {
+  color: color-mix(in srgb, var(--tt-branco) 85%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tt-branco) 25%, transparent);
+}
+.navbar__btn--ghost:hover {
+  background: color-mix(in srgb, var(--tt-branco) 8%, transparent);
+  border-color: color-mix(in srgb, var(--tt-branco) 50%, transparent);
+  color: var(--color-white);
+}
+
+/* "Criar conta": branco com texto roxo, pra destacar em cima do degrade */
+.navbar__btn--primary {
+  background: var(--color-white);
+  color: var(--tt-roxo-principal);
+}
+.navbar__btn--primary:hover {
+  background: var(--tt-lilas-claro);
+}
+
+/* Usuario logado */
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.navbar__user-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: color-mix(in srgb, var(--tt-branco) 85%, transparent);
+}
+
+.navbar__logout {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-white);
+  padding: 6px 12px;
+  border-radius: var(--radius-lg, 8px);
+  border: 1.5px solid color-mix(in srgb, var(--tt-branco) 60%, transparent);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.navbar__logout:hover {
+  background: color-mix(in srgb, var(--tt-branco) 15%, transparent);
+}
+
+/* Hamburguer */
+.navbar__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  width: 28px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.navbar__hamburger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--color-white);
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* vira um X quando o menu ta aberto */
+.navbar__hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.navbar__hamburger.is-open span:nth-child(2) { opacity: 0; }
+.navbar__hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Menu mobile */
+.navbar__mobile {
+  background: var(--tt-gradiente-marca);
+  border-top: 1px solid color-mix(in srgb, var(--tt-branco) 10%, transparent);
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar__mobile-link {
+  padding: var(--space-3) 0;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: color-mix(in srgb, var(--tt-branco) 80%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--tt-branco) 6%, transparent);
+  text-decoration: none;
+}
+
+.navbar__mobile-link.navbar__link--active {
+  color: var(--color-white);
+  background: none;
+  font-weight: 700;
+}
+
+.navbar__mobile-logout {
+  color: var(--color-white);
+  text-align: left;
+  cursor: pointer;
+}
+
+.navbar__mobile-cta {
+  color: var(--color-white);
+  font-weight: 700;
+}
+
+/* menu mobile aparece suavemente */
+.fade-in { animation: navbar-fade-in 0.18s ease; }
+@keyframes navbar-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .navbar__nav { display: none; }
+  .navbar__actions .navbar__btn { display: none; }
+  .navbar__user { display: none; }
+  .navbar__hamburger { display: flex; }
+}

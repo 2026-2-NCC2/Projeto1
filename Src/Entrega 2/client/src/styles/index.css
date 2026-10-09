@@ -7,7 +7,8 @@
    pra suavizar uma cor use opacidade (ex: text-tt-grafite/70 ou color-mix sobre o token). */
 :root {
   /* azuis */
-  --tt-azul-principal: #1261A0;   /* botoes principais, links */
+  --tt-azul-principal: #1E4FA0;   /* cor da marca: navbar, rodape, titulos e links */
+  --tt-azul-profundo: #163A7A;    /* hover e versao escura do azul principal */
   --tt-azul-vivo: #168FE2;        /* destaques e acoes */
   --tt-azul-claro: #38BDF8;       /* icones, detalhes */
   --tt-azul-suave: #E0F2FE;       /* fundos e cards */
@@ -36,11 +37,17 @@
   --tt-cinza-claro: #F3F4F6;      /* fundo de paginas e cards */
   --tt-branco: #FFFFFF;           /* fundo principal */
 
-  /* sucesso (fora das 20 cores, adicionado de proposito: a paleta nao tem verde) */
+  /* sucesso (status aprovado, mensagens de ok) */
   --tt-verde-sucesso: #15803D;
   --tt-verde-claro: #DCFCE7;
 
   /* gradientes permitidos (nao crie outros) */
+  /* marca: azul -> roxo -> rosa (navbar e rodape) */
+  --tt-gradiente-marca: linear-gradient(90deg, #1E4FA0, #6D3FD1 55%, #E91E8C);
+  /* botoes principais: roxo -> rosa */
+  --tt-gradiente-botao: linear-gradient(135deg, #6D3FD1, #E91E8C);
+  /* fundo suave dos topos das paginas: azul, lilas e rosa bem claros */
+  --tt-gradiente-suave: linear-gradient(120deg, #E0F2FE, #EDE9FE 50%, #FCE7F3);
   --tt-gradiente-principal: linear-gradient(135deg, #1261A0, #6D3FD1, #E91E8C, #F97316);
   --tt-gradiente-azul-roxo: linear-gradient(135deg, #168FE2, #6D3FD1);
   --tt-gradiente-rosa-laranja: linear-gradient(135deg, #E91E8C, #F97316);
@@ -51,6 +58,7 @@
   --font-sans: 'Inter', sans-serif;
 
   --color-tt-azul-principal: var(--tt-azul-principal);
+  --color-tt-azul-profundo: var(--tt-azul-profundo);
   --color-tt-azul-vivo: var(--tt-azul-vivo);
   --color-tt-azul-claro: var(--tt-azul-claro);
   --color-tt-azul-suave: var(--tt-azul-suave);
@@ -111,9 +119,9 @@
   :root {
     --color-primary:       var(--tt-azul-principal);
     --color-primary-light: var(--tt-azul-vivo);
-    --color-primary-dark:  var(--tt-azul-marinho);
-    --color-accent:        var(--tt-laranja-principal);
-    --color-accent-dark:   var(--tt-laranja-vivo);
+    --color-primary-dark:  var(--tt-azul-profundo);
+    --color-accent:        var(--tt-rosa-vivo);
+    --color-accent-dark:   var(--tt-rosa-principal);
     --color-white:         var(--tt-branco);
     /* fundo, cards e bordas */
     --color-bg:            var(--tt-cinza-claro);
@@ -132,6 +140,14 @@
     --color-success-light: var(--tt-verde-claro);
     --color-pending:       var(--tt-roxo-principal);
     --color-pending-light: var(--tt-lilas-claro);
+
+    /* espacamentos, tamanhos de fonte, cantos e transicao (usados na Navbar e nos componentes de ui/) */
+    --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+    --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-12: 48px;
+    --font-size-xs: 12px; --font-size-sm: 14px; --font-size-base: 16px; --font-size-lg: 18px;
+    /* cantos: o tamanho de 8px vem do proprio tailwind (--radius-lg), aqui so o de pilula */
+    --radius-full: 999px;
+    --transition: 0.18s ease;
 
     /* sombras pequena, media e grande */
     --shadow-sm: 0 1px 3px color-mix(in srgb, var(--tt-azul-marinho) 8%, transparent);

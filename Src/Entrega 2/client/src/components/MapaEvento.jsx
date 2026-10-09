@@ -75,7 +75,7 @@ export default function MapaEvento({ endereco }) {
     // no celular o mapa fica embaixo do texto, em tela maior fica do lado
     <section className="grid items-center gap-5 rounded-2xl border border-tt-azul-marinho/12 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
       <div className="min-w-0">
-        <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-azul-principal">Como chegar</span>
+        <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Como chegar</span>
         <h2 className="mb-0 mt-1.5 text-base font-bold text-tt-azul-marinho">Localização no mapa</h2>
         <p className="mt-1 text-[13px] leading-[1.6] text-tt-grafite/75">{endereco}</p>
         {status === "ok" && (
