@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useAuth } from '../services/AuthContext'
 
 // ─── Dados de exemplo iniciais ────────────────────────────────────────────────
 // eventos falsos pra testar a tela enquanto a API nao ta pronta
@@ -46,13 +47,10 @@ const IconPlus      = () => <svg width="16" height="16" {...svgProps} strokeWidt
 const IconSearch    = () => <svg width="16" height="16" {...svgProps}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
 const IconArrowLeft = () => <svg width="16" height="16" {...svgProps}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
 
-// id do organizador "logado", por enquanto fixo ate ter login de verdade
-const usuario =  JSON.parse(localStorage.getItem("usuario"))
-const perfil = usuario?.perfil
-const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario
-
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
+  const { perfil, usuario } = useAuth()
+  const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario
   // ── Aba ativa vem do query param gerenciado pelo Header ──────────────────
   // ex: ?tab=meus mostra so os meus eventos, sem nada mostra todos
   const [searchParams] = useSearchParams()

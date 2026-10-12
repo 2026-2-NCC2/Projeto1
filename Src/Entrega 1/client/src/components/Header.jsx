@@ -1,15 +1,15 @@
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import logo from '../assets/branding/logos/logo_navbar_web.png'
-
+import { useAuth } from '../services/AuthContext.jsx'
+import { useNavigate } from 'react-router-dom'
 const PAINEL_TABS = [
   { key: 'painel', label: 'Painel de Eventos' },
   { key: 'meus', label: 'Meus Eventos' },
 ]
 
-const usuario = JSON.parse(localStorage.getItem('usuario'))
-const perfil = usuario?.perfil // 'cliente' | 'organizador' | 'fornecedor' | 'administrador'
-
 export default function Header() {
+  const navigate = useNavigate()
+  const { perfil, logado, logout } = useAuth()
   const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const path = pathname.toLowerCase()
@@ -66,22 +66,19 @@ export default function Header() {
           {paginaDeConta && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/">Voltar ao início</Link>}
           {criandoEvento && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/PainelDeEventos">Voltar ao painel</Link>}
           {noPainel && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/">Início</Link>}
-          {areaDoOrganizador && perfil==="organizador" ? (
-            <span className="text-[13px] font-bold text-[#161a2e]">
-              Organizador
-              <Link to="/" className="ml-[7px] text-tt-azul-principal no-underline">(Sair)</Link>
+          
+            {logado ? (
+            <span className="text-[13px] font-bold text-[#161a2e] capitalize">
+              {perfil}
+              <button onClick={() => { logout(); navigate('/') }} className="ml-[7px] text-[#1e4fa0] no-underline font-semibold"> (Sair)</button>
             </span>
-          ): (
-            <span className="text-[13px] font-bold text-[#161a2e]">
-              Usuário
-              <Link to="/" className="ml-[7px] text-[#1e4fa0] no-underline">(Sair)</Link>
-            </span>
-          )}
-          {!paginaDeConta && !criandoEvento && !noPainel && (
-            <>
-              <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/Login">Entrar</Link>
-              <Link to="/Cadastro" className="rounded-full bg-tt-azul-marinho px-[18px] py-[11px] text-[13px] font-semibold text-tt-branco no-underline transition-colors hover:bg-tt-azul-principal max-[540px]:px-3 max-[540px]:py-[9px] max-[540px]:text-xs">Criar conta</Link>
-            </>
+          ) : (
+            !paginaDeConta && !criandoEvento && !noPainel && (
+              <>
+                <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/Login">Entrar</Link>
+                <Link to="/Cadastro" className="rounded-full bg-tt-azul-marinho px-[18px] py-[11px] text-[13px] font-semibold text-tt-branco no-underline transition-colors hover:bg-tt-azul-principal max-[540px]:px-3 max-[540px]:py-[9px] max-[540px]:text-xs">Criar conta</Link>
+              </>
+            )
           )}
         </nav>
       </div>

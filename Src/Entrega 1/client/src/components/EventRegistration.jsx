@@ -7,20 +7,21 @@ import { AudienceLots } from '../pages/AudienceLots.jsx';
 import { IndependentCosts } from '../pages/IndependentCosts.jsx';
 import { CostItems } from '../pages/CostItems.jsx';
 import './eventRegistration.css';
+import { useAuth } from '../services/AuthContext'
 
 // nome de cada etapa na url, na ordem (ex: /criar-evento/publico-lotes)
 const steps = ['evento', 'publico-lotes', 'custos-independentes', 'itens-custos'];
 
-// usuario logado, vem do login (salvo no localStorage)
-const usuario = JSON.parse(localStorage.getItem('usuario'));
-const perfil = usuario?.perfil;
 
 // pagina que controla o formulario de criar evento
 // guarda os dados de todas as etapas aqui, pra nao perder quando troca de etapa
 export default function EventRegistration() {
   // pega a etapa da url (o :etapa da rota)
   const { etapa } = useParams();
+  const { perfil } = useAuth();
   const navigate = useNavigate();
+  
+  
 
   // descobre o numero da etapa, se a url nao bater com nenhuma cai na etapa 1
   const index = steps.indexOf(etapa);
