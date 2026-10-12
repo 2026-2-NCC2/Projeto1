@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import { buscarChamados } from '../../services/api';
 
 // ─── Dados mock ───────────────────────────────────────────────────────────────
 // mesmos dados falsos do dashboard, com um cadastro a mais pra testar a lista
