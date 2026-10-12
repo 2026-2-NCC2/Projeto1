@@ -1,7 +1,7 @@
 import express from 'express'
 import pool from '../config/db.js'
 import router from './authRoutes.js'
-//import { EventRegistration } from '../../client/src/components/EventRegistration.jsx'
+import { EventRegistration } from '../../client/src/components/EventRegistration.jsx'
 
 const event = express()
 event.post('/eventos', async (req, res) => {
