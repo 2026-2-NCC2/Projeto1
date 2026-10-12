@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useAuth } from '../services/AuthContext'
 
 // ─── Dados de exemplo iniciais ────────────────────────────────────────────────
 // eventos falsos pra testar a tela enquanto a API nao ta pronta
@@ -46,11 +47,10 @@ const IconPlus      = () => <svg width="16" height="16" {...svgProps} strokeWidt
 const IconSearch    = () => <svg width="16" height="16" {...svgProps}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
 const IconArrowLeft = () => <svg width="16" height="16" {...svgProps}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
 
-// id do organizador "logado", por enquanto fixo ate ter login de verdade
-const ORGANIZADOR_LOGADO_ID = 99;
-
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
+  const { perfil, usuario } = useAuth()
+  const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario
   // ── Aba ativa vem do query param gerenciado pelo Header ──────────────────
   // ex: ?tab=meus mostra so os meus eventos, sem nada mostra todos
   const [searchParams] = useSearchParams()
@@ -168,12 +168,14 @@ export default function PainelDeEventos() {
                 </p>
               </div>
               {/* botao que leva pro formulario de criar evento */}
-              <Link
-                to="/criar-evento/evento"
-                className="flex items-center gap-2 bg-tt-laranja-principal text-tt-azul-marinho rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_color-mix(in_srgb,var(--tt-laranja-principal)_35%,transparent)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_color-mix(in_srgb,var(--tt-laranja-principal)_45%,transparent)]"
-              >
-                <IconPlus /> Criar Evento
-              </Link>
+              {perfil==="organizador" &&(
+                <Link
+                  to="/criar-evento/evento"
+                  className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]"
+                >
+                  <IconPlus /> Criar Evento
+                </Link>
+              )}
             </div>
           </div>
 

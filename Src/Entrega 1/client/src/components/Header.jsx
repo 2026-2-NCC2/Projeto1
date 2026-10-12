@@ -1,12 +1,15 @@
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import logo from '../assets/branding/logos/logo_navbar_web.png'
-
+import { useAuth } from '../services/AuthContext.jsx'
+import { useNavigate } from 'react-router-dom'
 const PAINEL_TABS = [
   { key: 'painel', label: 'Painel de Eventos' },
   { key: 'meus', label: 'Meus Eventos' },
 ]
 
 export default function Header() {
+  const navigate = useNavigate()
+  const { perfil, logado, logout } = useAuth()
   const { pathname } = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const path = pathname.toLowerCase()
@@ -40,36 +43,42 @@ export default function Header() {
 
           {noPainel && (
             <div className="flex gap-1.5 max-[540px]:w-full" aria-label="Abas do painel">
-              {PAINEL_TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  className={`cursor-pointer rounded-full border px-[11px] py-2 text-xs font-semibold max-[540px]:px-[9px] max-[540px]:py-[7px] ${activeTab === tab.key ? 'border-tt-azul-marinho/12 bg-tt-cinza-claro text-tt-azul-principal' : 'border-transparent bg-transparent text-tt-grafite/75'}`}
-                  aria-pressed={activeTab === tab.key}
-                  onClick={() => handleTabClick(tab.key)}
-                >
-                  {tab.label}
-                </button>
-              ))}
+              {perfil==="organizador" &&(
+                <div className="flex gap-1.5">
+                  {PAINEL_TABS.map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      className={`cursor-pointer rounded-full border px-[11px] py-2 text-xs font-semibold max-[540px]:px-[9px] max-[540px]:py-[7px] ${activeTab === tab.key ? 'border-[#e3e6ef] bg-[#f6f7fb] text-[#1e4fa0]' : 'border-transparent bg-transparent text-[#5b6178]'}`}
+                      aria-pressed={activeTab === tab.key}
+                      onClick={() => handleTabClick(tab.key)}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </nav>
 
         <nav className="flex shrink-0 items-center gap-4 max-[900px]:ml-auto max-[540px]:gap-[10px]" aria-label="Conta">
-          {paginaDeConta && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/">Voltar ao início</Link>}
-          {criandoEvento && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/PainelDeEventos">Voltar ao painel</Link>}
-          {noPainel && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/">Início</Link>}
-          {areaDoOrganizador && (
-            <span className="text-[13px] font-bold text-tt-azul-marinho">
-              Organizador
-              <Link to="/" className="ml-[7px] text-tt-azul-principal no-underline">(Sair)</Link>
+          {paginaDeConta && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/">Voltar ao início</Link>}
+          {criandoEvento && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/PainelDeEventos">Voltar ao painel</Link>}
+          {noPainel && <Link className="text-[13px] font-semibold text-[#5b6178] no-underline hover:text-[#1e4fa0] max-[540px]:text-xs" to="/">Início</Link>}
+          
+            {logado ? (
+            <span className="text-[13px] font-bold text-[#161a2e] capitalize">
+              {perfil}
+              <button onClick={() => { logout(); navigate('/') }} className="ml-[7px] text-[#1e4fa0] no-underline font-semibold"> (Sair)</button>
             </span>
-          )}
-          {!paginaDeConta && !criandoEvento && !noPainel && (
-            <>
-              <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/Login">Entrar</Link>
-              <Link to="/Cadastro" className="rounded-full bg-tt-azul-marinho px-[18px] py-[11px] text-[13px] font-semibold text-tt-branco no-underline transition-colors hover:bg-tt-azul-principal max-[540px]:px-3 max-[540px]:py-[9px] max-[540px]:text-xs">Criar conta</Link>
-            </>
+          ) : (
+            !paginaDeConta && !criandoEvento && !noPainel && (
+              <>
+                <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-azul-principal max-[540px]:text-xs" to="/Login">Entrar</Link>
+                <Link to="/Cadastro" className="rounded-full bg-tt-azul-marinho px-[18px] py-[11px] text-[13px] font-semibold text-tt-branco no-underline transition-colors hover:bg-tt-azul-principal max-[540px]:px-3 max-[540px]:py-[9px] max-[540px]:text-xs">Criar conta</Link>
+              </>
+            )
           )}
         </nav>
       </div>

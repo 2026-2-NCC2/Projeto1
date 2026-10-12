@@ -3,9 +3,13 @@ import { useNavigate, Link } from 'react-router-dom'
 import Footer from '../components/Footer'
 import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
 import { loginUsuario } from '../services/api'
+import { useAuth } from '../services/AuthContext'
 
 // pagina de login
+
+
 function Login() {
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erros, setErros] = useState({}) // mensagens de erro dos campos
@@ -38,24 +42,22 @@ function Login() {
     }
     setErros({})
     setApiLoading(true)
-    try{
-      const usuario = await loginUsuario({email, senha})
-      localStorage.setItem('usuario', JSON.stringify(usuario)) // { id_usuario, nome, email, perfil }
+    try {
+      const usuario = await loginUsuario({ email, senha })
+      login(usuario) // <-- em vez de localStorage.setItem direto
       navigate('/PainelDeEventos')
-    } catch(err){
-      setErros({ senha: 'E-mail ou senha inválidos.' })
-    } finally{
-      setApiLoading(false)
+    } catch (err) {
+        setErros({ senha: 'E-mail ou senha inválidos.' })
     }
-    // por enquanto so mostra no console e volta pra home, depois vai chamar a API
-    console.log('Dados válidos! Enviando...', { email, senha }) // corrigido: "nome" nao existia aqui
     
+      // por enquanto so mostra no console e volta pra home, depois vai chamar a API
+      console.log('Dados válidos! Enviando...', { email, senha }) // corrigido: "nome" nao existia aqui
   }
 
   return (
     <div className={ui.page}>
       <div className={ui.container}>
-        <div className={ui.card}>
+        <form className={ui.card} onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
           <h1 className={ui.title}>Entrar</h1>
           <p className={ui.subtitle}>Preencha os dados para se conectar.</p>
 
@@ -78,14 +80,14 @@ function Login() {
           {/* voltar pra home e entrar */}
           <div className={ui.botoes}>
             <Link to="/" className={ui.btnVoltar}>Voltar</Link>
-            <button className={ui.btnPrimary} onClick={handleLogin}>Login</button>
+            <button type="submit" className={ui.btnPrimary}>Login</button>
           </div>
 
           {/* link pra quem ainda nao tem conta */}
           <div className={ui.footerLink}>
             Ainda não tem uma conta? <Link to="/Cadastro">Cadastre-se</Link>
           </div>
-        </div>
+        </form>
       </div>
 
       {/* rodape do site */}

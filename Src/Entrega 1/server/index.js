@@ -30,6 +30,7 @@ app.get("/usuarios", async (req,res)=>{
 
 // Registra todas as rotas de auth com o prefixo /api
 app.use('/api', authRoutes)
+
 // Registra as rotas de evento com o prefixo /api
 app.use('/api', eventoRoutes)
 

@@ -1,5 +1,6 @@
 import express from 'express'
-import pool from './config/db.js'
+import pool from '../config/db.js'
+import router from './authRoutes.js'
 import { EventRegistration } from '../../client/src/components/EventRegistration.jsx'
 
 const event = express()
@@ -83,4 +84,5 @@ event.post('/custos-independentes', async (req, res) => {
         console.error(erro)
         return res.status(500).json({erro: 'Erro interno'})
     }
-})
+}) 
+export default router
