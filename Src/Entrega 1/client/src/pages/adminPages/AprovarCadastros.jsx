@@ -18,16 +18,16 @@ const NAV_LINKS = [
 ];
 
 // navbar do admin (mesma do dashboard)
-function AdminNav() {
+function AdminNav() { 
   // rota atual, pra saber qual link destacar
   const { pathname } = useLocation();
   return (
     // fica fixa no topo quando rola a pagina
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
+    <nav className="sticky top-0 z-50 flex h-14 items-center justify-center relative border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
       {/* logo, volta pra home */}
-      <Link to="/" className="flex items-center gap-2 no-underline">
+      <Link to="/" className="absolute left-6 md:left-10 flex items-center gap-2 no-underline">
         <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
-        <span className="text-sm font-extrabold tracking-tight text-tt-branco">
+        <span className="text-sm font-extrabold tracking-tight text-tt-branco hidden sm:inline">
           TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
         </span>
       </Link>
@@ -48,12 +48,6 @@ function AdminNav() {
           );
         })}
       </div>
-
-      {/* botao de sair, por enquanto so leva pro login */}
-      <Link to="/Login"
-        className="rounded-lg border border-tt-branco/20 px-3 py-1.5 text-xs font-semibold text-tt-branco/60 no-underline transition-colors hover:border-tt-branco/40 hover:text-tt-branco">
-        Sair
-      </Link>
     </nav>
   );
 }
