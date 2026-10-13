@@ -37,7 +37,7 @@ export async function loginUsuario(dados) {
   return data
 }
 
-export async function buscarChamados(){
+export async function buscarCadastros(){
   const response = await fetch(`${api_url}/admin/cadastros`, {
     method: 'GET'
   })
