@@ -1,19 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, {  useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
-
-// ─── Dados mock ───────────────────────────────────────────────────────────────
-// mesmos dados falsos do dashboard, com um cadastro a mais pra testar a lista
-// status: 'pendente', 'aprovado' ou 'rejeitado'
-const MOCK_CADASTROS = [
-  { id: 1, nome: 'Carlos Mendonça',  empresa: 'Eventos & Cia',    tipo: 'organizador', email: 'carlos@eventosecia.com',  data: '23/09/2026', status: 'pendente'  },
-  { id: 2, nome: 'Mariana Souza',    empresa: 'Som & Arte',        tipo: 'fornecedor',  email: 'mari@somart.com',         data: '22/09/2026', status: 'aprovado'  },
-  { id: 3, nome: 'Pedro Alves',      empresa: 'AlvesShow',         tipo: 'organizador', email: 'pedro@alvesshow.com',     data: '21/09/2026', status: 'pendente'  },
-  { id: 4, nome: 'Lúcia Ferreira',   empresa: 'LF Iluminação',     tipo: 'fornecedor',  email: 'lucia@lfilu.com',         data: '20/09/2026', status: 'rejeitado' },
-  { id: 5, nome: 'Bruno Lima',       empresa: 'Lima Produções',    tipo: 'organizador', email: 'bruno@limaproducoes.com', data: '19/09/2026', status: 'aprovado'  },
-  { id: 6, nome: 'Tatiana Campos',   empresa: 'TC Eventos',        tipo: 'fornecedor',  email: 'tati@tceven.com',         data: '18/09/2026', status: 'pendente'  },
-];
+import { buscarCadastros } from '../../services/api';
 
 // ─── Icone de busca ───────────────────────────────────────────────────────────
 // estilo padrao dos svgs (mesmo do dashboard)
@@ -29,16 +18,16 @@ const NAV_LINKS = [
 ];
 
 // navbar do admin (mesma do dashboard)
-function AdminNav() {
+function AdminNav() { 
   // rota atual, pra saber qual link destacar
   const { pathname } = useLocation();
   return (
     // fica fixa no topo quando rola a pagina
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
+    <nav className="sticky top-0 z-50 flex h-14 items-center justify-center relative border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
       {/* logo, volta pra home */}
-      <Link to="/" className="flex items-center gap-2 no-underline">
+      <Link to="/" className="absolute left-6 md:left-10 flex items-center gap-2 no-underline">
         <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
-        <span className="text-sm font-extrabold tracking-tight text-tt-branco">
+        <span className="text-sm font-extrabold tracking-tight text-tt-branco hidden sm:inline">
           TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
         </span>
       </Link>
@@ -59,12 +48,6 @@ function AdminNav() {
           );
         })}
       </div>
-
-      {/* botao de sair, por enquanto so leva pro login */}
-      <Link to="/Login"
-        className="rounded-lg border border-tt-branco/20 px-3 py-1.5 text-xs font-semibold text-tt-branco/60 no-underline transition-colors hover:border-tt-branco/40 hover:text-tt-branco">
-        Sair
-      </Link>
     </nav>
   );
 }
@@ -82,12 +65,25 @@ const FILTROS = [
 // ─── Componente principal ─────────────────────────────────────────────────────
 // pagina onde o admin aprova ou rejeita os cadastros
 export default function AprovarCadastros() {
-  // lista de cadastros, fica no state pra atualizar quando aprovar/rejeitar
-  const [cadastros, setCadastros] = useState(MOCK_CADASTROS);
-  // filtro selecionado, comeca mostrando todos
+  const [cadastros, setCadastros] = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [erroApi, setErroApi]     = useState('');
   const [filtro, setFiltro]       = useState('todos');
-  // texto digitado na busca
   const [busca, setBusca]         = useState('');
+
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const dados = await buscarCadastros();
+        setCadastros(dados);
+      } catch (err) {
+        setErroApi('Não foi possível carregar os cadastros. Tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    carregar();
+  }, []);
 
   // quantidade de cada status pra mostrar nos botoes de filtro
   // useMemo so recalcula quando a lista muda
@@ -108,11 +104,12 @@ export default function AprovarCadastros() {
 
   // muda o status do cadastro quando clica em aprovar ou rejeitar
   // por enquanto so muda no state, depois vai ter que chamar a API
-  function handleAcao(id, acao) {
+  async function handleAcao(id, acao) {
     setCadastros(prev =>
       prev.map(c => c.id === id ? { ...c, status: acao === 'aprovar' ? 'aprovado' : 'rejeitado' } : c)
     );
   }
+
 
   return (
     // fundo da pagina toda
@@ -179,7 +176,9 @@ export default function AprovarCadastros() {
         </div>
 
         {/* Estado vazio - aparece quando o filtro ou a busca nao acha nada */}
-        {lista.length === 0 && (
+        {loading && <p>Carregando...</p>}
+        {erroApi && <p>{erroApi}</p>}
+        {!loading && !erroApi && lista.length === 0 && (
           <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-[var(--color-border)] bg-tt-branco px-6 py-16 text-center">
             <p className="font-semibold text-[var(--color-primary)]">Nenhum cadastro encontrado</p>
             {/* se tiver busca sugere mudar o texto, senao avisa que ta tudo processado */}
@@ -188,7 +187,6 @@ export default function AprovarCadastros() {
             </p>
           </div>
         )}
-
         {/* Tabela - so aparece se tiver algum cadastro na lista */}
         {lista.length > 0 && (
           // caixa branca em volta da tabela

@@ -145,14 +145,31 @@ export default function Cadastro() {
     setApiError('')
     setApiLoading(true)
     try {
-      await cadastrarUsuario({
+      const payload = {
         nome,
         username,
         email,
         idade: Number(idade),
         senha,
         perfil: role, // 'cliente' | 'organizador' | 'fornecedor'
-      })
+      }
+
+      // organizador e fornecedor tem tabela propria no banco, precisam de empresa/cnpj
+      if (role === 'organizador' || role === 'fornecedor') {
+        payload.empresa = empresa
+        payload.cnpj = cnpj
+      }
+
+      // fornecedor.area_atuacao no banco e preenchido com os servicos marcados
+      // (o campo "areaFor" do form e geografico e nao tem coluna no banco ainda, entao nao e enviado)
+      if (role === 'fornecedor') {
+        payload.areaAtuacao = services
+          .map((id) => SERVICES.find((s) => s.id === id)?.label)
+          .filter(Boolean)
+          .join(', ')
+      }
+
+      await cadastrarUsuario(payload)
       setDone(true)
     } catch (err) {
       if (err.status === 409) {

@@ -37,6 +37,22 @@ export async function loginUsuario(dados) {
   return data
 }
 
+export async function buscarCadastros(){
+  const response = await fetch(`${api_url}/admin/cadastros`, {
+    method: 'GET'
+  })
+
+  const data = await response.json().catch(()=>({}))
+
+  if (!response.ok){
+    const erro = new Error(data.erro || 'Erro ao buscar usuários.')
+     erro.status = response.status
+    throw erro
+  }
+
+  return data
+}
+
 // CRUD DELETE - JULIA ;)
 // apaga um usuario pelo id, chamando a rota DELETE 
 export async function deletarUsuario(id){
@@ -55,7 +71,7 @@ export async function deletarUsuario(id){
     // guarda o status no erro pra quem chamar poder tratar cada um
     erro.status = response.status
     throw erro
-}
+  }
 // se der certo ele vai devolver { ok: true, mensagem: 'Usuário excluído com sucesso.' }
 return data
 }
