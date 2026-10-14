@@ -1,41 +1,36 @@
 /* botao base, as outras classes mudam tamanho e cor */
 .btn {
-  /* inline-flex + align/justify center = texto e icone centralizados dentro do botao */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   /* espaco entre o texto e o spinner/icone */
   gap: var(--space-2);
-  /* semi-negrito */
   font-weight: 600;
-  /* cantos arredondados (8px) */
-  border-radius: var(--radius-lg, 8px);
+  border-radius: var(--radius-sm);
   /* animacao suave quando muda cor, sombra ou opacidade */
   transition: background var(--transition), box-shadow var(--transition), opacity var(--transition);
   /* impede o texto de quebrar linha */
   white-space: nowrap;
-  /* letras um pouquinho mais espacadas */
   letter-spacing: 0.01em;
 }
 
 /* Tamanhos */
 /* pequeno, medio, grande e largura total */
-/* cada tamanho muda o espaco interno e o tamanho da letra */
 .btn--sm { padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); }
 .btn--md { padding: 10px var(--space-5); font-size: var(--font-size-sm); }
 .btn--lg { padding: var(--space-4) var(--space-8); font-size: var(--font-size-base); }
 .btn--full { width: 100%; }
 
 /* Variantes */
-/* degrade roxo -> rosa com texto branco (botao principal, ex: "Aprovar") */
+/* verde com texto azul (botao principal, ex: "Aprovar") */
 .btn--primary {
-  background: var(--tt-gradiente-botao);
-  color: var(--color-white);
+  background: var(--color-accent);
+  color: var(--color-primary);
 }
 /* o :not(:disabled) faz o hover nao funcionar quando o botao ta desativado */
 .btn--primary:hover:not(:disabled) {
-  /* fica um pouco mais claro ao passar o mouse */
-  filter: brightness(1.1);
+  background: var(--color-accent-dark);
+  box-shadow: var(--shadow-sm);
 }
 
 /* azul com texto branco */
@@ -43,9 +38,8 @@
   background: var(--color-primary);
   color: var(--color-white);
 }
-/* fica azul mais escuro ao passar o mouse */
 .btn--secondary:hover:not(:disabled) {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-light);
 }
 
 /* sem fundo, so com borda */
@@ -54,7 +48,6 @@
   color: var(--color-text-muted);
   border: 1.5px solid var(--color-border);
 }
-/* borda e texto ficam azuis ao passar o mouse */
 .btn--ghost:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: var(--color-primary);
@@ -66,7 +59,6 @@
   color: var(--color-white);
 }
 .btn--danger:hover:not(:disabled) {
-  /* fica levemente transparente ao passar o mouse */
   opacity: 0.88;
 }
 
@@ -79,7 +71,6 @@
 
 /* carregando: nao deixa clicar de novo */
 .btn--loading {
-  /* pointer-events none = ignora cliques */
   pointer-events: none;
 }
 
@@ -88,11 +79,9 @@
 .btn__spinner {
   width: 14px;
   height: 14px;
-  /* currentColor = usa a mesma cor do texto do botao */
   border: 2px solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
-  /* nao deixa a bolinha encolher */
   flex-shrink: 0;
 }
