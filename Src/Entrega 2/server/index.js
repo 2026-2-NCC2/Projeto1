@@ -3,7 +3,7 @@ import cors from 'cors'
 import pool from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import eventoRoutes from './routes/eventoRoutes.js'
-import adminRoutes from './routes/adminRoutes.js'
+
 const app = express()
 const port = 3000
 
@@ -18,14 +18,20 @@ app.get('/', (req, res) => {
     res.send('servidor rodando')
 })
 
+app.get("/usuarios", async (req,res)=>{
+    try{
+        const [resultado] = await pool.query("SELECT * FROM usuario;")
+        res.json(resultado)
+    }
+    catch(erro){
+        res.status(500).json({erro: "Erro no servidor"})
+    }
+})
+
 // Registra todas as rotas de auth com o prefixo /api
 app.use('/api', authRoutes)
-
 // Registra as rotas de evento com o prefixo /api
 app.use('/api', eventoRoutes)
-
-// Registra as rotas relacionadas ao admin com o prefixo /api
-app.use('/api', adminRoutes)
 
 app.listen(port, () => {
     console.log(`backend rodando na porta ${port}`)
