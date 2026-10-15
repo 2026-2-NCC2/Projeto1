@@ -32,4 +32,38 @@ router.get("/admin/cadastros", async (req,res)=>{
     }
 })
 
+// PATCH /api/admin/cadastros/:id — aprova ou rejeita um cadastro
+router.patch('/admin/cadastros/:id', async (req, res) => {
+    const { id } = req.params
+    const { tipo, status } = req.body
+
+    // whitelist: so aceita esses valores exatos, protege contra SQL injection no nome da tabela/coluna
+    if (!['organizador', 'fornecedor'].includes(tipo)) {
+        return res.status(400).json({ erro: 'Tipo inválido.' })
+    }
+    if (!['aprovado', 'rejeitado'].includes(status)) {
+        return res.status(400).json({ erro: 'Status inválido.' })
+    }
+
+    const tabela = tipo === 'organizador' ? 'organizador' : 'fornecedor'
+    const coluna = tipo === 'organizador' ? 'id_organizador' : 'id_fornecedor'
+
+    try {
+        const [resultado] = await pool.query(
+            `UPDATE ${tabela} SET status_aprovacao = ? WHERE ${coluna} = ?`,
+            [status, id]
+        )
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({ erro: 'Cadastro não encontrado.' })
+        }
+
+        res.json({ ok: true, status })
+    } catch (erro) {
+        console.error(erro)
+        res.status(500).json({ erro: 'Erro no servidor' })
+    }
+})
+
+
 export default router
