@@ -5,28 +5,62 @@ import bcrypt from 'bcrypt'
 const router = Router()
 
 router.post('/cadastro', async (req, res) => {
-    const { nome, username, email, idade, senha, perfil } = req.body
+    const { nome, username, email, idade, senha, perfil, empresa, cnpj, areaAtuacao } = req.body
 
     if (!nome || !email || !senha || !perfil || !idade || !username) {
         return res.status(400).json({ erro: 'Todos os campos são obrigatórios.' })
     }
 
+    // organizador e fornecedor precisam de empresa e cnpj pra preencher a tabela deles
+    if ((perfil === 'organizador' || perfil === 'fornecedor') && (!empresa || !cnpj)) {
+        return res.status(400).json({ erro: 'Empresa e CNPJ são obrigatórios para esse tipo de conta.' })
+    }
+
+    // pega uma conexao dedicada pra poder usar transacao
+    // (se o insert na tabela organizador/fornecedor falhar, desfaz o insert em usuario tambem)
+    const connection = await pool.getConnection()
+
     try {
+        await connection.beginTransaction()
+
         const senhaCriptografada = await bcrypt.hash(senha, 10)
 
-        const [resultado] = await pool.query(
+        const [resultadoUsuario] = await connection.query(
             `INSERT INTO usuario (nome, idade, username, email, senha, perfil) VALUES (?, ?, ?, ?, ?, ?)`,
             [nome, idade, username, email, senhaCriptografada, perfil]
         )
+        const idUsuario = resultadoUsuario.insertId
 
-        return res.status(201).json({ ok: true, id: resultado.insertId })
+        // id_organizador / id_fornecedor sao o mesmo id_usuario (FK com PK compartilhada)
+        if (perfil === 'organizador') {
+            await connection.query(
+                `INSERT INTO organizador (id_organizador, nome_organizacao, cnpj) VALUES (?, ?, ?)`,
+                [idUsuario, empresa, cnpj]
+            )
+        }
+
+        if (perfil === 'fornecedor') {
+            await connection.query(
+                `INSERT INTO fornecedor (id_fornecedor, nome_organizacao, cnpj, area_atuacao) VALUES (?, ?, ?, ?)`,
+                [idUsuario, empresa, cnpj, areaAtuacao || '']
+            )
+        }
+
+        await connection.commit()
+        return res.status(201).json({ ok: true, id: idUsuario })
 
     } catch (erro) {
+        await connection.rollback()
+
+        // ER_DUP_ENTRY cobre email/username duplicados (tabela usuario) e cnpj duplicado (organizador/fornecedor)
         if (erro.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ erro: 'E-mail já cadastrado.' })
+            return res.status(409).json({ erro: 'E-mail, username ou CNPJ já cadastrado.' })
         }
         console.error(erro)
         return res.status(500).json({ erro: 'Erro interno.' })
+    } finally {
+        connection.release()
+
     }
 })
 
@@ -90,4 +124,5 @@ router.post("/login", async (req,res)=>{
     }
     
 })
+
 export default router

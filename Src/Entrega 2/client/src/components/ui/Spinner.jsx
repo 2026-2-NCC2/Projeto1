@@ -1,6 +1,4 @@
-// React = biblioteca usada pra montar as telas
 import React from 'react';
-// estilos do spinner
 import './Spinner.css';
 
 // indicador de carregamento, o texto padrao e "Carregando..."
