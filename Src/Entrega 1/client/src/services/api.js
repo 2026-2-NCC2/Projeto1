@@ -75,3 +75,21 @@ export async function deletarUsuario(id){
 // se der certo ele vai devolver { ok: true, mensagem: 'Usuário excluído com sucesso.' }
 return data
 }
+
+export async function atualizarStatusCadastro(id, tipo, status) {
+  const response = await fetch(`${api_url}/admin/cadastros/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tipo, status }),
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const erro = new Error(data.erro || 'Erro ao atualizar cadastro.')
+    erro.status = response.status
+    throw erro
+  }
+
+  return data
+}

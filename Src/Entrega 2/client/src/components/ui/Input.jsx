@@ -5,18 +5,27 @@
  * O valor do input é controlado pelo estado React (value + onChange).
  * React é a "fonte de verdade" — não o DOM.
  */
+// React = biblioteca usada pra montar as telas
 import React from 'react';
+// estilos do campo
 import './Input.css';
 
 // campo reutilizavel com label, dica e mensagem de erro
 // o ...props pega o resto (value, onChange, type, placeholder...) e passa direto pro <input>
 export default function Input({
+  // texto em cima do campo
   label,
+  // id do campo (liga o label ao input)
   id,
+  // mensagem de erro (se tiver)
   error,
+  // dica embaixo do campo (se tiver)
   hint,
+  // true = campo obrigatorio (mostra o *)
   required,
+  // classes extras se precisar
   className = '',
+  // todo o resto (value, onChange, type...)
   ...props
 }) {
   return (
@@ -31,6 +40,7 @@ export default function Input({
       )}
       {/* aria-describedby liga o input ao texto de erro ou dica, pra leitores de tela */}
       {/* aria-invalid avisa que o campo ta com erro */}
+      {/* o campo em si; o {...props} passa value, onChange etc. direto pra ele */}
       <input
         id={id}
         className="field__input"

@@ -1,4 +1,6 @@
+// useState = guarda as mensagens de erro
 import { useState } from 'react';
+// pecas prontas do formulario (botoes, campo, card e input)
 import { ActionRow, Field, FormCard, Input } from '../components/FormUI.jsx';
 
 // etapa 1 do formulario de criar evento: informacoes basicas
@@ -6,43 +8,30 @@ import { ActionRow, Field, FormCard, Input } from '../components/FormUI.jsx';
 export function EventBasics({ data, setData, onBack, onNext }) {
   // guarda as mensagens de erro de cada campo
   const [errors, setErrors] = useState({});
-  // data de hoje no formato YYYY-MM-DD, usando o horário local
-const getToday = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-};
 
   // funcao generica pra atualizar qualquer campo, e so passar o nome dele
   // quando o usuario digita, ja limpa o erro daquele campo
   const patch = (key) => (e) => {
+    // atualiza so o campo que mudou e mantem os outros
     setData((prev) => ({ ...prev, [key]: e.target.value }));
+    // apaga o erro desse campo
     setErrors((prev) => ({ ...prev, [key]: '' }));
   };
 
   // valida os campos obrigatorios antes de ir pra proxima etapa
   const handleNext = () => {
-  const nextErrors = {};
-
-  if (!data.name.trim()) nextErrors.name = 'Campo obrigatório';
-
-  if (!data.date) {
-    nextErrors.date = 'Campo obrigatório';
-  } else if (data.date < getToday()) {
-    nextErrors.date = 'A data do evento não pode estar no passado';
-  }
-
-  if (!data.startTime) nextErrors.startTime = 'Campo obrigatório';
-  if (!data.location.trim()) nextErrors.location = 'Campo obrigatório';
-
-  setErrors(nextErrors);
-
-  // só avança se não tiver nenhum erro
-  if (Object.keys(nextErrors).length === 0) onNext();
-};
+    // comeca sem erros
+    const nextErrors = {};
+    // cada campo obrigatorio vazio ganha a mensagem de erro
+    if (!data.name.trim()) nextErrors.name = 'Campo obrigatório';
+    if (!data.date) nextErrors.date = 'Campo obrigatório';
+    if (!data.startTime) nextErrors.startTime = 'Campo obrigatório';
+    if (!data.location.trim()) nextErrors.location = 'Campo obrigatório';
+    // mostra os erros na tela
+    setErrors(nextErrors);
+    // so avanca se nao tiver nenhum erro
+    if (Object.keys(nextErrors).length === 0) onNext();
+  };
 
   return (
     // card padrao das etapas do formulario
@@ -54,13 +43,14 @@ const getToday = () => {
     >
       {/* campos em 2 colunas */}
       <div className="form-grid two-cols">
+        {/* cada Field tem o texto em cima e o campo dentro */}
         <Field label="Nome do evento" required error={errors.name}>
           <Input value={data.name} onChange={patch('name')} placeholder="Ex: Festival TrocaTicket 2026" />
         </Field>
 
         {/* data e horarios usam os seletores nativos do navegador */}
         <Field label="Data" required error={errors.date}>
-           <Input type="date" min={getToday()} value={data.date} onChange={patch('date')} />
+          <Input type="date" value={data.date} onChange={patch('date')} />
         </Field>
         <Field label="Horário de início" required error={errors.startTime}>
           <Input type="time" value={data.startTime} onChange={patch('startTime')} />
