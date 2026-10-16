@@ -1,8 +1,11 @@
 import { Router } from 'express'
 import pool from '../config/db.js'
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken";
 
 const router = Router()
+
+const JWT_SECRET = process.env.JWT_SECRET
 
 router.post('/cadastro', async (req, res) => {
     const { nome, username, email, idade, senha, perfil, empresa, cnpj, areaAtuacao } = req.body
