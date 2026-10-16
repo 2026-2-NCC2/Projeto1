@@ -35,13 +35,6 @@ export default function EventRegistration() {
 
   // so organizador pode criar evento, qualquer outro perfil (ou deslogado) volta pro painel
   // fica em useEffect pra nao chamar navigate() durante o render (e manter os hooks sempre na mesma ordem)
-  useEffect(() => {
-    if (perfil !== 'organizador') {
-      navigate('/PainelDeEventos');
-    }
-  }, [navigate]);
-
-  if (perfil !== 'organizador') return null;
 
   // vai pra etapa pelo numero, esconde a mensagem de concluido e volta pro topo
   function goTo(number) {

@@ -43,15 +43,14 @@ function Login() {
     setErros({})
     setApiLoading(true)
     try {
-      const usuario = await loginUsuario({ email, senha })
-      login(usuario) // <-- em vez de localStorage.setItem direto
+      const resposta = await loginUsuario({ email, senha })
+      login({ usuario: resposta.usuario, token: resposta.token }) // <-- em vez de localStorage.setItem direto
       navigate('/PainelDeEventos')
     } catch (err) {
         setErros({ senha: 'E-mail ou senha inválidos.' })
+    } finally {
+      setApiLoading(false)
     }
-    
-      // por enquanto so mostra no console e volta pra home, depois vai chamar a API
-      console.log('Dados válidos! Enviando...', { email, senha }) // corrigido: "nome" nao existia aqui
   }
 
   return (
