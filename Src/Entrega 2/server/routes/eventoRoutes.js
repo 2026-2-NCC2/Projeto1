@@ -1,6 +1,7 @@
 import express from 'express'
 import pool from '../config/db.js'
 import router from './authRoutes.js'
+import { autenticar } from '../middlewares/autenticacao.js';
 //import { EventRegistration } from '../../client/src/components/EventRegistration.jsx'
 
 const event = express()
@@ -39,7 +40,7 @@ event.post('/eventos', async (req, res) => {
     }
 })
 
-event.post('/lote', async (req, res) => {
+event.post('/lote', autenticar, async (req, res) => {
     const { minBatchAmount, maxBatchAmount, minPublic, maxPublic } = req.body
 
     if (!minBatchAmount || ! maxBatchAmount || !minPublic || !maxPublic) {
@@ -64,7 +65,7 @@ event.post('/lote', async (req, res) => {
     }
 })
 
-event.post('/custos-independentes', async (req, res) => {
+event.post('/custos-independentes', autenticar, async (req, res) => {
     const { costCategory, description, cost } = req.body
 
     if (!costCategory || !description || !cost) {
