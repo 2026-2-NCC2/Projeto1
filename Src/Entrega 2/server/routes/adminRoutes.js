@@ -1,11 +1,11 @@
 import { Router } from 'express'
 import pool from '../config/db.js'
-import { autenticar } from '../middlewares/autenticacao.js';
+import { autenticar, permitir } from '../middlewares/autenticacao.js';
 
 
 const router = Router()
 
-router.get("/admin/cadastros", autenticar, async (req,res)=>{
+router.get("/admin/cadastros", autenticar, permitir("administrador"), async (req,res)=>{
     try{
         const [resultado] = await pool.query(`
             SELECT u.id_usuario AS id, u.nome, u.email, u.data_criacao,
@@ -34,7 +34,7 @@ router.get("/admin/cadastros", autenticar, async (req,res)=>{
 })
 
 // PATCH /api/admin/cadastros/:id — aprova ou rejeita um cadastro
-router.patch('/admin/cadastros/:id', autenticar, async (req, res) => {
+router.patch('/admin/cadastros/:id', autenticar, permitir("administrador"), async (req, res) => {
     const { id } = req.params
     const { tipo, status } = req.body
 

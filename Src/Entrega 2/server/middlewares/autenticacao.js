@@ -17,3 +17,12 @@ export function autenticar(req,res,next){
         return res.status(401).json({erro: "Token de autenticação inválido ou expirado"})
     }
 }
+
+export function permitir(...perfisPermitidos) {
+    return (req, res, next) => {
+        if (!perfisPermitidos.includes(req.usuario?.perfil)) {
+            return res.status(403).json({ erro: 'Acesso negado para o seu perfil.' })
+        }
+        next()
+    }
+}
