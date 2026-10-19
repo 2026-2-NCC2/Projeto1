@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { buscarCadastros } from '../../services/api';
-import {atualizarStatusCadastro} from '../../services/api'
 
 // ─── Icone de busca ───────────────────────────────────────────────────────────
 // estilo padrao dos svgs (mesmo do dashboard)
@@ -106,19 +105,10 @@ export default function AprovarCadastros() {
   // muda o status do cadastro quando clica em aprovar ou rejeitar
   // por enquanto so muda no state, depois vai ter que chamar a API
   async function handleAcao(id, acao) {
-  const cadastro = cadastros.find(c => c.id === id);
-  const status = acao === 'aprovar' ? 'aprovado' : 'rejeitado';
-
-  try {
-    await atualizarStatusCadastro(id, cadastro.tipo, status);
-    // so atualiza a tela depois que o banco confirmou
     setCadastros(prev =>
-      prev.map(c => c.id === id ? { ...c, status } : c)
+      prev.map(c => c.id === id ? { ...c, status: acao === 'aprovar' ? 'aprovado' : 'rejeitado' } : c)
     );
-  } catch (err) {
-    alert('Não foi possível atualizar o cadastro. Tente novamente.');
   }
-}
 
 
   return (

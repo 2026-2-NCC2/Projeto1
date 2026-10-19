@@ -1,12 +1,10 @@
 import { Router } from 'express'
 import pool from '../config/db.js'
 import bcrypt from 'bcrypt'
-import jwt from "jsonwebtoken";
-import { autenticar } from '../middlewares/autenticacao.js';
+
+import { criarSessao } from '../middleware/auth.js'
 
 const router = Router()
-
-const JWT_SECRET = process.env.JWT_SECRET
 
 router.post('/cadastro', async (req, res) => {
     const { nome, username, email, idade, senha, perfil, empresa, cnpj, areaAtuacao } = req.body
@@ -14,6 +12,8 @@ router.post('/cadastro', async (req, res) => {
     if (!nome || !email || !senha || !perfil || !idade || !username) {
         return res.status(400).json({ erro: 'Todos os campos são obrigatórios.' })
     }
+
+    if (!['cliente','organizador','fornecedor'].includes(perfil)) return res.status(400).json({erro:'Perfil inválido.'})
 
     // organizador e fornecedor precisam de empresa e cnpj pra preencher a tabela deles
     if ((perfil === 'organizador' || perfil === 'fornecedor') && (!empresa || !cnpj)) {
@@ -68,6 +68,30 @@ router.post('/cadastro', async (req, res) => {
     }
 })
 
+router.delete("/deleteUsers/:id", async (req,res) =>{
+    const {id} = req.params
+
+    try{
+
+        const [resultado] = await pool.query(
+            `DELETE FROM usuario WHERE id_usuario= ?`,
+            [id]
+        )
+
+        if (resultado.affectedRows===0){
+            return res.status(404).json({ erro: 'Usuário não encontrado.' })
+        }
+
+        return res.status(200).json({ ok: true, mensagem: 'Usuário excluído com sucesso.' })
+    }
+    catch(erro){
+
+        return res.status(500).json({ erro: 'Erro interno ao excluir usuário.' })
+
+    }
+})
+
+
 router.post("/login", async (req,res)=>{
 
     const { email, senha } = req.body
@@ -91,62 +115,19 @@ router.post("/login", async (req,res)=>{
         return res.status(401).json({ erro: 'E-mail ou senha inválidos.' })
     }
 
-    const payload = {
-            id_usuario: usuario.id_usuario,
-            email: usuario.email,
-            perfil: usuario.perfil
-        }
-
-        // 2. ASSINATURA DO TOKEN (jwt.sign recebendo a variável payload)
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2d' })
-
-        // 3. RETORNO PARA O FRONT-END
-        return res.status(200).json({
-            ok: true,
-            token: token, 
-            usuario: {
-                id_usuario: usuario.id_usuario,
-                nome: usuario.nome,
-                email: usuario.email,
-                perfil: usuario.perfil,
-            }
-        })
+    return res.status(200).json({
+        token: await criarSessao(usuario.id_usuario),
+        id_usuario: usuario.id_usuario,
+        nome: usuario.nome,
+        email: usuario.email,
+        perfil: usuario.perfil,
+    })
 
     } catch (error) {
-        console.error(erro)
+        console.error(error)
         return res.status(500).json({ erro: 'Erro interno.' })
     }
     
 })
-
-router.delete("/deleteUsers/:id", autenticar, async (req,res) =>{
-    const {id} = req.params
-
-    try{
-
-        const [resultado] = await pool.query(
-            `DELETE FROM usuario WHERE id_usuario= ?`,
-            [id]
-        )
-
-        if (resultado.affectedRows===0){
-            return res.status(404).json({ erro: 'Usuário não encontrado.' })
-        }
-
-        return res.status(200).json({ ok: true, mensagem: 'Usuário excluído com sucesso.' })
-    }
-    catch(erro){
-
-        return res.status(500).json({ erro: 'Erro interno ao excluir usuário.' })
-
-    }
-})
-
-router.get("/usuarios", autenticar, async (req,res)=>{
-    const [resultado] = await pool.query("SELECT * FROM usuario;")
-    return res.status(200).json(resultado)
-
-})
-
 
 export default router

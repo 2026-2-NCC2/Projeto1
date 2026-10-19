@@ -3,7 +3,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const pool = mysql.createPool({
-    host: 'localhost',
+    host: '127.0.0.1',
+    port: 3306,
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_SECRET,
     database: process.env.DATABASE_NAME,
@@ -19,7 +20,11 @@ async function testConnection() {
         console.log('Banco conectado com sucesso!')
         connection.release()
     } catch (error) {
-        console.error('Erro ao conectar:', error.message)
+        console.error('Erro ao conectar:', {
+        message: error.message,
+        code: error.code,
+        errors: error.errors,
+    })
         process.exit(1)
     }
 }

@@ -16,7 +16,6 @@ export default function Header() {
   const paginaDeConta = ['/cadastro', '/login', '/teladeescolha'].includes(path)
   const criandoEvento = path.startsWith('/criar-evento')
   const noPainel = path === '/paineldeeventos'
-  const areaDoOrganizador = noPainel || criandoEvento
   const activeTab = searchParams.get('tab') || 'painel'
 
   function handleTabClick(key) {
@@ -38,6 +37,7 @@ export default function Header() {
           >
             Eventos
           </Link>
+          {['fornecedor','organizador'].includes(perfil) && <Link to="/propostas" className="text-[13px] font-semibold text-tt-azul-principal hover:underline">{perfil==='fornecedor'?'Propostas enviadas':'Propostas recebidas'}</Link>}
           {path === '/' && <a className="text-[13px] font-semibold text-tt-grafite/75 no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs" href="#categorias">Categorias</a>}
           {path === '/' && <a className="text-[13px] font-semibold text-tt-grafite/75 no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs" href="#como-funciona">Como funciona</a>}
 

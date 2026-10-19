@@ -3,6 +3,7 @@ import cors from 'cors'
 import pool from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import eventoRoutes from './routes/eventoRoutes.js'
+import propostaRoutes from './routes/propostaRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 const app = express()
 const port = 3000
@@ -26,6 +27,12 @@ app.use('/api', eventoRoutes)
 
 // Registra as rotas relacionadas ao admin com o prefixo /api
 app.use('/api', adminRoutes)
+
+app.use('/api/propostas', propostaRoutes)
+app.use((erro, req, res, next) => {
+ console.error(erro)
+ res.status(500).json({erro:'Não foi possível concluir a operação. Tente novamente.'})
+})
 
 app.listen(port, () => {
     console.log(`backend rodando na porta ${port}`)

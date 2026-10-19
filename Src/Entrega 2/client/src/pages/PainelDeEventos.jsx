@@ -1,146 +1,212 @@
-import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { useAuth } from '../services/AuthContext'
-
-// ─── Dados de exemplo iniciais ────────────────────────────────────────────────
-// eventos falsos pra testar a tela enquanto a API nao ta pronta
-// organizador_id 99 e o "usuario logado", entao esses aparecem em "Meus Eventos"
-const EVENTOS_INICIAIS = [
-  { id: 1, titulo: "Lollapalooza 2026", data_inicio: "2026-03-28", data_fim: "2026-03-30", endereco: "Autódromo de Interlagos, SP", status_publicacao: "Publicado", ticket_estimado: 890.0, itens_pendentes: 3, banner_color: "var(--tt-azul-vivo)", organizador_id: 99, organizador_nome: "Você" },
-  { id: 2, titulo: "Rock in Rio — Dia 1", data_inicio: "2026-09-12", data_fim: "2026-09-12", endereco: "Cidade do Rock, Rio de Janeiro", status_publicacao: "Publicado", ticket_estimado: 650.0, itens_pendentes: 4, banner_color: "#6D3FD1", organizador_id: 12, organizador_nome: "Rock World" },
-  { id: 3, titulo: "Show Maroon 5", data_inicio: "2026-11-05", data_fim: "2026-11-05", endereco: "Allianz Parque, São Paulo", status_publicacao: "Rascunho", ticket_estimado: 420.0, itens_pendentes: 5, banner_color: "#1261A0", organizador_id: 99, organizador_nome: "Você" },
-  { id: 4, titulo: "Tomorrowland Brasil", data_inicio: "2026-10-30", data_fim: "2026-11-01", endereco: "Parque Maeda, Itu — SP", status_publicacao: "Publicado", ticket_estimado: 1200.0, itens_pendentes: 6, banner_color: "#172554", organizador_id: 45, organizador_nome: "SFX Entertainment" },
-  { id: 5, titulo: "GP de Interlagos 2026", data_inicio: "2026-11-13", data_fim: "2026-11-15", endereco: "Autódromo José Carlos Pace, SP", status_publicacao: "Publicado", ticket_estimado: 980.0, itens_pendentes: 7, banner_color: "var(--tt-rosa-principal)", organizador_id: 99, organizador_nome: "Você" },
-  { id: 6, titulo: "Slayer em São Paulo", data_inicio: "2026-08-22", data_fim: "2026-08-22", endereco: "Audio Club, São Paulo", status_publicacao: "Encerrado", ticket_estimado: 280.0, itens_pendentes: 8, banner_color: "#1F2937", organizador_id: 77, organizador_nome: "Move Concerts" },
-];
+import FornecedoresConfirmados from '../components/FornecedoresConfirmados';
+import { solicitar } from '../services/api';
+import CustosFornecedor from '../components/CustosFornecedor';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../services/AuthContext';
 
 // cor da etiqueta de cada status
 const BADGE_CLASS = {
-  Publicado: "bg-tt-verde-claro text-tt-azul-principal",
-  Rascunho:  "bg-tt-laranja-claro text-tt-azul-marinho",
-  Encerrado: "bg-tt-cinza-claro text-tt-grafite/85",
-  Cancelado: "bg-tt-rosa-claro text-tt-rosa-principal",
+  Publicado: 'bg-tt-verde-claro text-tt-azul-principal',
+  Rascunho: 'bg-tt-laranja-claro text-tt-azul-marinho',
+  Encerrado: 'bg-tt-cinza-claro text-tt-grafite/85',
+  Cancelado: 'bg-tt-rosa-claro text-tt-rosa-principal',
 };
 
 // transforma a data do formato do banco (2026-03-28) pro brasileiro (28/03/2026)
 // se nao tiver data mostra um tracinho
 function formatDate(iso) {
-  if (!iso) return "—";
-  const [y, m, d] = iso.split("-");
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
 }
 
 // formata numero como dinheiro (ex: 890 vira "R$ 890,00")
 function formatCurrency(val) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val);
+  if (val === null || val === undefined || val === '') return 'Não informado';
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(val);
 }
 
 // ─── Ícones SVG ───────────────────────────────────────────────────────────────
 // estilo padrao dos svgs, currentColor faz o icone pegar a cor do texto
 // icones: calendario, localizacao, ingresso, pendencias, mais (criar), lupa e seta de voltar
-const svgProps = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 24 24" };
-const IconCalendar  = () => <svg width="14" height="14" {...svgProps}><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
-const IconPin       = () => <svg width="14" height="14" {...svgProps}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
-const IconTicket    = () => <svg width="13" height="13" {...svgProps}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>;
-const IconPending   = () => <svg width="13" height="13" {...svgProps}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-const IconPlus      = () => <svg width="16" height="16" {...svgProps} strokeWidth={2.5}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-const IconSearch    = () => <svg width="16" height="16" {...svgProps}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
-const IconArrowLeft = () => <svg width="16" height="16" {...svgProps}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
+const svgProps = {
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  viewBox: '0 0 24 24',
+};
+const IconCalendar = () => (
+  <svg width="14" height="14" {...svgProps}>
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+const IconPin = () => (
+  <svg width="14" height="14" {...svgProps}>
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+const IconTicket = () => (
+  <svg width="13" height="13" {...svgProps}>
+    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" />
+  </svg>
+);
+const IconPending = () => (
+  <svg width="13" height="13" {...svgProps}>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+const IconPlus = () => (
+  <svg width="16" height="16" {...svgProps} strokeWidth={2.5}>
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+const IconSearch = () => (
+  <svg width="16" height="16" {...svgProps}>
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+const IconArrowLeft = () => (
+  <svg width="16" height="16" {...svgProps}>
+    <line x1="19" y1="12" x2="5" y2="12" />
+    <polyline points="12 19 5 12 12 5" />
+  </svg>
+);
 
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
-  const { perfil, usuario } = useAuth()
-  const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario
+  const { perfil, usuario } = useAuth();
+  const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario;
   // ── Aba ativa vem do query param gerenciado pelo Header ──────────────────
   // ex: ?tab=meus mostra so os meus eventos, sem nada mostra todos
-  const [searchParams] = useSearchParams()
-  const activeTab = searchParams.get('tab') || 'painel'
+  const [searchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'painel';
 
   // ── Estado interno da página ──────────────────────────────────────────────
   // telaAtual = "painel" (lista) ou "detalhes" / eventoSelecionado = evento aberto nos detalhes
   // modoModal = "criar" ou "editar" / os form... sao os campos do formulario do modal
-  const [telaAtual, setTelaAtual]           = useState("painel");
-  const [eventos, setEventos]               = useState(EVENTOS_INICIAIS);
-  const [eventoSelecionado, setEventoSel]   = useState(null);
-  const [filtroStatus, setFiltroStatus]     = useState("Todos");
-  const [busca, setBusca]                   = useState("");
-  const [modalAberto, setModalAberto]       = useState(false);
-  const [modoModal, setModoModal]           = useState("criar");
-  const [formId, setFormId]                 = useState(null);
-  const [formTitulo, setFormTitulo]         = useState("");
-  const [formInicio, setFormInicio]         = useState("");
-  const [formFim, setFormFim]               = useState("");
-  const [formEndereco, setFormEndereco]     = useState("");
-  const [formStatus, setFormStatus]         = useState("Publicado");
-  const [formTicket, setFormTicket]         = useState("");
+  const [telaAtual, setTelaAtual] = useState('painel');
+  const [eventos, setEventos] = useState([]);
+  const [eventoSelecionado, setEventoSel] = useState(null);
+  const [filtroStatus, setFiltroStatus] = useState('Todos');
+  const [busca, setBusca] = useState('');
+  const [modalAberto, setModalAberto] = useState(false);
+  const [modoModal, setModoModal] = useState('criar');
+  const [formId, setFormId] = useState(null);
+  const [formTitulo, setFormTitulo] = useState('');
+  const [formInicio, setFormInicio] = useState('');
+  const [formFim, setFormFim] = useState('');
+  const [formEndereco, setFormEndereco] = useState('');
+  const [formStatus, setFormStatus] = useState('Publicado');
+  const [formTicket, setFormTicket] = useState('');
+  const [formSegundoLote, setFormSegundoLote] = useState('');
+
+  const [erroApi, setErroApi] = useState('');
+  const [carregando, setCarregando] = useState(true);
+  useEffect(() => {
+    let ativo = true;
+    solicitar('/eventos')
+      .then((d) => {
+        if (ativo) setEventos(d);
+      })
+      .catch((e) => {
+        if (ativo) setErroApi(e.message);
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   // ── Filtragem (usa activeTab vindo da URL) ────────────────────────────────
   // o evento so aparece se passar nos 3 filtros: aba, status e busca
   // a busca procura no titulo ou no endereco, sem diferenciar maiuscula
   const eventosFiltrados = eventos.filter((ev) => {
-    const matchAba    = activeTab === "painel" || ev.organizador_id === ORGANIZADOR_LOGADO_ID;
-    const matchStatus = filtroStatus === "Todos" || ev.status_publicacao === filtroStatus;
-    const matchBusca  = ev.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-                        ev.endereco.toLowerCase().includes(busca.toLowerCase());
-    return matchAba && matchStatus && matchBusca;
+    const matchAba =
+      activeTab === 'painel' || ev.organizador_id === ORGANIZADOR_LOGADO_ID;
+    const matchStatus =
+      filtroStatus === 'Todos' || ev.status_publicacao === filtroStatus;
+    const matchBusca =
+      ev.titulo.toLowerCase().includes(busca.toLowerCase()) ||
+      ev.endereco.toLowerCase().includes(busca.toLowerCase());
+    return (
+      matchAba &&
+      matchStatus &&
+      matchBusca &&
+      (ev.status_publicacao === 'Publicado' ||
+        (perfil === 'organizador' &&
+          ev.organizador_id === ORGANIZADOR_LOGADO_ID))
+    );
   });
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   // abre o modal ja preenchido com os dados do evento
   function abrirModalEditar(ev) {
-    setModoModal("editar");
+    setModoModal('editar');
     setFormId(ev.id);
     setFormTitulo(ev.titulo);
     setFormInicio(ev.data_inicio);
     setFormFim(ev.data_fim);
     setFormEndereco(ev.endereco);
     setFormStatus(ev.status_publicacao);
-    setFormTicket(ev.ticket_estimado.toString());
+    setFormTicket(String(ev.primeiro_lote ?? ev.ticket_estimado ?? ''));
+    setFormSegundoLote(String(ev.segundo_lote ?? ''));
     setModalAberto(true);
   }
 
-  // salva o formulario do modal (criando um evento novo ou editando)
-  function salvarFormulario(e) {
-    // impede o form de recarregar a pagina
+  // Atualiza o banco e busca os dados reais para manter o painel sincronizado.
+  async function salvarFormulario(e) {
     e.preventDefault();
-    // nao salva se faltar titulo, data de inicio ou endereco
-    if (!formTitulo || !formInicio || !formEndereco) return;
+    setErroApi('');
 
-    if (modoModal === "criar") {
-      // monta o evento novo, usa a hora atual como id e se nao tiver data fim usa a de inicio
-      const novoEvento = {
-        id: Date.now(),
-        titulo: formTitulo,
-        data_inicio: formInicio,
-        data_fim: formFim || formInicio,
-        endereco: formEndereco,
-        status_publicacao: formStatus,
-        ticket_estimado: parseFloat(formTicket) || 0,
-        itens_pendentes: 0,
-        banner_color: "var(--tt-azul-vivo)",
-        organizador_id: ORGANIZADOR_LOGADO_ID,
-        organizador_nome: "Você",
-      };
-      // coloca o novo no comeco da lista
-      setEventos([novoEvento, ...eventos]);
-    } else {
-      // troca so o evento que ta sendo editado, os outros ficam iguais
-      setEventos(eventos.map((ev) => {
-        if (ev.id !== formId) return ev;
-        const atualizado = { ...ev, titulo: formTitulo, data_inicio: formInicio, data_fim: formFim || formInicio, endereco: formEndereco, status_publicacao: formStatus, ticket_estimado: parseFloat(formTicket) || 0 };
-        // se o evento editado ta aberto nos detalhes, atualiza la tambem
-        if (eventoSelecionado?.id === formId) setEventoSel(atualizado);
-        return atualizado;
-      }));
+    try {
+      await solicitar(`/eventos/${formId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          titulo: formTitulo,
+          inicio: formInicio,
+          fim: formFim || formInicio,
+          endereco: formEndereco,
+          status: formStatus,
+          ticket: formTicket,
+          segundoLote: formSegundoLote,
+        }),
+      });
+
+      const atualizados = await solicitar('/eventos');
+      setEventos(atualizados);
+      setEventoSel(atualizados.find((evento) => evento.id === formId) ?? null);
+      setModalAberto(false);
+    } catch (erro) {
+      setErroApi(erro.message);
     }
-    setModalAberto(false);
   }
 
   // remove o evento depois de confirmar e volta pra lista
-  function excluirEvento(id) {
-    if (confirm("Tem certeza que deseja remover este evento?")) {
+  async function excluirEvento(id) {
+    if (confirm('Tem certeza que deseja remover este evento?')) {
+      try {
+        await solicitar(`/eventos/${id}`, { method: 'DELETE' });
+      } catch (e) {
+        setErroApi(e.message);
+        return;
+      }
       setEventos(eventos.filter((ev) => ev.id !== id));
-      setTelaAtual("painel");
+      setTelaAtual('painel');
       setEventoSel(null);
     }
   }
@@ -148,9 +214,19 @@ export default function PainelDeEventos() {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-tt-cinza-claro text-tt-azul-marinho">
+      {erroApi && (
+        <p role="alert" className="p-5 text-tt-rosa-principal">
+          {erroApi}
+        </p>
+      )}
+      {carregando && (
+        <p role="status" className="p-5">
+          Carregando eventos…
+        </p>
+      )}
 
       {/* ── TELA: LISTAGEM ── */}
-      {telaAtual === "painel" && (
+      {telaAtual === 'painel' && (
         <>
           {/* Hero sub-header */}
           {/* titulo muda conforme a aba, e embaixo mostra o total e quantos estao publicados */}
@@ -158,17 +234,24 @@ export default function PainelDeEventos() {
             <div className="max-w-[1200px] mx-auto px-8 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="text-tt-laranja-principal text-[12px] font-semibold tracking-[1px] uppercase mb-1">
-                  {activeTab === "meus" ? "Seus Eventos" : "Geral"}
+                  {activeTab === 'meus' ? 'Seus Eventos' : 'Geral'}
                 </p>
                 <h1 className="text-tt-branco text-[26px] font-extrabold tracking-[-0.5px]">
-                  {activeTab === "meus" ? "Meus Eventos Criados" : "Painel de Eventos"}
+                  {activeTab === 'meus'
+                    ? 'Meus Eventos Criados'
+                    : 'Painel de Eventos'}
                 </h1>
                 <p className="text-tt-branco/45 text-[13px] mt-1.5">
-                  {eventos.length} eventos cadastrados · {eventos.filter((e) => e.status_publicacao === "Publicado").length} publicados
+                  {eventos.length} eventos cadastrados ·{' '}
+                  {
+                    eventos.filter((e) => e.status_publicacao === 'Publicado')
+                      .length
+                  }{' '}
+                  publicados
                 </p>
               </div>
               {/* botao que leva pro formulario de criar evento */}
-              {perfil==="organizador" &&(
+              {perfil === 'organizador' && (
                 <Link
                   to="/criar-evento/evento"
                   className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]"
@@ -183,7 +266,9 @@ export default function PainelDeEventos() {
           <div className="max-w-[1200px] mx-auto px-8 pt-6 flex flex-wrap items-center gap-3">
             {/* campo de busca com a lupa dentro */}
             <div className="relative flex-[1_1_240px] max-w-[340px]">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tt-grafite/50 flex"><IconSearch /></span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tt-grafite/50 flex">
+                <IconSearch />
+              </span>
               <input
                 className="w-full py-[9px] pr-3 pl-[38px] rounded-[10px] border border-tt-azul-marinho/12 bg-tt-branco text-[13px] text-tt-azul-marinho outline-none transition focus:border-tt-azul-claro focus:ring-[3px] focus:ring-tt-azul-vivo/[0.12]"
                 type="text"
@@ -195,44 +280,53 @@ export default function PainelDeEventos() {
 
             {/* botoes de filtro por status, o selecionado fica escuro */}
             <div className="flex flex-wrap gap-1.5">
-              {["Todos", "Publicado", "Rascunho", "Encerrado", "Cancelado"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setFiltroStatus(s)}
-                  className={`rounded-[20px] border px-4 py-1.5 text-xs cursor-pointer transition ${
-                    filtroStatus === s
-                      ? "bg-tt-azul-marinho text-tt-laranja-principal border-tt-azul-marinho font-semibold"
-                      : "bg-tt-branco text-tt-grafite/70 border-tt-azul-marinho/12 font-normal hover:border-tt-azul-marinho/20 hover:text-tt-azul-marinho"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+              {['Todos', 'Publicado', 'Rascunho', 'Encerrado', 'Cancelado'].map(
+                (s) => (
+                  <button
+                    key={s}
+                    onClick={() => setFiltroStatus(s)}
+                    className={`rounded-[20px] border px-4 py-1.5 text-xs cursor-pointer transition ${
+                      filtroStatus === s
+                        ? 'bg-tt-azul-marinho text-tt-laranja-principal border-tt-azul-marinho font-semibold'
+                        : 'bg-tt-branco text-tt-grafite/70 border-tt-azul-marinho/12 font-normal hover:border-tt-azul-marinho/20 hover:text-tt-azul-marinho'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ),
+              )}
             </div>
             {/* quantidade de resultados, coloca o "s" so se for mais de um */}
             <span className="ml-auto text-xs text-tt-grafite/50 whitespace-nowrap">
-              {eventosFiltrados.length} resultado{eventosFiltrados.length !== 1 ? "s" : ""}
+              {eventosFiltrados.length} resultado
+              {eventosFiltrados.length !== 1 ? 's' : ''}
             </span>
           </div>
 
           {/* Grid de cards */}
           {/* cabe quantos cards de 320px der na largura da tela */}
-          <main className="max-w-[1200px] mx-auto px-8 pt-6 pb-12 grid gap-6 grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+          <main className="max-w-[1200px] mx-auto px-8 pt-6 pb-12 grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))]">
             {/* se nenhum evento passar nos filtros mostra a mensagem, senao mostra os cards */}
             {eventosFiltrados.length === 0 ? (
               <div className="col-span-full text-center py-20 text-tt-grafite/50">
                 <div className="text-5xl mb-4">🎟️</div>
-                <p className="text-base font-semibold text-tt-grafite/85 mb-1.5">Nenhum evento encontrado</p>
-                <p className="text-[13px]">Ajuste seus filtros de busca ou crie um novo evento.</p>
+                <p className="text-base font-semibold text-tt-grafite/85 mb-1.5">
+                  Nenhum evento encontrado
+                </p>
+                <p className="text-[13px]">
+                  Ajuste seus filtros de busca ou crie um novo evento.
+                </p>
               </div>
             ) : (
               eventosFiltrados.map((ev) => {
                 // eventos encerrados ou cancelados ficam mais apagados
-                const enc = ev.status_publicacao === "Encerrado" || ev.status_publicacao === "Cancelado";
+                const enc =
+                  ev.status_publicacao === 'Encerrado' ||
+                  ev.status_publicacao === 'Cancelado';
                 return (
                   <article
                     key={ev.id}
-                    className={`bg-tt-branco rounded-2xl overflow-hidden flex flex-col cursor-pointer shadow-[0_4px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_13%,transparent)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_32px_color-mix(in_srgb,var(--tt-azul-marinho)_20%,transparent)] ${enc ? "opacity-[0.72]" : ""}`}
+                    className={`bg-tt-branco rounded-2xl overflow-hidden flex flex-col cursor-pointer shadow-[0_4px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_13%,transparent)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_32px_color-mix(in_srgb,var(--tt-azul-marinho)_20%,transparent)] ${enc ? 'opacity-[0.72]' : ''}`}
                   >
                     {/* banner do card com degrade na cor do evento */}
                     {/* o before e o after desenham os circulos decorativos no canto */}
@@ -241,20 +335,29 @@ export default function PainelDeEventos() {
                       style={{ background: ev.banner_color }}
                     >
                       {/* etiqueta de status */}
-                      <span className={`relative z-1 text-[11px] font-semibold px-2.5 py-[3px] rounded-[20px] tracking-[0.2px] ${BADGE_CLASS[ev.status_publicacao] || "bg-tt-cinza-claro"}`}>
+                      <span
+                        className={`relative z-1 text-[11px] font-semibold px-2.5 py-[3px] rounded-[20px] tracking-[0.2px] ${BADGE_CLASS[ev.status_publicacao] || 'bg-tt-cinza-claro'}`}
+                      >
                         {ev.status_publicacao}
                       </span>
                     </div>
 
                     {/* conteudo do card: titulo, organizador, data, local, ticket e pendencias */}
                     <div className="flex-1 flex flex-col gap-2 px-[18px] pt-4 pb-[18px]">
-                      <h2 className="text-base font-bold text-tt-azul-marinho leading-tight line-clamp-1">{ev.titulo}</h2>
+                      <h2 className="text-base font-bold text-tt-azul-marinho leading-tight line-clamp-1">
+                        {ev.titulo}
+                      </h2>
                       <div className="text-[11.5px] text-tt-grafite/50 -mt-1">
-                        Por: <strong className="text-tt-grafite/70 font-semibold">{ev.organizador_nome}</strong>
+                        Por:{' '}
+                        <strong className="text-tt-grafite/70 font-semibold">
+                          {ev.organizador_nome}
+                        </strong>
                       </div>
                       <div className="flex flex-col gap-1.5 mt-1">
                         <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex"><IconCalendar /></span>
+                          <span className="text-tt-grafite/50 flex">
+                            <IconCalendar />
+                          </span>
                           {/* se for um dia so mostra uma data, senao mostra inicio → fim */}
                           <span className="truncate">
                             {ev.data_inicio === ev.data_fim
@@ -263,7 +366,9 @@ export default function PainelDeEventos() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex"><IconPin /></span>
+                          <span className="text-tt-grafite/50 flex">
+                            <IconPin />
+                          </span>
                           <span className="truncate">{ev.endereco}</span>
                         </div>
                       </div>
@@ -272,21 +377,42 @@ export default function PainelDeEventos() {
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col gap-0.5">
                           <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
-                            <span className="text-tt-laranja-principal flex"><IconTicket /></span>Ticket
+                            <span className="text-tt-laranja-principal flex">
+                              <IconTicket />
+                            </span>
+                            Lote inicial
                           </span>
-                          <span className="text-sm font-bold text-tt-azul-principal">{formatCurrency(ev.ticket_estimado)}</span>
+                          <span className="text-sm font-bold text-tt-azul-principal">
+                            {formatCurrency(
+                              ev.primeiro_lote ?? ev.ticket_estimado,
+                            )}
+                          </span>
+                          {ev.segundo_lote != null && (
+                            <span className="text-xs text-tt-grafite/70">
+                              2º lote: {formatCurrency(ev.segundo_lote)}
+                            </span>
+                          )}
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">Pendências</span>
-                          <span className="text-sm font-bold text-tt-azul-marinho">{ev.itens_pendentes}</span>
+                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
+                            Itens de custo
+                          </span>
+                          <span className="text-sm font-bold text-tt-azul-marinho">
+                            {ev.quantidade_itens ?? ev.itens_pendentes ?? 0}
+                          </span>
                         </div>
                       </div>
                       {/* abre a tela de detalhes desse evento */}
                       <button
-                        onClick={() => { setEventoSel(ev); setTelaAtual("detalhes"); }}
+                        onClick={() => {
+                          setEventoSel(ev);
+                          setTelaAtual('detalhes');
+                        }}
                         className="mt-2 w-full py-[9px] rounded-lg text-[13px] font-semibold tracking-[0.2px] bg-tt-azul-marinho text-tt-laranja-principal hover:bg-tt-azul-vivo transition-colors"
                       >
-                        Ver detalhes →
+                        {perfil === 'fornecedor'
+                          ? 'Ver custos e enviar proposta →'
+                          : 'Ver detalhes →'}
                       </button>
                     </div>
                   </article>
@@ -299,11 +425,14 @@ export default function PainelDeEventos() {
 
       {/* ── TELA: DETALHES ── */}
       {/* so aparece se tiver um evento selecionado */}
-      {telaAtual === "detalhes" && eventoSelecionado && (
+      {telaAtual === 'detalhes' && eventoSelecionado && (
         <div className="max-w-[800px] mx-auto px-4 py-8">
           {/* volta pra lista e limpa o evento selecionado */}
           <button
-            onClick={() => { setTelaAtual("painel"); setEventoSel(null); }}
+            onClick={() => {
+              setTelaAtual('painel');
+              setEventoSel(null);
+            }}
             className="flex items-center gap-2 text-sm text-tt-grafite/70 hover:text-tt-azul-marinho mb-6 transition-colors font-medium"
           >
             <IconArrowLeft /> Voltar para a lista
@@ -315,7 +444,9 @@ export default function PainelDeEventos() {
               className="h-[160px] flex items-end p-6"
               style={{ background: eventoSelecionado.banner_color }}
             >
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}>
+              <span
+                className={`text-xs font-bold px-3 py-1 rounded-full ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}
+              >
                 {eventoSelecionado.status_publicacao}
               </span>
             </div>
@@ -325,60 +456,108 @@ export default function PainelDeEventos() {
                 {eventoSelecionado.titulo}
               </h1>
               <p className="text-sm text-tt-grafite/70 mt-1">
-                Organizado por: <span className="font-semibold text-tt-azul-marinho">{eventoSelecionado.organizador_nome}</span>
+                Organizado por:{' '}
+                <span className="font-semibold text-tt-azul-marinho">
+                  {eventoSelecionado.organizador_nome}
+                </span>
               </p>
 
               {/* caixa com data, local, ticket e pendencias (1 coluna no celular e 2 em tela maior) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6 p-4 bg-tt-cinza-claro rounded-xl border border-tt-azul-marinho/8">
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho"><IconCalendar /></span>
+                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
+                    <IconCalendar />
+                  </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Data do Evento</p>
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                      Data do Evento
+                    </p>
                     <p className="font-medium text-tt-azul-marinho">
-                      {eventoSelecionado.data_inicio === eventoSelecionado.data_fim
+                      {eventoSelecionado.data_inicio ===
+                      eventoSelecionado.data_fim
                         ? formatDate(eventoSelecionado.data_inicio)
                         : `${formatDate(eventoSelecionado.data_inicio)} até ${formatDate(eventoSelecionado.data_fim)}`}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho"><IconPin /></span>
+                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
+                    <IconPin />
+                  </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Localização</p>
-                    <p className="font-medium text-tt-azul-marinho truncate max-w-[260px]">{eventoSelecionado.endereco}</p>
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                      Localização
+                    </p>
+                    <p className="font-medium text-tt-azul-marinho truncate max-w-[260px]">
+                      {eventoSelecionado.endereco}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-principal"><IconTicket /></span>
+                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-principal">
+                    <IconTicket />
+                  </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Ticket Médio Estimado</p>
-                    <p className="font-bold text-tt-azul-principal">{formatCurrency(eventoSelecionado.ticket_estimado)}</p>
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                      Lote inicial
+                    </p>
+                    <p className="font-bold text-tt-azul-principal">
+                      {formatCurrency(
+                        eventoSelecionado.primeiro_lote ??
+                          eventoSelecionado.ticket_estimado,
+                      )}
+                    </p>
+                    {eventoSelecionado.segundo_lote != null && (
+                      <p className="mt-1 text-sm text-tt-grafite/70">
+                        Segundo lote:{' '}
+                        {formatCurrency(eventoSelecionado.segundo_lote)}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho"><IconPending /></span>
+                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
+                    <IconPending />
+                  </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">Tarefas Pendentes</p>
-                    <p className="font-medium text-tt-azul-marinho">{eventoSelecionado.itens_pendentes} itens registrados</p>
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                      Itens de custo
+                    </p>
+                    <p className="font-medium text-tt-azul-marinho">
+                      {eventoSelecionado.quantidade_itens ??
+                        eventoSelecionado.itens_pendentes ??
+                        0}{' '}
+                      itens registrados
+                    </p>
                   </div>
                 </div>
               </div>
 
+              {['organizador', 'fornecedor'].includes(perfil) && <FornecedoresConfirmados key={eventoSelecionado.id} eventoId={eventoSelecionado.id} />}
+              {perfil === 'fornecedor' && (
+                <CustosFornecedor
+                  key={eventoSelecionado.id}
+                  evento={eventoSelecionado}
+                />
+              )}
               {/* botoes de excluir e editar */}
-              <div className="flex gap-3 justify-end pt-4 border-t border-tt-azul-marinho/8">
-                <button
-                  onClick={() => excluirEvento(eventoSelecionado.id)}
-                  className="px-5 py-2.5 rounded-xl border border-tt-rosa-suave text-tt-rosa-principal font-semibold text-sm hover:bg-tt-rosa-claro transition"
-                >
-                  Excluir Evento
-                </button>
-                <button
-                  onClick={() => abrirModalEditar(eventoSelecionado)}
-                  className="px-5 py-2.5 rounded-xl bg-tt-azul-marinho text-tt-laranja-principal font-semibold text-sm hover:bg-tt-azul-vivo transition"
-                >
-                  Editar Evento
-                </button>
-              </div>
+              {perfil === 'organizador' &&
+                eventoSelecionado.organizador_id === ORGANIZADOR_LOGADO_ID && (
+                  <div className="flex gap-3 justify-end pt-4 border-t border-tt-azul-marinho/8">
+                    <button
+                      onClick={() => excluirEvento(eventoSelecionado.id)}
+                      className="px-5 py-2.5 rounded-xl border border-tt-rosa-suave text-tt-rosa-principal font-semibold text-sm hover:bg-tt-rosa-claro transition"
+                    >
+                      Excluir Evento
+                    </button>
+                    <button
+                      onClick={() => abrirModalEditar(eventoSelecionado)}
+                      className="px-5 py-2.5 rounded-xl bg-tt-azul-marinho text-tt-laranja-principal font-semibold text-sm hover:bg-tt-azul-vivo transition"
+                    >
+                      Editar Evento
+                    </button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -391,43 +570,77 @@ export default function PainelDeEventos() {
           <div className="bg-tt-branco rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-tt-azul-marinho/8">
             {/* titulo muda se ta criando ou editando */}
             <h2 className="text-xl font-bold text-tt-azul-marinho mb-4">
-              {modoModal === "criar" ? "Criar Novo Evento" : "Editar Dados do Evento"}
+              {modoModal === 'criar'
+                ? 'Criar Novo Evento'
+                : 'Editar Dados do Evento'}
             </h2>
             {/* ao enviar chama o salvarFormulario */}
             <form onSubmit={salvarFormulario} className="space-y-4">
               {/* titulo */}
               <div>
-                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Título do Evento *</label>
-                <input type="text" required value={formTitulo} onChange={(e) => setFormTitulo(e.target.value)}
+                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                  Título do Evento *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formTitulo}
+                  onChange={(e) => setFormTitulo(e.target.value)}
                   className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  placeholder="Ex: Lollapalooza 2026" />
+                  placeholder="Ex: Lollapalooza 2026"
+                />
               </div>
               {/* datas lado a lado, so a de inicio e obrigatoria */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Data Início *</label>
-                  <input type="date" required value={formInicio} onChange={(e) => setFormInicio(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal" />
+                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                    Data Início *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formInicio}
+                    onChange={(e) => setFormInicio(e.target.value)}
+                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Data Fim</label>
-                  <input type="date" value={formFim} onChange={(e) => setFormFim(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal" />
+                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                    Data Fim
+                  </label>
+                  <input
+                    type="date"
+                    value={formFim}
+                    onChange={(e) => setFormFim(e.target.value)}
+                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  />
                 </div>
               </div>
               {/* endereco */}
               <div>
-                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Endereço / Local *</label>
-                <input type="text" required value={formEndereco} onChange={(e) => setFormEndereco(e.target.value)}
+                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                  Endereço / Local *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formEndereco}
+                  onChange={(e) => setFormEndereco(e.target.value)}
                   className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  placeholder="Ex: Allianz Parque, São Paulo" />
+                  placeholder="Ex: Allianz Parque, São Paulo"
+                />
               </div>
               {/* status e ticket lado a lado */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Status de Publicação</label>
-                  <select value={formStatus} onChange={(e) => setFormStatus(e.target.value)}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-laranja-principal">
+                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                    Status de Publicação
+                  </label>
+                  <select
+                    value={formStatus}
+                    onChange={(e) => setFormStatus(e.target.value)}
+                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-laranja-principal"
+                  >
                     <option value="Publicado">Publicado</option>
                     <option value="Rascunho">Rascunho</option>
                     <option value="Encerrado">Encerrado</option>
@@ -435,20 +648,48 @@ export default function PainelDeEventos() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">Ticket Estimado (R$)</label>
-                  <input type="number" value={formTicket} onChange={(e) => setFormTicket(e.target.value)}
+                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                    Preço do lote inicial (R$)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    max="99999999.99"
+                    step="0.01"
+                    value={formTicket}
+                    onChange={(e) => setFormTicket(e.target.value)}
                     className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                    placeholder="890" />
+                    placeholder="890"
+                  />
                 </div>
               </div>
+              <label className="block text-xs font-bold text-tt-grafite/70">
+                Preço do segundo lote (R$) — opcional
+                <input
+                  type="number"
+                  min="0"
+                  max="99999999.99"
+                  step="0.01"
+                  value={formSegundoLote}
+                  onChange={(e) => setFormSegundoLote(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-tt-azul-marinho/12 p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  placeholder="Deixe vazio se não houver segundo lote"
+                />
+              </label>
               {/* cancelar fecha sem salvar / salvar envia o form */}
               <div className="flex gap-2 justify-end pt-4 border-t border-tt-azul-marinho/8">
-                <button type="button" onClick={() => setModalAberto(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-tt-grafite/70 hover:bg-tt-cinza-claro">
+                <button
+                  type="button"
+                  onClick={() => setModalAberto(false)}
+                  className="px-4 py-2 rounded-xl text-sm font-semibold text-tt-grafite/70 hover:bg-tt-cinza-claro"
+                >
                   Cancelar
                 </button>
-                <button type="submit"
-                  className="px-5 py-2 bg-tt-laranja-principal text-tt-azul-marinho font-bold rounded-xl text-sm hover:opacity-90">
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-tt-laranja-principal text-tt-azul-marinho font-bold rounded-xl text-sm hover:opacity-90"
+                >
                   Salvar Mudanças
                 </button>
               </div>
