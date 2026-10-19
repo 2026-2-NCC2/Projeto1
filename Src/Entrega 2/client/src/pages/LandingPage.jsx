@@ -13,6 +13,12 @@ const ETAPAS = [
   { titulo: 'Aproveite com tranquilidade', texto: 'Tenha os detalhes do seu evento sempre à mão.' },
 ]
 
+const EVENTOS = [
+  { rotulo: 'Eventos Cadastrados', valor: '2.400+' },
+  { rotulo: 'Ingressos Emitidos', valor: '180k+' },
+  { rotulo: 'Cidades Atendidas', valor: '360+' }
+]
+
 function LandingPage() {
   return (
     <main className="bg-tt-branco text-tt-azul-marinho">
@@ -64,6 +70,17 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+       <section className="bg-tt-azul-marinho">
+              <div className="mx-auto flex w-[calc(100%-48px)] max-w-[1180px] divide-x divide-tt-branco/10 py-5">
+                 {EVENTOS.map((s) => (
+              <div key={s.rotulo} className="flex flex-1 flex-col items-center gap-0.5 px-4">
+                 <span className="text-2xl font-extrabold text-tt-branco">{s.valor}</span>
+                   <span className="text-[11px] text-tt-branco/60">{s.rotulo}</span>
+              </div>
+                     ))}
+               </div>
+                  </section>
 
       <section className="mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[68px] pb-[76px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
         <div className="mb-6 flex items-end justify-between gap-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3">
