@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { ActionRow, CurrencyInput, Field, FormCard, Input } from '../components/FormUI.jsx';
+import {
+  ActionRow,
+  CurrencyInput,
+  Field,
+  FormCard,
+  Input,
+} from '../components/FormUI.jsx';
 
 export function AudienceLots({ data, setData, onBack, onNext }) {
   const [errors, setErrors] = useState({});
@@ -38,6 +44,24 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
       if (error) nextErrors[field] = error;
     });
 
+    for (const field of ['firstLot', 'secondLot']) {
+      const text = String(data[field] ?? '').trim();
+      if (
+        !nextErrors[field] &&
+        text &&
+        Number(text.replace(',', '.')) > 99999999.99
+      ) {
+        nextErrors[field] = 'O preço máximo é R$ 99.999.999,99.';
+      }
+    }
+
+    for (const field of ['minAudience', 'maxAudience']) {
+      if (!nextErrors[field] && Number(data[field]) > 1000000000) {
+        nextErrors[field] =
+          'O público não pode ultrapassar 1 bilhão de pessoas.';
+      }
+    }
+
     if (!nextErrors.maxAudience && Number(data.maxAudience) < 1) {
       nextErrors.maxAudience = 'O público máximo deve ser pelo menos 1.';
     }
@@ -65,16 +89,12 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
       title="Público e Lotes"
       subtitle="Defina capacidade, quantidade disponível e o preço inicial dos ingressos."
       footer={
-        <ActionRow
-          onBack={onBack}
-          onNext={handleNext}
-          backLabel="Voltar"
-        />
+        <ActionRow onBack={onBack} onNext={handleNext} backLabel="Voltar" />
       }
     >
       <div className="form-grid two-cols">
         <Field
-          label="Lote inicial"
+          label="Preço do lote inicial (R$)"
           required
           error={errors.firstLot}
           hint="Preço de abertura das vendas."
@@ -87,7 +107,7 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
         </Field>
 
         <Field
-          label="Segundo lote"
+          label="Preço do segundo lote (R$)"
           error={errors.secondLot}
           hint="Opcional. Você pode ajustar depois."
         >
@@ -108,11 +128,7 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
           />
         </Field>
 
-        <Field
-          label="Público máximo"
-          required
-          error={errors.maxAudience}
-        >
+        <Field label="Público máximo" required error={errors.maxAudience}>
           <Input
             type="text"
             inputMode="numeric"
@@ -127,7 +143,8 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
         <span className="info-icon">i</span>
         <p>
           O público máximo também pode ser usado como limite inicial de
-          ingressos. Depois você poderá dividir a quantidade por lotes e setores.
+          ingressos. Depois você poderá dividir a quantidade por lotes e
+          setores.
         </p>
       </div>
     </FormCard>

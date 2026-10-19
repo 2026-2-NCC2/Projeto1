@@ -3,9 +3,15 @@ import { ActionRow, FormCard } from '../components/FormUI.jsx';
 
 // converte o texto do valor em numero (ex: "1.500,00" vira 1500)
 // tira o ponto do milhar e troca a virgula por ponto, se der erro vira 0
-const money = (value) => Number(String(value).replace('.', '').replace(',', '.')) || 0;
+const money = (value) =>
+  Number(
+    String(value).includes(',')
+      ? String(value).replace(/\./g, '').replace(',', '.')
+      : value,
+  ) || 0;
 // formata numero como dinheiro (ex: 1500 vira "R$ 1.500,00")
-const formatBRL = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatBRL = (value) =>
+  value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 // categorias de custo que ja comecam na tela, todas vazias
 const seed = [
@@ -18,17 +24,38 @@ const seed = [
 
 // etapa do formulario de criar evento: itens de custo
 // independentCosts = custos avulsos que vem da etapa anterior / onBack e onFinish = voltar e finalizar
-export function CostItems({ independentCosts, onBack, onFinish }) {
-  const [groups, setGroups] = useState(seed);         // categorias com os itens de cada uma
-  const [open, setOpen] = useState('Iluminação');     // categoria aberta no momento
-  const [drafts, setDrafts] = useState({});           // o que ta sendo digitado antes de adicionar o item
+export function CostItems({
+  independentCosts,
+  onBack,
+  onFinish,
+  groups: savedGroups,
+  setGroups: saveGroups,
+}) {
+  const [localGroups, setLocalGroups] = useState(seed);
+  const groups = savedGroups ?? localGroups;
+  const setGroups = (update) => {
+    const next = typeof update === 'function' ? update(groups) : update;
+    if (saveGroups) saveGroups(next);
+    else setLocalGroups(next);
+  }; // categorias com os itens de cada uma
+  const [open, setOpen] = useState('Iluminação'); // categoria aberta no momento
+  const [erro, setErro] = useState('');
+  const [drafts, setDrafts] = useState({}); // o que ta sendo digitado antes de adicionar o item
 
   // soma dos custos avulsos
-  const independentTotal = useMemo(() => independentCosts.reduce((sum, item) => sum + money(item.value), 0), [independentCosts]);
+  const independentTotal = useMemo(
+    () => independentCosts.reduce((sum, item) => sum + money(item.value), 0),
+    [independentCosts],
+  );
 
   // soma de todos os itens de todas as categorias (quantidade x valor unitario)
   const categoryTotal = useMemo(
-    () => groups.reduce((sum, group) => sum + group.items.reduce((s, item) => s + item.qty * item.unit, 0), 0),
+    () =>
+      groups.reduce(
+        (sum, group) =>
+          sum + group.items.reduce((s, item) => s + item.qty * item.unit, 0),
+        0,
+      ),
     [groups],
   );
 
@@ -40,40 +67,127 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
   // atualiza o que ta sendo digitado no formulario de uma categoria
   // cada categoria tem seu proprio rascunho, e os valores padrao evitam campo undefined
   function changeDraft(group, key, value) {
-    setDrafts((prev) => ({ ...prev, [group]: { description: '', qty: '1', unit: '', ...prev[group], [key]: value } }));
+    setErro('');
+    setDrafts((prev) => ({
+      ...prev,
+      [group]: {
+        description: '',
+        qty: '1',
+        unit: '',
+        ...prev[group],
+        [key]: value,
+      },
+    }));
   }
 
   // adiciona o item digitado na categoria
   function addItem(groupName) {
     const draft = { description: '', qty: '1', unit: '', ...drafts[groupName] };
-    // nao adiciona se faltar descricao ou valor
-    if (!draft.description.trim() || !draft.unit) return;
+    const quantidade = Number(draft.qty);
+    const valorTexto = String(draft.unit).trim();
+
+    if (!draft.description.trim() || draft.description.trim().length > 255) {
+      setErro('Informe uma descrição de até 255 caracteres para o item.');
+      return;
+    }
+
+    if (
+      !Number.isInteger(quantidade) ||
+      quantidade < 1 ||
+      quantidade > 1000000
+    ) {
+      setErro('A quantidade deve ser um número inteiro entre 1 e 1.000.000.');
+      return;
+    }
+
+    if (
+      !/^\d+(?:[.,]\d{1,2})?$/.test(valorTexto) ||
+      money(valorTexto) > 9999999999
+    ) {
+      setErro(
+        'Informe o valor unitário com até duas casas decimais, sem separador de milhar.',
+      );
+      return;
+    }
+
+    setErro('');
 
     // coloca o item novo so na categoria certa, as outras ficam iguais
-    setGroups((prev) => prev.map((group) => group.name === groupName ? {
-      ...group,
-      items: [...group.items, {
-        id: crypto.randomUUID(),                      // id unico pro item
-        description: draft.description,
-        qty: Math.max(1, Number(draft.qty) || 1),     // quantidade minima e 1
-        unit: money(draft.unit),                      // converte o valor digitado pra numero
-      }],
-    } : group));
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.name === groupName
+          ? {
+              ...group,
+              items: [
+                ...group.items,
+                {
+                  id: crypto.randomUUID(), // id unico pro item
+                  description: draft.description.trim(),
+                  qty: quantidade, // quantidade minima e 1
+                  unit: money(draft.unit), // converte o valor digitado pra numero
+                },
+              ],
+            }
+          : group,
+      ),
+    );
 
     // limpa o formulario depois de adicionar
-    setDrafts((prev) => ({ ...prev, [groupName]: { description: '', qty: '1', unit: '' } }));
+    setDrafts((prev) => ({
+      ...prev,
+      [groupName]: { description: '', qty: '1', unit: '' },
+    }));
   }
 
   // remove um item de uma categoria pelo id
   function removeItem(groupName, id) {
-    setGroups((prev) => prev.map((group) => group.name === groupName ? { ...group, items: group.items.filter((item) => item.id !== id) } : group));
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.name === groupName
+          ? { ...group, items: group.items.filter((item) => item.id !== id) }
+          : group,
+      ),
+    );
   }
 
-  // botoes de voltar e finalizar
-  // ao finalizar manda as categorias e o total geral (categorias + custos avulsos) pro componente pai
-  // o ?. evita erro caso o onFinish nao tenha sido passado
+  // Evita finalizar com um item digitado que ainda não entrou na lista.
+  function finalizar() {
+    const temItemNaoAdicionado = Object.values(drafts).some(
+      (draft) =>
+        String(draft.description ?? '').trim() !== '' ||
+        String(draft.unit ?? '').trim() !== '' ||
+        (String(draft.qty ?? '1').trim() !== '' &&
+          Number(draft.qty ?? 1) !== 1),
+    );
+
+    if (temItemNaoAdicionado) {
+      setErro(
+        'Há um item preenchido ainda não adicionado. Clique em Adicionar na categoria correspondente ou limpe os campos antes de finalizar.',
+      );
+      return;
+    }
+
+    setErro('');
+    onFinish?.({ groups, total: categoryTotal + independentTotal });
+  }
+
   const footer = (
-    <ActionRow onBack={onBack} onNext={() => onFinish?.({ groups, total: categoryTotal + independentTotal })} backLabel="Voltar" nextLabel="Finalizar cadastro" />
+    <div>
+      {erro && (
+        <p
+          role="alert"
+          className="mb-3 rounded-xl bg-tt-rosa-claro p-3 text-sm text-tt-rosa-principal"
+        >
+          {erro}
+        </p>
+      )}
+      <ActionRow
+        onBack={onBack}
+        onNext={finalizar}
+        backLabel="Voltar"
+        nextLabel="Revisar e finalizar"
+      />
+    </div>
   );
 
   return (
@@ -81,25 +195,37 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
     <FormCard
       eyebrow="Etapa 4 de 4"
       title="Itens de custos"
-      subtitle="Detalhe os gastos por categoria e acompanhe o total estimado do evento."
+      subtitle="Detalhe os gastos por categoria. Clique em Adicionar para incluir cada item antes de finalizar."
       footer={footer}
     >
       {/* resumo dos totais: 1 coluna no celular e 3 a partir de 761px */}
       <div className="mb-6 grid grid-cols-1 gap-3 min-[761px]:grid-cols-3">
         {/* total das categorias */}
         <div className="grid gap-1 rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro px-4 py-[15px]">
-          <span className="text-[.68rem] font-bold text-tt-grafite/70">Custos categorizados</span>
-          <strong className="text-base text-tt-azul-marinho">{formatBRL(categoryTotal)}</strong>
+          <span className="text-[.68rem] font-bold text-tt-grafite/70">
+            Custos categorizados
+          </span>
+          <strong className="text-base text-tt-azul-marinho">
+            {formatBRL(categoryTotal)}
+          </strong>
         </div>
         {/* total dos custos avulsos */}
         <div className="grid gap-1 rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro px-4 py-[15px]">
-          <span className="text-[.68rem] font-bold text-tt-grafite/70">Custos independentes</span>
-          <strong className="text-base text-tt-azul-marinho">{formatBRL(independentTotal)}</strong>
+          <span className="text-[.68rem] font-bold text-tt-grafite/70">
+            Custos independentes
+          </span>
+          <strong className="text-base text-tt-azul-marinho">
+            {formatBRL(independentTotal)}
+          </strong>
         </div>
         {/* total geral, com fundo escuro pra destacar */}
         <div className="grid gap-1 rounded-xl border border-tt-azul-marinho bg-tt-azul-marinho px-4 py-[15px]">
-          <span className="text-[.68rem] font-bold text-tt-branco/65">Total estimado</span>
-          <strong className="text-base text-tt-laranja-principal">{formatBRL(categoryTotal + independentTotal)}</strong>
+          <span className="text-[.68rem] font-bold text-tt-branco/65">
+            Total estimado
+          </span>
+          <strong className="text-base text-tt-laranja-principal">
+            {formatBRL(categoryTotal + independentTotal)}
+          </strong>
         </div>
       </div>
 
@@ -108,23 +234,44 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
         {groups.map((group) => {
           const isOpen = open === group.name; // ve se essa categoria e a que ta aberta
           // rascunho da categoria, com valores padrao caso ainda nao tenha nada digitado
-          const draft = { description: '', qty: '1', unit: '', ...drafts[group.name] };
+          const draft = {
+            description: '',
+            qty: '1',
+            unit: '',
+            ...drafts[group.name],
+          };
 
           return (
             // first:border-t-0 tira a borda de cima da primeira categoria
-            <section className="border-t border-tt-azul-marinho/12 first:border-t-0" key={group.name}>
+            <section
+              className="border-t border-tt-azul-marinho/12 first:border-t-0"
+              key={group.name}
+            >
               {/* cabecalho da categoria, clicando abre ou fecha */}
               {/* se ja ta aberta fecha, senao abre essa */}
-              <button className={`flex w-full cursor-pointer items-center justify-between gap-4 border-0 px-4 py-[15px] text-left ${isOpen ? 'bg-tt-cinza-claro' : 'bg-tt-branco'}`} type="button" onClick={() => setOpen(isOpen ? '' : group.name)}>
+              <button
+                className={`flex w-full cursor-pointer items-center justify-between gap-4 border-0 px-4 py-[15px] text-left ${isOpen ? 'bg-tt-cinza-claro' : 'bg-tt-branco'}`}
+                type="button"
+                onClick={() => setOpen(isOpen ? '' : group.name)}
+              >
                 {/* nome da categoria e quantidade de itens (item/itens no singular ou plural) */}
                 <span className="flex items-center gap-2.5">
-                  <strong className="text-[.84rem] text-tt-azul-marinho">{group.name}</strong>
-                  <small className="text-[.65rem] text-tt-grafite/70">{group.items.length} {group.items.length === 1 ? 'item' : 'itens'}</small>
+                  <strong className="text-[.84rem] text-tt-azul-marinho">
+                    {group.name}
+                  </strong>
+                  <small className="text-[.65rem] text-tt-grafite/70">
+                    {group.items.length}{' '}
+                    {group.items.length === 1 ? 'item' : 'itens'}
+                  </small>
                 </span>
                 {/* total da categoria e o icone de + ou - */}
                 <span className="flex items-center gap-2.5">
-                  <b className="text-[.77rem] text-tt-azul-marinho">{formatBRL(groupTotal(group))}</b>
-                  <i className="grid size-6 place-items-center rounded-full bg-tt-cinza-claro not-italic font-black text-tt-azul-vivo">{isOpen ? '−' : '+'}</i>
+                  <b className="text-[.77rem] text-tt-azul-marinho">
+                    {formatBRL(groupTotal(group))}
+                  </b>
+                  <i className="grid size-6 place-items-center rounded-full bg-tt-cinza-claro not-italic font-black text-tt-azul-vivo">
+                    {isOpen ? '−' : '+'}
+                  </i>
                 </span>
               </button>
 
@@ -146,14 +293,27 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
                       {/* uma linha pra cada item */}
                       {/* no celular fica em 2 colunas com o botao de remover na direita, no desktop vira as 5 colunas da tabela */}
                       {group.items.map((item) => (
-                        <div className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 border-t border-tt-azul-marinho/12 bg-tt-branco p-3 text-[.72rem] first:border-t-0 min-[761px]:grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] min-[761px]:gap-2.5 min-[761px]:px-2.5 min-[761px]:py-[9px] [&>span:nth-child(5)]:col-start-2 [&>span:nth-child(5)]:row-[1/span_2] min-[761px]:[&>span:nth-child(5)]:col-auto min-[761px]:[&>span:nth-child(5)]:row-auto" key={item.id}>
+                        <div
+                          className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 border-t border-tt-azul-marinho/12 bg-tt-branco p-3 text-[.72rem] first:border-t-0 min-[761px]:grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] min-[761px]:gap-2.5 min-[761px]:px-2.5 min-[761px]:py-[9px] [&>span:nth-child(5)]:col-start-2 [&>span:nth-child(5)]:row-[1/span_2] min-[761px]:[&>span:nth-child(5)]:col-auto min-[761px]:[&>span:nth-child(5)]:row-auto"
+                          key={item.id}
+                        >
                           <span>{item.description}</span>
                           <span>{item.qty}</span>
                           <span>{formatBRL(item.unit)}</span>
                           {/* total do item (quantidade x valor unitario) */}
-                          <span><strong>{formatBRL(item.qty * item.unit)}</strong></span>
+                          <span>
+                            <strong>{formatBRL(item.qty * item.unit)}</strong>
+                          </span>
                           {/* botao de remover o item */}
-                          <span><button className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal" onClick={() => removeItem(group.name, item.id)} aria-label="Remover item">×</button></span>
+                          <span>
+                            <button
+                              className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
+                              onClick={() => removeItem(group.name, item.id)}
+                              aria-label="Remover item"
+                            >
+                              ×
+                            </button>
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -163,18 +323,50 @@ export function CostItems({ independentCosts, onBack, onFinish }) {
                   {/* no celular: descricao e qtd em cima, valor e botao embaixo / no desktop fica tudo numa linha so */}
                   <div className="grid grid-cols-[1fr_80px] gap-2 min-[761px]:grid-cols-[minmax(160px,2fr)_82px_150px_auto]">
                     {/* descricao, o placeholder muda conforme a categoria */}
-                    <input className="min-h-[38px] rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]" placeholder={`Adicionar item de ${group.name.toLowerCase()}`} value={draft.description} onChange={(e) => changeDraft(group.name, 'description', e.target.value)} />
+                    <input
+                      className="min-h-[38px] rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
+                      placeholder={`Adicionar item de ${group.name.toLowerCase()}`}
+                      value={draft.description}
+                      onChange={(e) =>
+                        changeDraft(group.name, 'description', e.target.value)
+                      }
+                    />
                     {/* quantidade */}
-                    <input className="min-h-[38px] rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]" type="number" min="1" placeholder="Qtd." value={draft.qty} onChange={(e) => changeDraft(group.name, 'qty', e.target.value)} />
+                    <input
+                      className="min-h-[38px] rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
+                      type="number"
+                      min="1"
+                      placeholder="Qtd."
+                      value={draft.qty}
+                      onChange={(e) =>
+                        changeDraft(group.name, 'qty', e.target.value)
+                      }
+                    />
                     {/* valor unitario com o "R$" grudado na esquerda */}
                     {/* focus-within deixa a borda laranja quando o input de dentro ta em foco */}
                     <div className="col-start-1 flex min-h-[38px] overflow-hidden rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco focus-within:border-tt-laranja-principal focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)] min-[761px]:col-auto">
-                      <span className="grid self-stretch place-items-center border-r border-tt-azul-marinho/12 bg-tt-cinza-claro px-[9px] text-[.68rem] font-extrabold text-tt-grafite/70">R$</span>
+                      <span className="grid self-stretch place-items-center border-r border-tt-azul-marinho/12 bg-tt-cinza-claro px-[9px] text-[.68rem] font-extrabold text-tt-grafite/70">
+                        R$
+                      </span>
                       {/* inputMode decimal abre o teclado numerico no celular */}
-                      <input className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5 outline-0 placeholder:text-tt-grafite/45" inputMode="decimal" placeholder="0,00" value={draft.unit} onChange={(e) => changeDraft(group.name, 'unit', e.target.value)} />
+                      <input
+                        className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5 outline-0 placeholder:text-tt-grafite/45"
+                        inputMode="decimal"
+                        placeholder="0,00"
+                        value={draft.unit}
+                        onChange={(e) =>
+                          changeDraft(group.name, 'unit', e.target.value)
+                        }
+                      />
                     </div>
                     {/* botao de adicionar o item na categoria */}
-                    <button type="button" className="col-start-2 min-h-[38px] cursor-pointer rounded-[10px] border-0 bg-tt-laranja-principal px-[13px] py-2.5 text-[.78rem] font-extrabold text-tt-azul-marinho transition-transform duration-150 hover:-translate-y-px min-[761px]:col-auto" onClick={() => addItem(group.name)}>Adicionar</button>
+                    <button
+                      type="button"
+                      className="col-start-2 min-h-[38px] cursor-pointer rounded-[10px] border-0 bg-tt-laranja-principal px-[13px] py-2.5 text-[.78rem] font-extrabold text-tt-azul-marinho transition-transform duration-150 hover:-translate-y-px min-[761px]:col-auto"
+                      onClick={() => addItem(group.name)}
+                    >
+                      Adicionar
+                    </button>
                   </div>
                 </div>
               )}

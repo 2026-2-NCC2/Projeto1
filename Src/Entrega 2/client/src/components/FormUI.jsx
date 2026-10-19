@@ -6,12 +6,17 @@ export function Field({ label, children, hint, required, error }) {
   return (
     <label className="field">
       <span className="field-label">
-        {label}{required && <span className="required">*</span>}
+        {label}
+        {required && <span className="required">*</span>}
       </span>
       {/* aqui entra o input, select, textarea... */}
       {children}
       {/* role="alert" faz o leitor de tela ler o erro assim que aparece */}
-      {error && <span className="field-error" role="alert">{error}</span>}
+      {error && (
+        <span className="field-error" role="alert">
+          {error}
+        </span>
+      )}
       {hint && <span className="field-hint">{hint}</span>}
     </label>
   );
@@ -24,7 +29,11 @@ export function Input(props) {
 
 // select com o estilo padrao, as <option> vem pelo children
 export function Select({ children, ...props }) {
-  return <select className="control" {...props}>{children}</select>;
+  return (
+    <select className="control" {...props}>
+      {children}
+    </select>
+  );
 }
 
 // caixa de texto maior com o estilo padrao
@@ -68,12 +77,31 @@ export function FormCard({ eyebrow, title, subtitle, children, footer }) {
 
 // botoes de voltar e avancar do rodape do card
 // os textos tem valor padrao, mas cada etapa pode trocar
-export function ActionRow({ onBack, onNext, backLabel = 'Cancelar', nextLabel = 'Salvar e próximo', nextType = 'button' }) {
+export function ActionRow({
+  onBack,
+  onNext,
+  backLabel = 'Cancelar',
+  nextLabel = 'Salvar e próximo',
+  nextType = 'button',
+}) {
   return (
     <div className="action-row">
-      <button type="button" className="btn btn-secondary" onClick={onBack}>{backLabel}</button>
+      <button type="button" className="btn btn-secondary" onClick={onBack}>
+        {backLabel}
+      </button>
       {/* seta so decorativa, aria-hidden esconde do leitor de tela */}
-      <button type={nextType} className="btn btn-primary" onClick={onNext}>{nextLabel}<span aria-hidden="true">→</span></button>
+      <button
+        key={nextLabel}
+        type={nextType}
+        className="btn btn-primary"
+        onClick={(event) => {
+          if (event.detail > 1) return;
+          onNext?.(event);
+        }}
+      >
+        {nextLabel}
+        <span aria-hidden="true">→</span>
+      </button>
     </div>
   );
 }
