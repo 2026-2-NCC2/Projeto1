@@ -31,6 +31,7 @@ export async function cadastrarUsuario(dados) {
   if (!response.ok) {
     const erro = new Error(data.erro || 'Erro ao cadastrar.')
     erro.status = response.status
+    erro.campo = data.campo
     throw erro
   }
 
