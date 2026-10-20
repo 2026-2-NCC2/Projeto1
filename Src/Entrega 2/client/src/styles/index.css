@@ -1,5 +1,5 @@
 /* fonte Inter do Google Fonts, com todos os pesos usados no site */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Archivo:wdth,wght@100..125,700..900&display=swap');
 @import "tailwindcss";
 
 /* ── Paleta oficial Troca Ticket ──
@@ -7,10 +7,10 @@
    pra suavizar uma cor use opacidade (ex: text-tt-grafite/70 ou color-mix sobre o token). */
 :root {
   /* azuis */
-  --tt-azul-principal: #1261A0;   /* botoes principais, links */
-  --tt-azul-vivo: #168FE2;        /* destaques e acoes */
-  --tt-azul-claro: #38BDF8;       /* icones, detalhes */
-  --tt-azul-suave: #E0F2FE;       /* fundos e cards */
+  --tt-azul-principal: #6D28D9;   /* links e destaques (violeta) */
+  --tt-azul-vivo: #8B5CF6;        /* destaques e acoes */
+  --tt-azul-claro: #C084FC;       /* icones, detalhes */
+  --tt-azul-suave: #F3E8FF;       /* fundos e cards */
 
   /* roxos */
   --tt-roxo-principal: #6D3FD1;   /* destaques secundarios */
@@ -25,15 +25,15 @@
   --tt-rosa-claro: #FCE7F3;       /* backgrounds */
 
   /* laranjas e dourado */
-  --tt-laranja-principal: #F97316; /* CTA, vendas, acoes */
-  --tt-laranja-vivo: #FF8A1F;      /* hover e destaque */
+  --tt-laranja-principal: #D946EF; /* CTA (magenta) */
+  --tt-laranja-vivo: #E879F9;      /* hover e destaque */
   --tt-ambar: #F59E0B;             /* alertas e informacoes */
-  --tt-laranja-claro: #FFEDD5;     /* backgrounds */
+  --tt-laranja-claro: #FAE8FF;     /* backgrounds */
 
   /* neutros */
-  --tt-azul-marinho: #172554;     /* titulos e textos fortes */
-  --tt-grafite: #1F2937;          /* textos principais */
-  --tt-cinza-claro: #F3F4F6;      /* fundo de paginas e cards */
+  --tt-azul-marinho: #0A0A0F;     /* preto: titulos, linhas e fundos escuros */
+  --tt-grafite: #17171C;          /* textos principais */
+  --tt-cinza-claro: #F7F5FA;      /* fundo de paginas e cards */
   --tt-branco: #FFFFFF;           /* fundo principal */
 
   /* sucesso (fora das 20 cores, adicionado de proposito: a paleta nao tem verde) */
@@ -41,14 +41,15 @@
   --tt-verde-claro: #DCFCE7;
 
   /* gradientes permitidos (nao crie outros) */
-  --tt-gradiente-principal: linear-gradient(135deg, #1261A0, #6D3FD1, #E91E8C, #F97316);
-  --tt-gradiente-azul-roxo: linear-gradient(135deg, #168FE2, #6D3FD1);
-  --tt-gradiente-rosa-laranja: linear-gradient(135deg, #E91E8C, #F97316);
+  --tt-gradiente-principal: linear-gradient(135deg, #6D3FD1, #A855F7, #E91E8C, #F9A8D4);
+  --tt-gradiente-azul-roxo: linear-gradient(135deg, #7C3AED, #C084FC);
+  --tt-gradiente-rosa-laranja: linear-gradient(135deg, #E91E8C, #F9A8D4);
 }
 
 /* fonte e cores viram classes do tailwind (ex: bg-tt-azul-principal, text-tt-grafite/70) */
 @theme inline {
   --font-sans: 'Inter', sans-serif;
+  --font-display: 'Archivo', 'Inter', sans-serif;
 
   --color-tt-azul-principal: var(--tt-azul-principal);
   --color-tt-azul-vivo: var(--tt-azul-vivo);
@@ -143,4 +144,71 @@
   .logo-troca  { color: var(--tt-azul-principal); }
   .logo-ticket { color: var(--tt-laranja-principal); }
   .logo-symbol { background: var(--tt-gradiente-principal); }
+}
+
+
+/* ── Linguagem visual editorial/brutalista ──
+   Titulos largos e pesados, linhas finas pretas, formas geometricas e manchas de gradiente.
+   So apresentacao: nenhum texto do site e criado ou alterado aqui. */
+@layer base {
+  h1, h2 { font-family: var(--font-display); font-stretch: 112%; }
+  h3 { font-family: var(--font-display); font-stretch: 100%; }
+  ::selection { background: var(--tt-roxo-vivo); color: var(--tt-branco); }
+}
+
+@layer components {
+  /* titulo grande, largo e pesado */
+  .tt-display {
+    font-family: var(--font-display);
+    font-stretch: 125%;
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
+  /* texto so com contorno (mantem a palavra original, so muda o preenchimento) */
+  .tt-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--tt-azul-marinho);
+  }
+  /* legenda pequena com quadradinho preto na frente */
+  .tt-eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--tt-azul-marinho); }
+  .tt-eyebrow::before { content: ''; width: 9px; height: 9px; background: var(--tt-azul-marinho); flex: none; }
+  /* mancha de luz difusa, sempre atras do conteudo */
+  .tt-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(56px);
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(closest-side, var(--tt-rosa-vivo), transparent 72%);
+  }
+  .tt-blob--violeta { background: radial-gradient(closest-side, var(--tt-roxo-vivo), transparent 72%); }
+  .tt-blob--rosa { background: radial-gradient(closest-side, var(--tt-rosa-suave), transparent 72%); }
+  /* circulo preto com linhas internas (globo) */
+  .tt-globe {
+    position: relative;
+    display: block;
+    border-radius: 9999px;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 9px, var(--tt-branco) 9px 10px),
+      var(--tt-azul-marinho);
+    overflow: hidden;
+  }
+  .tt-globe::before, .tt-globe::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1.5px solid var(--tt-branco);
+  }
+  .tt-globe::before { transform: scaleX(0.55); }
+  .tt-globe::after { transform: scaleX(0.2); }
+  /* semicirculo preto */
+  .tt-semi-l { background: var(--tt-azul-marinho); border-radius: 0 9999px 9999px 0; }
+  .tt-semi-r { background: var(--tt-azul-marinho); border-radius: 9999px 0 0 9999px; }
+}
+
+/* quem pede menos movimento nao ve transicoes */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
 }
