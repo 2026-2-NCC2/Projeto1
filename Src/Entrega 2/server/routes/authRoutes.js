@@ -57,18 +57,31 @@ router.post('/cadastro', async (req, res) => {
         return res.status(201).json({ ok: true, id: idUsuario })
 
     } catch (erro) {
-        await connection.rollback()
+    await connection.rollback()
 
-        // ER_DUP_ENTRY cobre email/username duplicados (tabela usuario) e cnpj duplicado (organizador/fornecedor)
-        if (erro.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ erro: 'E-mail, username ou CNPJ já cadastrado.' })
+    if (erro.code === 'ER_DUP_ENTRY') {
+        const msg = erro.sqlMessage || ''
+        const campo = msg.includes('username') ? 'username'
+                    : msg.includes('cnpj')     ? 'cnpj'
+                    : msg.includes('email')    ? 'email'
+                    : null
+
+        const mensagens = {
+            email: 'E-mail já cadastrado.',
+            username: 'Username já está em uso.',
+            cnpj: 'CNPJ já cadastrado.',
         }
-        console.error(erro)
-        return res.status(500).json({ erro: 'Erro interno.' })
-    } finally {
-        connection.release()
 
+        return res.status(409).json({
+            erro: mensagens[campo] || 'Dado já cadastrado.',
+            campo, // 'email' | 'username' | 'cnpj' | null
+        })
     }
+    console.error(erro)
+    return res.status(500).json({ erro: 'Erro interno.' })
+} finally {
+    connection.release()
+}
 })
 
 router.delete("/deleteUsers/:id", async (req,res) =>{
