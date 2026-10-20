@@ -1,10 +1,13 @@
 import { Router } from 'express'
 import pool from '../config/db.js'
 import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken";
+import { autenticar } from '../middlewares/autenticacao.js';
 
-import { criarSessao } from '../middleware/auth.js'
 
 const router = Router()
+
+const JWT_SECRET = process.env.JWT_SECRET
 
 router.post('/cadastro', async (req, res) => {
     const { nome, username, email, idade, senha, perfil, empresa, cnpj, areaAtuacao } = req.body
@@ -115,13 +118,26 @@ router.post("/login", async (req,res)=>{
         return res.status(401).json({ erro: 'E-mail ou senha inválidos.' })
     }
 
-    return res.status(200).json({
-        token: await criarSessao(usuario.id_usuario),
-        id_usuario: usuario.id_usuario,
-        nome: usuario.nome,
-        email: usuario.email,
-        perfil: usuario.perfil,
-    })
+    const payload = {
+            id_usuario: usuario.id_usuario,
+            email: usuario.email,
+            perfil: usuario.perfil
+        }
+
+        // 2. ASSINATURA DO TOKEN (jwt.sign recebendo a variável payload)
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2d' })
+
+        // 3. RETORNO PARA O FRONT-END
+        return res.status(200).json({
+            ok: true,
+            token: token, 
+            usuario: {
+                id_usuario: usuario.id_usuario,
+                nome: usuario.nome,
+                email: usuario.email,
+                perfil: usuario.perfil,
+            }
+        })
 
     } catch (error) {
         console.error(error)

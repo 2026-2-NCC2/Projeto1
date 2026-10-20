@@ -1,7 +1,7 @@
 import { consultarCobertura } from '../services/cobertura.js'
 import { Router } from 'express'
 import pool from '../config/db.js'
-import { autenticar, permitir } from '../middleware/auth.js'
+import { autenticar, permitir } from '../middlewares/autenticacao.js'
 
 const router = Router()
 

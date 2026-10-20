@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto'
+/*import { createHash, randomBytes } from 'node:crypto'
 import pool from '../config/db.js'
 export async function criarSessao(id) {
  const token = randomBytes(32).toString('hex')
@@ -14,4 +14,4 @@ export async function autenticar(req,res,next) {
   req.usuario=rows[0]; next()
  } catch (e) { next(e) }
 }
-export const permitir = (...perfis) => (req,res,next) => perfis.includes(req.usuario.perfil) ? next() : res.status(403).json({erro:'Seu perfil não tem acesso a esta ação.'})
+export const permitir = (...perfis) => (req,res,next) => perfis.includes(req.usuario.perfil) ? next() : res.status(403).json({erro:'Seu perfil não tem acesso a esta ação.'})*/
