@@ -55,26 +55,32 @@ function LandingPage() {
             </div>
           </div>
 
-          <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]" aria-label="Ilustração de um ingresso digital" role="img">
-            <div className="absolute -z-10 aspect-square w-[min(380px,90%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-40 blur-[40px]" />
-            <div className="relative w-[min(330px,86%)] rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)] max-[760px]:w-[min(300px,78%)]">
-                <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
-                <span className="absolute -right-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
-              <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
-                <span className="grid size-[34px] place-items-center rounded-full bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
-                <span>SEU PRÓXIMO EVENTO</span>
-              </div>
-              <div className="relative flex min-h-[174px] items-end border-b border-dashed border-tt-branco/35 py-6 max-[760px]:min-h-[150px]">
-                <span className="absolute right-[17px] top-[23px] text-[52px] text-tt-rosa-vivo">✦</span>
-                <p className="tt-display m-0 text-[30px] text-tt-branco" style={{ fontStretch: '118%' }}>Momentos<br />que ficam.</p>
-              </div>
-              <div className="flex items-center justify-between gap-3 pt-4 text-[9px] font-extrabold tracking-[0.12em] text-tt-branco/70">
-                <span>VIVA A EXPERIÊNCIA</span>
-                <span className="h-[23px] w-[66px] bg-[repeating-linear-gradient(90deg,var(--tt-branco)_0_2px,transparent_2px_4px,var(--tt-branco)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
-              </div>
-            </div>
-            <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
-          </div>
+        <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]" aria-label="Ilustração de um ingresso digital" role="img">
+  <div className="absolute -z-10 aspect-square w-[min(380px,90%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-40 blur-[40px]" />
+
+  {/* wrapper novo: só cuida do tamanho e da animação */}
+  <div className="relative w-[min(330px,86%)] max-[760px]:w-[min(300px,78%)] animate__animated animate__flip">
+    {/* ingresso: mantém a inclinação e ocupa 100% do wrapper */}
+    <div className="relative w-full rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
+      <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
+      <span className="absolute -right-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
+      <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
+        <span className="grid size-[34px] place-items-center rounded-full bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
+        <span>SEU PRÓXIMO EVENTO</span>
+      </div>
+      <div className="relative flex min-h-[174px] items-end border-b border-dashed border-tt-branco/35 py-6 max-[760px]:min-h-[150px]">
+        <span className="absolute right-[17px] top-[23px] text-[52px] text-tt-rosa-vivo">✦</span>
+        <p className="tt-display m-0 text-[30px] text-tt-branco" style={{ fontStretch: '118%' }}>Momentos<br />que ficam.</p>
+      </div>
+      <div className="flex items-center justify-between gap-3 pt-4 text-[9px] font-extrabold tracking-[0.12em] text-tt-branco/70">
+        <span>VIVA A EXPERIÊNCIA</span>
+        <span className="h-[23px] w-[66px] bg-[repeating-linear-gradient(90deg,var(--tt-branco)_0_2px,transparent_2px_4px,var(--tt-branco)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
+      </div>
+    </div>
+  </div>
+
+  <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
+      </div>
         </div>
       </section>
 
