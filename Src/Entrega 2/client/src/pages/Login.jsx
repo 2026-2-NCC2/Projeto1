@@ -47,7 +47,7 @@ function Login() {
       login(usuario) // <-- em vez de localStorage.setItem direto
       navigate('/PainelDeEventos')
     } catch (err) {
-        setErros({ senha: 'E-mail ou senha inválidos.' })
+        setErros({ senha: err.message })
     }
     
       // por enquanto so mostra no console e volta pra home, depois vai chamar a API

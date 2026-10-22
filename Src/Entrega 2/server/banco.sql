@@ -1,6 +1,8 @@
+DROP DATABASE IF EXISTS trocaticket;
 CREATE DATABASE trocaticket;
 USE trocaticket;
 
+-- 1. TABELAS DE USUÁRIOS E PERFIS
 CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
@@ -35,13 +37,14 @@ CREATE TABLE administrador (
     CONSTRAINT fk_administrador_usuario FOREIGN KEY (id_administrador) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
+-- 2. TABELAS DE EVENTOS E CUSTOS
 CREATE TABLE evento (
     id_evento INT AUTO_INCREMENT PRIMARY KEY,
     id_organizador_fk INT NOT NULL,
     titulo_evento VARCHAR(150) NOT NULL,
     data_evento DATE NOT NULL,
-    data_inicio TIMESTAMP NOT NULL,
-    data_fim TIMESTAMP NOT NULL,
+    data_inicio TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+    data_fim TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,    
     endereco VARCHAR(200) NOT NULL,
     publico_minimo INT,
     publico_maximo INT,
@@ -61,7 +64,7 @@ CREATE TABLE itemcusto (
     categoria VARCHAR(80) NOT NULL,
     descricao_detalhada VARCHAR(255) NOT NULL,
     quantidade INT NOT NULL DEFAULT 1,
-    valor_unitario DECIMAL(12,2) NOT NULL DEFAULT 0,
+    valor_unitario DECIMAL(12,2) NOT NULL DEFAULT 0, -- Mantido aqui (evita o erro de ALTER TABLE)
     CONSTRAINT fk_itemcusto_evento FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
@@ -74,6 +77,7 @@ CREATE TABLE custoindependente (
     CONSTRAINT fk_custoindependente_evento FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE CASCADE
 ) ENGINE=INNODB;
 
+-- 3. TABELAS DE PROPOSTAS E SOLICITAÇÕES
 CREATE TABLE proposta (
     id_proposta INT AUTO_INCREMENT PRIMARY KEY,
     id_fornecedor_fk INT NOT NULL,
@@ -89,32 +93,25 @@ CREATE TABLE proposta (
     CONSTRAINT uq_fornecedor_item UNIQUE (id_fornecedor_fk, id_item_custo_fk)
 ) ENGINE=INNODB;
 
--- Execute uma vez em uma instalação existente, depois de selecionar o banco.
-CREATE TABLE IF NOT EXISTS sessao (
- token_hash CHAR(64) PRIMARY KEY,
- id_usuario_fk INT NOT NULL,
- expira_em DATETIME NOT NULL,
- FOREIGN KEY (id_usuario_fk) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+CREATE TABLE solicitacao_fornecimento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_evento_fk INT NOT NULL,
+    id_fornecedor_fk INT NOT NULL,
+    mensagem VARCHAR(1000) NOT NULL,
+    status ENUM('enviada','aceita','recusada') NOT NULL DEFAULT 'enviada',
+    criada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    respondida_em TIMESTAMP NULL,
+    CONSTRAINT fk_solicitacao_evento FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE CASCADE,
+    CONSTRAINT fk_solicitacao_fornecedor FOREIGN KEY (id_fornecedor_fk) REFERENCES fornecedor(id_fornecedor) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE solicitacao_fornecimento (
- id INT AUTO_INCREMENT PRIMARY KEY,
- id_evento_fk INT NOT NULL,
- id_fornecedor_fk INT NOT NULL,
- mensagem VARCHAR(1000) NOT NULL,
- status ENUM('enviada','aceita','recusada') NOT NULL DEFAULT 'enviada',
- criada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- respondida_em TIMESTAMP NULL,
- FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE CASCADE,
- FOREIGN KEY (id_fornecedor_fk) REFERENCES fornecedor(id_fornecedor) ON DELETE CASCADE
-) ENGINE=InnoDB;
 CREATE TABLE produto_solicitacao (
- id INT AUTO_INCREMENT PRIMARY KEY,
- id_solicitacao_fk INT NOT NULL,
- id_item_custo_fk INT NOT NULL,
- produto VARCHAR(255) NOT NULL,
- quantidade INT NOT NULL,
- valor_unitario DECIMAL(12,2) NOT NULL,
- FOREIGN KEY (id_solicitacao_fk) REFERENCES solicitacao_fornecimento(id) ON DELETE CASCADE,
- FOREIGN KEY (id_item_custo_fk) REFERENCES itemcusto(id_item_custo) ON DELETE CASCADE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_solicitacao_fk INT NOT NULL,
+    id_item_custo_fk INT NOT NULL,
+    produto VARCHAR(255) NOT NULL,
+    quantidade INT NOT NULL,
+    valor_unitario DECIMAL(12,2) NOT NULL,
+    CONSTRAINT fk_produto_solicitacao FOREIGN KEY (id_solicitacao_fk) REFERENCES solicitacao_fornecimento(id) ON DELETE CASCADE,
+    CONSTRAINT fk_produto_itemcusto FOREIGN KEY (id_item_custo_fk) REFERENCES itemcusto(id_item_custo) ON DELETE CASCADE
 ) ENGINE=InnoDB;

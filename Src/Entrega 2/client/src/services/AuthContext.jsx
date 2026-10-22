@@ -3,37 +3,44 @@ import { createContext, useContext, useState } from 'react'
 const AuthContext = createContext(null)
 
 // le o usuario salvo no localStorage, usado so pra inicializar o estado (sobrevive a um refresh)
-function lerUsuarioSalvo() {
+function lerSessaoSalva() {
   try {
-    return JSON.parse(localStorage.getItem('usuario'))
+    const usuario = JSON.parse(localStorage.getItem('usuario'))
+    const token = localStorage.getItem('token')
+    if (!usuario || !token) return { usuario: null, token: null }
+    return { usuario, token }
   } catch {
-    return null
+    return { usuario: null, token: null }
   }
 }
 
 // envolve o app inteiro (ver main.jsx) e guarda o usuario logado em ESTADO do React
 // qualquer componente que usar useAuth() re-renderiza automaticamente quando login/logout acontece
 export function AuthProvider({ children }) {
-  const [usuario, setUsuario] = useState(lerUsuarioSalvo)
+  const [sessao, setSessao] = useState(lerSessaoSalva)
 
   // chamado depois que o POST /api/login retorna com sucesso
-  function login(dadosUsuario) {
-    localStorage.setItem('usuario', JSON.stringify(dadosUsuario))
-    setUsuario(dadosUsuario)
+    function login({ usuario, token }) {
+
+    localStorage.setItem('usuario', JSON.stringify(usuario))
+    localStorage.setItem('token', token)
+    setSessao({ usuario, token })
   }
 
   function logout() {
     localStorage.removeItem('usuario')
-    setUsuario(null)
+    localStorage.removeItem('token')
+    setSessao({ usuario: null, token: null })
   }
 
   const value = {
-    usuario,
-    perfil: usuario?.perfil ?? null,
-    logado: Boolean(usuario),
+    usuario: sessao.usuario,
+    token: sessao.token,
+    perfil: sessao.usuario?.perfil ?? null,
+    logado: Boolean(sessao.usuario && sessao.token),
     login,
     logout,
-  }
+  } 
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

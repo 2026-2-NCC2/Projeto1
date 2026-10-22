@@ -38,3 +38,40 @@ INSERT INTO fornecedor (id_fornecedor, nome_organizacao, cnpj, area_atuacao, sta
 (6, 'Som & Arte',    '98.765.432/0001-01', 'Som e Luz',  'pendente'),
 (7, 'LF Iluminação', '98.765.432/0001-02', 'Iluminação', 'aprovado'),
 (8, 'TC Eventos',    '98.765.432/0001-03', 'Catering',   'rejeitado');
+
+-- evento teste usando o id 4 
+INSERT INTO evento (
+    id_evento, 
+    id_organizador_fk, 
+    titulo_evento, 
+    data_evento, 
+    data_inicio, 
+    data_fim, 
+    endereco, 
+    publico_minimo, 
+    publico_maximo, 
+    qtd_lote_minimo,
+    qtd_lote_maximo,
+    status_publicacao,
+    margem_lucro_percentual,
+    ticket_estimado
+) VALUES (
+    1, 
+    4, -- ID do organizador 'Lima Produções' (Aprovado)
+    'Festival de Primavera TrocaTicket', 
+    '2026-11-15', 
+    '2026-11-15 14:00:00', 
+    '2026-11-15 23:30:00', -- Garante a regra data_fim >= data_inicio
+    'Parque da Cidade, Espaço Alvorada - São Paulo, SP', 
+    200, 
+    1500, 
+    10.0,
+    100.0,
+    'publicado',
+    15.50,
+    75.00
+);
+
+-- Adicionando um item de custo base para este evento (necessário para as propostas)
+INSERT INTO itemcusto (id_item_custo, id_evento_fk, categoria, descricao_detalhada, quantidade, valor_unitario)
+VALUES (1, 1, 'Palco', 'Estrutura metálica de palco 10x8 metros', 1, 3500.00);
