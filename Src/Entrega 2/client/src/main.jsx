@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import { AuthProvider } from './services/AuthContext.jsx'
 import './styles/index.css'
-import 'animate.css'
+
 
 // ponto de entrada do app: coloca o react dentro da div "root" do index.html
 createRoot(document.getElementById('root')).render(
