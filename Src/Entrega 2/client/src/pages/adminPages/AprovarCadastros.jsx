@@ -4,6 +4,13 @@ import Button from '../../components/ui/Button';
 import { buscarCadastros } from '../../services/api';
 import {atualizarStatusCadastro} from '../../services/api'
 
+// formata o timestamp vindo do banco (data_criacao) pro formato brasileiro
+function formatDate(dataCriacao) {
+  if (!dataCriacao) return '—';
+  return new Date(dataCriacao).toLocaleDateString('pt-BR');
+}
+
+
 // ─── Icone de busca ───────────────────────────────────────────────────────────
 // estilo padrao dos svgs (mesmo do dashboard)
 const S = { fill:'none', stroke:'currentColor', strokeWidth:1.8, strokeLinecap:'round', strokeLinejoin:'round', viewBox:'0 0 24 24' };
@@ -183,7 +190,7 @@ export default function AprovarCadastros() {
                       </td>
                       <td className="px-5 py-4"><Badge label={c.tipo} variant={c.tipo} /></td>
                       <td className="px-5 py-4 text-[var(--color-text-muted)]">{c.email}</td>
-                      <td className="px-5 py-4 text-[var(--color-text-muted)]">{c.data}</td>
+                      <td className="px-5 py-4 text-[var(--color-text-muted)]">{formatDate(c.data_criacao)}</td>
                       <td className="px-5 py-4"><Badge label={c.status} variant={c.status} /></td>
                       {/* botoes de aprovar e rejeitar so aparecem nos pendentes */}
                       <td className="px-5 py-4">
