@@ -193,6 +193,7 @@ router.post("/login", async (req, res) => {
         perfil: usuario.perfil,
       },
     });
+    
   } catch (error) {
     console.error(error);
     return res.status(500).json({ erro: "Erro interno." });
