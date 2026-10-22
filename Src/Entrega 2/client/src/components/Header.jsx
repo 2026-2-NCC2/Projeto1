@@ -17,6 +17,10 @@ export default function Header() {
   const criandoEvento = path.startsWith('/criar-evento')
   const noPainel = path === '/paineldeeventos'
   const activeTab = searchParams.get('tab') || 'painel'
+  // aceita os dois valores: 'administrador' vem do enum do banco (login real),
+  // 'admin' é o usado pelo modo demonstração (services/perfil.js)
+  const isAdmin = ['administrador', 'admin'].includes(perfil)
+  const naAreaAdmin = path === '/admindashboard' || path === '/aprovarcadastros'
 
   function handleTabClick(key) {
     setSearchParams({ tab: key })
@@ -38,6 +42,27 @@ export default function Header() {
             Eventos
           </Link>
           {['fornecedor','organizador'].includes(perfil) && <Link to="/propostas" className="text-[13px] font-semibold text-tt-azul-principal hover:underline">{perfil==='fornecedor'?'Propostas enviadas':'Propostas recebidas'}</Link>}
+
+          {/* Links exclusivos do administrador — antes só eram acessíveis digitando a URL */}
+          {isAdmin && (
+            <>
+              <Link
+                to="/AdminDashboard"
+                className={`text-[13px] font-semibold no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs ${path === '/admindashboard' ? 'py-[25px] shadow-[inset_0_-2px_var(--tt-laranja-principal)] text-tt-azul-principal max-[900px]:py-2' : 'text-tt-grafite/75'}`}
+                aria-current={path === '/admindashboard' ? 'page' : undefined}
+              >
+                Painel
+              </Link>
+              <Link
+                to="/AprovarCadastros"
+                className={`text-[13px] font-semibold no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs ${path === '/aprovarcadastros' ? 'py-[25px] shadow-[inset_0_-2px_var(--tt-laranja-principal)] text-tt-azul-principal max-[900px]:py-2' : 'text-tt-grafite/75'}`}
+                aria-current={path === '/aprovarcadastros' ? 'page' : undefined}
+              >
+                Aprovações
+              </Link>
+            </>
+          )}
+
           {path === '/' && <a className="text-[13px] font-semibold text-tt-grafite/75 no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs" href="#categorias">Categorias</a>}
           {path === '/' && <a className="text-[13px] font-semibold text-tt-grafite/75 no-underline transition-colors hover:text-tt-azul-principal max-[540px]:text-xs" href="#como-funciona">Como funciona</a>}
 
@@ -66,8 +91,9 @@ export default function Header() {
           {paginaDeConta && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-roxo-vivo max-[540px]:text-xs" to="/">Voltar ao início</Link>}
           {criandoEvento && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-roxo-vivo max-[540px]:text-xs" to="/PainelDeEventos">Voltar ao painel</Link>}
           {noPainel && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-roxo-vivo max-[540px]:text-xs" to="/">Início</Link>}
-          
-            {logado ? (
+          {naAreaAdmin && <Link className="text-[13px] font-semibold text-tt-grafite/75 no-underline hover:text-tt-roxo-vivo max-[540px]:text-xs" to="/">Início</Link>}
+
+          {logado ? (
             <span className="text-[13px] font-bold text-tt-azul-marinho capitalize">
               {perfil}
               <button onClick={() => { logout(); navigate('/') }} className="ml-[7px] text-tt-roxo-vivo no-underline font-semibold"> (Sair)</button>
