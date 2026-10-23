@@ -1,4 +1,5 @@
 import Footer from '../components/Footer'
+import Sticker from '../components/Sticker'
 import { Link } from 'react-router-dom'
 
 const CATEGORIAS = [
@@ -55,26 +56,36 @@ function LandingPage() {
             </div>
           </div>
 
-          <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]" aria-label="Ilustração de um ingresso digital" role="img">
-            <div className="absolute -z-10 aspect-square w-[min(380px,90%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-40 blur-[40px]" />
-            <div className="relative w-[min(330px,86%)] rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)] max-[760px]:w-[min(300px,78%)]">
-                <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
-                <span className="absolute -right-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
-              <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
-                <span className="grid size-[34px] place-items-center rounded-full bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
-                <span>SEU PRÓXIMO EVENTO</span>
-              </div>
-              <div className="relative flex min-h-[174px] items-end border-b border-dashed border-tt-branco/35 py-6 max-[760px]:min-h-[150px]">
-                <span className="absolute right-[17px] top-[23px] text-[52px] text-tt-rosa-vivo">✦</span>
-                <p className="tt-display m-0 text-[30px] text-tt-branco" style={{ fontStretch: '118%' }}>Momentos<br />que ficam.</p>
-              </div>
-              <div className="flex items-center justify-between gap-3 pt-4 text-[9px] font-extrabold tracking-[0.12em] text-tt-branco/70">
-                <span>VIVA A EXPERIÊNCIA</span>
-                <span className="h-[23px] w-[66px] bg-[repeating-linear-gradient(90deg,var(--tt-branco)_0_2px,transparent_2px_4px,var(--tt-branco)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
-              </div>
-            </div>
-            <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
-          </div>
+        <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]" aria-label="Ilustração de um ingresso digital" role="img">
+  <div className="absolute -z-10 aspect-square w-[min(380px,90%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-40 blur-[40px]" />
+
+  {/* wrapper novo: só cuida do tamanho e da animação */}
+  <div className="relative w-[min(330px,86%)] max-[760px]:w-[min(300px,78%)] animate__animated animate__flip">
+    {/* ingresso: mantém a inclinação e ocupa 100% do wrapper */}
+    <div className="relative w-full rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
+      <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
+      <span className="absolute -right-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
+      <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
+        <span className="grid size-[34px] place-items-center rounded-full bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
+        <span>SEU PRÓXIMO EVENTO</span>
+      </div>
+      <div className="relative flex min-h-[174px] items-end border-b border-dashed border-tt-branco/35 py-6 max-[760px]:min-h-[150px]">
+        <span className="absolute right-[17px] top-[23px] text-[52px] text-tt-rosa-vivo">✦</span>
+        <p className="tt-display m-0 text-[30px] text-tt-branco" style={{ fontStretch: '118%' }}>Momentos<br />que ficam.</p>
+      </div>
+      <div className="flex items-center justify-between gap-3 pt-4 text-[9px] font-extrabold tracking-[0.12em] text-tt-branco/70">
+        <span>VIVA A EXPERIÊNCIA</span>
+        <span className="h-[23px] w-[66px] bg-[repeating-linear-gradient(90deg,var(--tt-branco)_0_2px,transparent_2px_4px,var(--tt-branco)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
+      </div>
+    </div>
+  </div>
+
+  {/* adesivos colados em volta do ingresso */}
+  <Sticker nome="cd" tamanho={104} rotate={12} className="-top-3 right-0 max-[760px]:right-1 max-[760px]:top-0 max-[760px]:w-[76px]" />
+  <Sticker nome="estrela" tamanho={86} rotate={-14} delay={1.2} className="bottom-6 left-0 max-[760px]:left-1 max-[760px]:w-[64px]" />
+
+  <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
+      </div>
         </div>
       </section>
 
@@ -90,7 +101,8 @@ function LandingPage() {
                </div>
                   </section>
 
-      <section className="mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[84px] pb-[92px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
+      <section className="relative mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[84px] pb-[92px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
+        <Sticker nome="vinil" tamanho={104} rotate={-10} delay={0.6} className="right-[24%] top-[40px] hidden min-[1000px]:block" />
         <div className="mb-10 flex items-end justify-between gap-6 border-t border-tt-azul-marinho pt-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3">
           <div>
             <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Inspire-se</span>
@@ -118,6 +130,8 @@ function LandingPage() {
       <section className="relative overflow-hidden border-y border-tt-azul-marinho bg-tt-branco py-[84px] pb-[92px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="como-funciona">
         <span className="tt-blob tt-blob--rosa -left-24 top-10 size-[380px] opacity-60" aria-hidden="true" />
         <span className="tt-semi-r absolute -right-0 top-12 h-[110px] w-[55px] max-[760px]:hidden" aria-hidden="true" />
+        <Sticker nome="fita" tamanho={150} rotate={-8} delay={1.4} className="left-[3%] top-[56px] hidden min-[1100px]:block" />
+        <Sticker nome="globo" tamanho={84} rotate={10} delay={0.3} className="right-[9%] top-[44px] hidden min-[1100px]:block" />
         <div className="relative z-[1] mx-auto w-[calc(100%_-_48px)] max-w-[1180px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px]">
           <div className="mb-6 flex justify-center gap-6 text-center max-[480px]:items-center max-[480px]:flex-col max-[480px]:gap-3">
             <div>

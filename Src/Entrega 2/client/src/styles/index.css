@@ -206,6 +206,31 @@
   /* semicirculo preto */
   .tt-semi-l { background: var(--tt-azul-marinho); border-radius: 0 9999px 9999px 0; }
   .tt-semi-r { background: var(--tt-azul-marinho); border-radius: 9999px 0 0 9999px; }
+  /* texto so com contorno, versao clara pra usar em fundo escuro */
+  .tt-outline-claro {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--tt-branco);
+  }
+  /* adesivo decorativo (componente Sticker): inclinado, com sombra de adesivo colado e uma flutuada leve.
+     --r = inclinacao, --d = atraso da animacao (cada adesivo se mexe num tempo diferente) */
+  .tt-sticker {
+    position: absolute;
+    z-index: 1;
+    height: auto;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+    transform: rotate(var(--r, 0deg));
+    filter:
+      drop-shadow(0 1px 1px color-mix(in srgb, var(--tt-azul-marinho) 35%, transparent))
+      drop-shadow(0 8px 12px color-mix(in srgb, var(--tt-azul-marinho) 28%, transparent));
+    animation: tt-sticker-flutuar 7s ease-in-out var(--d, 0s) infinite;
+  }
+}
+
+@keyframes tt-sticker-flutuar {
+  0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
+  50% { transform: rotate(calc(var(--r, 0deg) + 2.5deg)) translateY(-7px); }
 }
 
 /* quem pede menos movimento nao ve transicoes */
