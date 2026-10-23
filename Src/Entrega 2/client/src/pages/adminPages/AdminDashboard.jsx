@@ -1,11 +1,9 @@
-import React from 'react';
+
 import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Footer from '../../components/Footer';
 import Sticker from '../../components/Sticker';
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Badge from "../../components/ui/Badge";
 import { buscarCadastros } from "../../services/api";
 
 // formata o timestamp vindo do banco (data_criacao) pro formato brasileiro
@@ -14,57 +12,18 @@ function formatDate(dataCriacao) {
   return new Date(dataCriacao).toLocaleDateString("pt-BR");
 }
 
+
+
 // ─── Icones ───────────────────────────────────────────────────────────────────
 // Estilo padrao dos svgs, assim todos os icones ficam iguais e nao precisa repetir em cada um.
 // currentColor faz o icone pegar a cor do texto onde ele estiver
-const S = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.8,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
-  viewBox: "0 0 24 24",
-};
+const IconUsers  = () => <svg width="20" height="20" {...S}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>; // total de cadastros
+const IconCheck  = () => <svg width="20" height="20" {...S}><polyline points="20 6 9 17 4 12"/></svg>; // aprovados
+const IconClock  = () => <svg width="20" height="20" {...S}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>; // pendentes
+const IconX      = () => <svg width="20" height="20" {...S}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>; // rejeitados
+const IconArrow  = () => <svg width="16" height="16" {...S}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>; // seta dos links
+const IconReport = () => <svg width="20" height="20" {...S}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>; // relatorios
 
-// icones usados nos cards e botoes da tela
-const IconUsers = () => (
-  <svg width="20" height="20" {...S}>
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-); // total de cadastros
-const IconCheck = () => (
-  <svg width="20" height="20" {...S}>
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-); // aprovados
-const IconClock = () => (
-  <svg width="20" height="20" {...S}>
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-); // pendentes
-const IconX = () => (
-  <svg width="20" height="20" {...S}>
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-); // rejeitados
-const IconArrow = () => (
-  <svg width="15" height="15" {...S}>
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
-  </svg>
-); // seta dos links (menor que os outros)
-const IconReport = () => (
-  <svg width="20" height="20" {...S}>
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-  </svg>
-); // relatorios
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 // card dos numeros do dashboard, reaproveitado pros 4 status
