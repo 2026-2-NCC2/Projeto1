@@ -1,4 +1,4 @@
-/*import mysql from 'mysql2/promise'
+import mysql from 'mysql2/promise'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -31,9 +31,9 @@ async function testConnection() {
 
 testConnection()
 
-export default pool*/
+export default pool
 
-import postgres from 'postgres'
+/*import postgres from 'postgres'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -74,4 +74,4 @@ async function testConnection() {
 
 testConnection()
 
-export default pool
+export default pool*/
