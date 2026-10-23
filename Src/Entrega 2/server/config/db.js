@@ -45,7 +45,7 @@ if (!connectionString) {
 }
 
 // Configuração do cliente postgres.js ajustada para o Supabase
-const sql = postgres(connectionString, {
+const pool = postgres(connectionString, {
     max: 10,
     ssl: 'require', // 💡 O Supabase EXIGE conexão segura (SSL) ativa
     connect_timeout: 10 // Tempo máximo de espera para conectar (em segundos)
@@ -74,4 +74,4 @@ async function testConnection() {
 
 testConnection()
 
-export default sql
+export default pool
