@@ -1,8 +1,15 @@
 import React, {  useEffect, useState, useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { buscarCadastros } from '../../services/api';
+import {atualizarStatusCadastro} from '../../services/api'
+
+// formata o timestamp vindo do banco (data_criacao) pro formato brasileiro
+function formatDate(dataCriacao) {
+  if (!dataCriacao) return '—';
+  return new Date(dataCriacao).toLocaleDateString('pt-BR');
+}
+
 
 // ─── Icone de busca ───────────────────────────────────────────────────────────
 // estilo padrao dos svgs (mesmo do dashboard)
@@ -10,47 +17,6 @@ const S = { fill:'none', stroke:'currentColor', strokeWidth:1.8, strokeLinecap:'
 // lupa que fica dentro do campo de pesquisa
 const IconSearch = () => <svg width="15" height="15" {...S}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
 
-// ─── Navbar Admin (igual ao Dashboard) ───────────────────────────────────────
-// links do menu, mesma lista do dashboard
-const NAV_LINKS = [
-  { to: '/AdminDashboard',   label: 'Dashboard'  },
-  { to: '/AprovarCadastros', label: 'Aprovações' },
-];
-
-// navbar do admin (mesma do dashboard)
-function AdminNav() { 
-  // rota atual, pra saber qual link destacar
-  const { pathname } = useLocation();
-  return (
-    // fica fixa no topo quando rola a pagina
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-center relative border-b border-tt-branco/10 bg-tt-azul-marinho px-6 md:px-10">
-      {/* logo, volta pra home */}
-      <Link to="/" className="absolute left-6 md:left-10 flex items-center gap-2 no-underline">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
-        <span className="text-sm font-extrabold tracking-tight text-tt-branco hidden sm:inline">
-          TrocaTicket <span className="font-normal text-tt-branco/40">· Admin</span>
-        </span>
-      </Link>
-
-      {/* links do menu */}
-      <div className="flex items-center gap-1">
-        {NAV_LINKS.map(({ to, label }) => {
-          // ativo se for a pagina atual
-          const active = pathname === to || (to !== '/admin' && pathname.startsWith(to));
-          return (
-            // link ativo fica mais claro, os outros mais apagados
-            <Link key={to} to={to}
-              className={`rounded-lg px-3 py-1.5 text-sm font-semibold no-underline transition-colors duration-150 ${
-                active ? 'bg-tt-branco/10 text-tt-branco' : 'text-tt-branco/50 hover:bg-tt-branco/5 hover:text-tt-branco/80'
-              }`}>
-              {label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
 
 // ─── Filtros ──────────────────────────────────────────────────────────────────
 // botoes de filtro da lista de cadastros
@@ -105,16 +71,24 @@ export default function AprovarCadastros() {
   // muda o status do cadastro quando clica em aprovar ou rejeitar
   // por enquanto so muda no state, depois vai ter que chamar a API
   async function handleAcao(id, acao) {
+  const cadastro = cadastros.find(c => c.id === id);
+  const status = acao === 'aprovar' ? 'aprovado' : 'rejeitado';
+
+  try {
+    await atualizarStatusCadastro(id, cadastro.tipo, status);
+    // so atualiza a tela depois que o banco confirmou
     setCadastros(prev =>
-      prev.map(c => c.id === id ? { ...c, status: acao === 'aprovar' ? 'aprovado' : 'rejeitado' } : c)
+      prev.map(c => c.id === id ? { ...c, status } : c)
     );
+  } catch (err) {
+    alert('Não foi possível atualizar o cadastro. Tente novamente.');
   }
+}
 
 
   return (
     // fundo da pagina toda
     <div className="min-h-screen bg-[var(--color-bg)]">
-      <AdminNav />
 
       {/* Hero - faixa azul do topo com o titulo */}
       <div className="bg-[var(--color-primary)] px-6 pb-12 pt-8 md:px-10">
@@ -216,7 +190,7 @@ export default function AprovarCadastros() {
                       </td>
                       <td className="px-5 py-4"><Badge label={c.tipo} variant={c.tipo} /></td>
                       <td className="px-5 py-4 text-[var(--color-text-muted)]">{c.email}</td>
-                      <td className="px-5 py-4 text-[var(--color-text-muted)]">{c.data}</td>
+                      <td className="px-5 py-4 text-[var(--color-text-muted)]">{formatDate(c.data_criacao)}</td>
                       <td className="px-5 py-4"><Badge label={c.status} variant={c.status} /></td>
                       {/* botoes de aprovar e rejeitar so aparecem nos pendentes */}
                       <td className="px-5 py-4">

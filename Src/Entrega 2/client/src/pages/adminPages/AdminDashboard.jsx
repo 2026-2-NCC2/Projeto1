@@ -3,95 +3,68 @@ import { Link, useLocation } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Footer from '../../components/Footer';
 import Sticker from '../../components/Sticker';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Badge from "../../components/ui/Badge";
+import { buscarCadastros } from "../../services/api";
 
-// ─── Dados mock ───────────────────────────────────────────────────────────────
-// Dados falsos pra testar a tela enquanto a API nao ta pronta.
-// Depois e so trocar pela resposta do back-end.
-// tipo: 'organizador' ou 'fornecedor'
-// status: 'pendente', 'aprovado' ou 'rejeitado' (coloquei um de cada pra testar os filtros)
-const MOCK_CADASTROS = [
-  { id: 1, nome: 'Carlos Mendonça',  empresa: 'Eventos & Cia',    tipo: 'organizador', email: 'carlos@eventosecia.com',  data: '23/09/2026', status: 'pendente'  },
-  { id: 2, nome: 'Mariana Souza',    empresa: 'Som & Arte',        tipo: 'fornecedor',  email: 'mari@somart.com',         data: '22/09/2026', status: 'aprovado'  },
-  { id: 3, nome: 'Pedro Alves',      empresa: 'AlvesShow',         tipo: 'organizador', email: 'pedro@alvesshow.com',     data: '21/09/2026', status: 'pendente'  },
-  { id: 4, nome: 'Lúcia Ferreira',   empresa: 'LF Iluminação',     tipo: 'fornecedor',  email: 'lucia@lfilu.com',         data: '20/09/2026', status: 'rejeitado' },
-  { id: 5, nome: 'Bruno Lima',       empresa: 'Lima Produções',    tipo: 'organizador', email: 'bruno@limaproducoes.com', data: '19/09/2026', status: 'aprovado'  },
-];
+// formata o timestamp vindo do banco (data_criacao) pro formato brasileiro
+function formatDate(dataCriacao) {
+  if (!dataCriacao) return "—";
+  return new Date(dataCriacao).toLocaleDateString("pt-BR");
+}
 
 // ─── Icones ───────────────────────────────────────────────────────────────────
 // Estilo padrao dos svgs, assim todos os icones ficam iguais e nao precisa repetir em cada um.
 // currentColor faz o icone pegar a cor do texto onde ele estiver
-const S = { fill:'none', stroke:'currentColor', strokeWidth:1.8, strokeLinecap:'round', strokeLinejoin:'round', viewBox:'0 0 24 24' };
+const S = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  viewBox: "0 0 24 24",
+};
 
 // icones usados nos cards e botoes da tela
-const IconUsers  = () => <svg width="20" height="20" {...S}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>; // total de cadastros
-const IconCheck  = () => <svg width="20" height="20" {...S}><polyline points="20 6 9 17 4 12"/></svg>; // aprovados
-const IconClock  = () => <svg width="20" height="20" {...S}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>; // pendentes
-const IconX      = () => <svg width="20" height="20" {...S}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>; // rejeitados
-const IconArrow  = () => <svg width="16" height="16" {...S}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>; // seta dos links
-const IconReport = () => <svg width="20" height="20" {...S}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>; // relatorios
-
-// ─── Navbar Admin ─────────────────────────────────────────────────────────────
-// Links do menu do admin. Pra adicionar uma pagina nova e so colocar mais um item aqui
-// to = rota da pagina / label = nome que aparece no menu
-const NAV_LINKS = [
-  { to: '/AdminDashboard',   label: 'Dashboard'  },
-  { to: '/AprovarCadastros', label: 'Aprovações' },
-];
-
-// barra de navegacao do topo, so aparece nas paginas do admin
-function AdminNav() {
-  // useLocation devolve a rota que o usuario ta agora (ex: '/AdminDashboard')
-  // uso o pathname pra comparar com os links e deixar destacado o da pagina atual
-  const { pathname } = useLocation();
-
-  return (
-    // sticky + top-0 deixa a navbar grudada no topo quando rola a pagina
-    // z-50 garante que ela fique por cima do resto do conteudo
-    // linha fina embaixo e cantos retos, igual ao resto do site
-    <nav className="sticky top-0 z-50 flex h-14 items-center justify-between gap-3 border-b-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho px-4 sm:px-6 md:px-10">
-      {/* Logo - clicando nela volta pra home do site */}
-      <Link to="/" className="flex shrink-0 items-center gap-2 no-underline">
-        {/* bolinha com o T, que e a "marca" do TrocaTicket */}
-        <span className="grid size-7 place-items-center rounded-full bg-tt-laranja-principal text-sm font-black text-tt-azul-marinho">T</span>
-        {/* nome do site em branco e o "Admin" mais apagado, pra deixar claro que ta na area administrativa */}
-        <span className="font-display text-sm font-black tracking-tight text-tt-branco max-[420px]:hidden">
-          TrocaTicket <span className="font-normal text-tt-branco/50">· Admin</span>
-        </span>
-      </Link>
-
-      {/* Links do menu (vem da lista NAV_LINKS) */}
-      <div className="flex items-center gap-1">
-        {NAV_LINKS.map(({ to, label }) => {
-          // link fica ativo se for a pagina atual ou uma subpagina dela
-          const active = pathname === to || pathname.startsWith(to);
-
-          return (
-            <Link
-              key={to}
-              to={to}
-              // ativo = fundo branco e texto escuro / inativo = apagado, clareia no hover
-              className={`px-3 py-1.5 text-[13px] font-bold no-underline transition-colors duration-150 ${
-                active
-                  ? 'bg-tt-branco text-tt-azul-marinho'
-                  : 'text-tt-branco/60 hover:bg-tt-branco/10 hover:text-tt-branco'
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Botao de sair: por enquanto so manda pro login */}
-      <Link
-        to="/Login"
-        className="border-[1.5px] border-tt-branco/40 px-3 py-1.5 text-xs font-bold text-tt-branco/80 no-underline transition-colors hover:border-tt-branco hover:bg-tt-branco hover:text-tt-azul-marinho"
-      >
-        Sair
-      </Link>
-    </nav>
-  );
-}
+const IconUsers = () => (
+  <svg width="20" height="20" {...S}>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+); // total de cadastros
+const IconCheck = () => (
+  <svg width="20" height="20" {...S}>
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+); // aprovados
+const IconClock = () => (
+  <svg width="20" height="20" {...S}>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+); // pendentes
+const IconX = () => (
+  <svg width="20" height="20" {...S}>
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+); // rejeitados
+const IconArrow = () => (
+  <svg width="15" height="15" {...S}>
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+); // seta dos links (menor que os outros)
+const IconReport = () => (
+  <svg width="20" height="20" {...S}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+  </svg>
+); // relatorios
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 // card dos numeros do dashboard, reaproveitado pros 4 status
@@ -169,12 +142,35 @@ function TituloSecao({ legenda, titulo, children }) {
 // pagina do dashboard do admin, junta tudo que foi feito acima
 export default function AdminDashboard() {
   // conta os cadastros por status pra mostrar nos stat cards
+  const [cadastros, setCadastros] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erroApi, setErroApi] = useState("");
+
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const dados = await buscarCadastros();
+        setCadastros(dados);
+      } catch (err) {
+        setErroApi("Não foi possível carregar os cadastros. Tente novamente.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    carregar();
+  }, []);
+
+  // conta os cadastros por status pra mostrar nos stat cards
   const stats = {
-    total:      MOCK_CADASTROS.length,
-    pendentes:  MOCK_CADASTROS.filter(c => c.status === 'pendente').length,
-    aprovados:  MOCK_CADASTROS.filter(c => c.status === 'aprovado').length,
-    rejeitados: MOCK_CADASTROS.filter(c => c.status === 'rejeitado').length,
+    total: cadastros.length,
+    pendentes: cadastros.filter((c) => c.status === "pendente").length,
+    aprovados: cadastros.filter((c) => c.status === "aprovado").length,
+    rejeitados: cadastros.filter((c) => c.status === "rejeitado").length,
   };
+
+  // so os 5 mais recentes pro preview do dashboard; a lista completa fica em AprovarCadastros
+  const recentes = cadastros.slice(0, 5);
+
   return (
     // fundo da pagina toda (overflow-x-clip evita barra de rolagem lateral por causa dos adesivos)
     <div className="min-h-screen overflow-x-clip bg-tt-cinza-claro">
@@ -232,14 +228,16 @@ export default function AdminDashboard() {
             <QuickCard to="/AprovarCadastros" icon={<IconCheck />} numero="01"
               titulo="Aprovar Cadastros"
               desc={`${stats.pendentes} solicitações aguardando revisão`}
-              badge={stats.pendentes} />
+              badge={stats.pendentes}
+            />
             {/* to="#" porque essas paginas ainda nao foram feitas */}
             <QuickCard to="#" icon={<IconUsers />} numero="02"
               titulo="Lista de Usuários"
               desc="Compradores, vendedores e suas permissões" />
             <QuickCard to="#" icon={<IconReport />} numero="03"
               titulo="Relatórios"
-              desc="Atividade da plataforma e métricas de uso" />
+              desc="Atividade da plataforma e métricas de uso"
+            />
           </div>
         </section>
 
@@ -255,48 +253,91 @@ export default function AdminDashboard() {
           </TituloSecao>
 
           {/* caixa branca em volta da tabela */}
-          <div className="border-[1.5px] border-tt-azul-marinho bg-tt-branco">
+          <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-tt-branco shadow-[var(--shadow-sm)]">
+            {loading && (
+              <p className="px-5 py-10 text-center text-sm text-[var(--color-text-muted)]">
+                Carregando cadastros...
+              </p>
+            )}
+            {erroApi && (
+              <p
+                role="alert"
+                className="px-5 py-10 text-center text-sm text-[var(--color-danger)]"
+              >
+                {erroApi}
+              </p>
+            )}
+            {!loading && !erroApi && recentes.length === 0 && (
+              <p className="px-5 py-10 text-center text-sm text-[var(--color-text-muted)]">
+                Nenhum cadastro recebido até o momento.
+              </p>
+            )}
             {/* overflow-x-auto deixa rolar pro lado no celular quando a tabela nao cabe */}
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  {/* cabecalho escuro, igual aos blocos escuros da home */}
-                  <tr className="bg-tt-azul-marinho">
-                    {/* cabecalho da tabela, fiz com map pra nao repetir o th 5 vezes */}
-                    {['Nome / Empresa','Tipo','E-mail','Data','Status'].map(h => (
-                      <th key={h} className="whitespace-nowrap px-5 py-3.5 text-left text-[11px] font-extrabold uppercase tracking-[0.1em] text-tt-branco">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* uma linha pra cada cadastro do mock */}
-                  {MOCK_CADASTROS.map(c => (
-                    // os pendentes ficam com fundo lilas pra chamar atencao
-                    // last:border-b-0 tira a borda da ultima linha
-                    <tr key={c.id}
-                      className={`border-b border-tt-azul-marinho/15 transition-colors last:border-b-0 hover:bg-tt-cinza-claro ${c.status === 'pendente' ? 'bg-tt-lilas-claro' : ''}`}>
-                      {/* nome em cima e empresa embaixo, na mesma celula */}
-                      <td className="px-5 py-3.5">
-                        <p className="font-bold text-tt-azul-marinho">{c.nome}</p>
-                        <p className="text-xs text-tt-grafite/70">{c.empresa}</p>
-                      </td>
-                      {/* tipo e status aparecem como etiqueta colorida (Badge) */}
-                      <td className="px-5 py-3.5"><Badge label={c.tipo} variant={c.tipo} /></td>
-                      <td className="whitespace-nowrap px-5 py-3.5 text-tt-grafite/75">{c.email}</td>
-                      <td className="whitespace-nowrap px-5 py-3.5 text-tt-grafite/75">{c.data}</td>
-                      <td className="px-5 py-3.5"><Badge label={c.status} variant={c.status} /></td>
+            {!loading && !erroApi && recentes.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+                      {/* cabecalho da tabela, fiz com map pra nao repetir o th 5 vezes */}
+                      {[
+                        "Nome / Empresa",
+                        "Tipo",
+                        "E-mail",
+                        "Data",
+                        "Status",
+                      ].map((h) => (
+                        <th
+                          key={h}
+                          className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]"
+                        >
+                          {h}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {/* uma linha pra cada cadastro recente vindo do banco */}
+                    {recentes.map((c) => (
+                      // os pendentes ficam com fundo roxinho pra chamar atencao
+                      // last:border-b-0 tira a borda da ultima linha
+                      <tr
+                        key={c.id}
+                        className={`border-b border-[var(--color-border)] transition-colors last:border-b-0 hover:bg-tt-cinza-claro ${c.status === "pendente" ? "bg-tt-lilas-claro" : ""}`}
+                      >
+                        {/* nome em cima e empresa embaixo, na mesma celula */}
+                        <td className="px-5 py-3.5">
+                          <p className="font-semibold text-[var(--color-primary)]">
+                            {c.nome}
+                          </p>
+                          <p className="text-xs text-[var(--color-text-muted)]">
+                            {c.empresa}
+                          </p>
+                        </td>
+                        {/* tipo e status aparecem como etiqueta colorida (Badge) */}
+                        <td className="px-5 py-3.5">
+                          <Badge label={c.tipo} variant={c.tipo} />
+                        </td>
+                        <td className="px-5 py-3.5 text-[var(--color-text-muted)]">
+                          {c.email}
+                        </td>
+                        <td className="px-5 py-3.5 text-[var(--color-text-muted)]">
+                          {formatDate(c.data_criacao)}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <Badge label={c.status} variant={c.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
           {/* vinil e globo colados na quina da tabela, so em tela maior pra nao cobrir os dados */}
           <Sticker nome="vinil" tamanho={118} rotate={-10} delay={1.5} className="-bottom-[78px] -right-6 hidden xl:block" />
           <Sticker nome="globo" tamanho={92} rotate={9} delay={0.2} className="-bottom-[66px] right-[118px] hidden xl:block" />
         </section>
         {/* fim dos cadastros recentes */}
-
       </div>
       {/* fim do conteudo principal */}
 

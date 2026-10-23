@@ -7,34 +7,33 @@ import ValidacaoEmail from '../pages/ValidacaoEmail'
 import NotFound from '../pages/NotFound'
 import Cadastro from '../pages/Cadastro'
 import Login from '../pages/Login'
-import Propostas from '../pages/Propostas'
 import PainelDeEventos from '../pages/PainelDeEventos'
 import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
 import EventRegistration from '../components/EventRegistration.jsx'
 import AdminDashboard from '../pages/adminPages/AdminDashboard.jsx'
+import ProtectedRoute from '../components/ProtectedRoute'
 
 // todas as rotas do site
 export const router = createBrowserRouter([
   {
-    // layout em volta de todas as paginas
     element: <AppLayout />,
     children: [
-      // cada item liga um endereco a uma pagina
       { path: '/', element: <LandingPage /> },
       { path: '/validation', element: <ValidacaoEmail /> },
       { path: '/Cadastro', element: <Cadastro /> },
       { path: '/Login', element: <Login /> },
-      { path: '/propostas', element: <Propostas /> },
       { path: '/PainelDeEventos', element: <PainelDeEventos /> },
-      // paginas do admin
-      { path: '/AprovarCadastros', element: <AprovarCadastros /> },
-      { path: "/AdminDashboard", element: <AdminDashboard/>},
-      // formulario de criar evento, o ? deixa a etapa opcional (ex: /criar-evento ou /criar-evento/evento)
+
+      // admin — so perfil 'administrador'
+      { path: '/AprovarCadastros', element: <ProtectedRoute roles={['administrador']}><AprovarCadastros /></ProtectedRoute> },
+      { path: '/AdminDashboard', element: <ProtectedRoute roles={['administrador']}><AdminDashboard /></ProtectedRoute> },
+
+      // criar evento — so perfil 'organizador'
       {
         path: '/criar-evento/:etapa?',
-        element: <EventRegistration />,
+        element: <ProtectedRoute roles={['organizador']}><EventRegistration /></ProtectedRoute>,
       },
-      // qualquer rota que nao existe cai na pagina 404
+
       { path: '*', element: <NotFound /> },
     ],
   },

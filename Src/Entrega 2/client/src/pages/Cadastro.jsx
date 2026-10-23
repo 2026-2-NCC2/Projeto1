@@ -7,23 +7,38 @@ import { cadastrarUsuario } from '../services/api'
 // tipos de conta que a pessoa pode escolher no cadastro
 // id = valor que vai pro back-end (bate com o ENUM da tabela usuario.perfil) / emoji, titulo e desc = o que aparece no card
 const ROLES = [
-  { id: 'cliente', emoji: '👤', titulo: 'Usuário', desc: 'Compre e troque ingressos de eventos.' },
-  { id: 'organizador', emoji: '🎪', titulo: 'Organizador', desc: 'Crie e gerencie seus eventos.' },
-  { id: 'fornecedor', emoji: '🏢', titulo: 'Fornecedor', desc: 'Ofereça serviços para organizadores.' }
-]
+  {
+    id: "cliente",
+    emoji: "👤",
+    titulo: "Usuário",
+    desc: "Compre e troque ingressos de eventos.",
+  },
+  {
+    id: "organizador",
+    emoji: "🎪",
+    titulo: "Organizador",
+    desc: "Crie e gerencie seus eventos.",
+  },
+  {
+    id: "fornecedor",
+    emoji: "🏢",
+    titulo: "Fornecedor",
+    desc: "Ofereça serviços para organizadores.",
+  },
+];
 
 // servicos que o fornecedor pode marcar (so aparece se escolher fornecedor)
 // pra adicionar um servico novo e so colocar mais um item aqui
 const SERVICES = [
-  { id: 'som_luz', emoji: '🔊', label: 'Som e Luz' },
-  { id: 'seguranca', emoji: '🛡️', label: 'Segurança' },
-  { id: 'catering', emoji: '🍽️', label: 'Catering / Buffet' },
-  { id: 'decoracao', emoji: '🎨', label: 'Decoração' },
-  { id: 'foto_video', emoji: '📸', label: 'Foto e Vídeo' },
-  { id: 'transporte', emoji: '🚌', label: 'Transporte' },
-  { id: 'estrutura', emoji: '🏗️', label: 'Estrutura / Palco' },
-  { id: 'outro', emoji: '➕', label: 'Outro' }
-]
+  { id: "som_luz", emoji: "🔊", label: "Som e Luz" },
+  { id: "seguranca", emoji: "🛡️", label: "Segurança" },
+  { id: "catering", emoji: "🍽️", label: "Catering / Buffet" },
+  { id: "decoracao", emoji: "🎨", label: "Decoração" },
+  { id: "foto_video", emoji: "📸", label: "Foto e Vídeo" },
+  { id: "transporte", emoji: "🚌", label: "Transporte" },
+  { id: "estrutura", emoji: "🏗️", label: "Estrutura / Palco" },
+  { id: "outro", emoji: "➕", label: "Outro" },
+];
 
 // classes que se repetem nos botoes e campos do cadastro (mesmo visual do Login: cantos retos, linha preta fina e sombra dura)
 const BTN_BASE = 'w-full sm:w-auto cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho px-7 py-3 text-[15px] font-bold transition duration-150 disabled:cursor-not-allowed disabled:border-tt-azul-marinho/20 disabled:bg-tt-azul-marinho/10 disabled:text-tt-grafite/45 disabled:shadow-none disabled:translate-y-0'
@@ -109,7 +124,7 @@ function Etiqueta({ children, fundo }) {
 // indicador de progresso do cadastro (1 --- 2 --- 3), agora com quadrados e linha preta
 // current = etapa atual (comeca do 0) / total = quantas etapas tem
 function StepDots({ current, total }) {
-  const items = []
+  const items = [];
   for (let i = 0; i < total; i++) {
     const isActive = i === current // etapa que ta agora
     const isDone = i < current     // etapas que ja passaram
@@ -136,94 +151,98 @@ function Campo({ id, label, type, placeholder, value, onChange, error }) {
       {/* mensagem de erro embaixo, so aparece se tiver */}
       {error && <span className="mt-1.5 text-xs font-bold text-tt-rosa-principal">{error}</span>}
     </div>
-  )
+  );
 }
 
 // pagina de cadastro, dividida em etapas
 export default function Cadastro() {
-  const navigate = useNavigate() // pra mudar de pagina pelo codigo
+  const navigate = useNavigate(); // pra mudar de pagina pelo codigo
 
   // controle das etapas
-  const [step, setStep] = useState(0)   // etapa atual
-  const [role, setRole] = useState('')  // tipo de conta escolhido
-  const [done, setDone] = useState(false) // true quando termina o cadastro
+  const [step, setStep] = useState(0); // etapa atual
+  const [role, setRole] = useState(""); // tipo de conta escolhido
+  const [done, setDone] = useState(false); // true quando termina o cadastro
 
   // dados basicos
-  const [nome, setNome] = useState('')
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [idade, setIdade] = useState('')
-  const [senha, setSenha] = useState('')
-  const [confirmSenha, setConfirmSenha] = useState('')
+  const [nome, setNome] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [idade, setIdade] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmSenha, setConfirmSenha] = useState("");
 
   // dados da empresa (organizador e fornecedor)
-  const [empresa, setEmpresa] = useState('')
-  const [cnpj, setCnpj] = useState('')
-  const [areas, setAreas] = useState(['']) // comeca com um campo vazio
-  const [services, setServices] = useState([]) // servicos marcados pelo fornecedor
+  const [empresa, setEmpresa] = useState("");
+  const [cnpj, setCnpj] = useState("");
+  const [areas, setAreas] = useState([""]); // comeca com um campo vazio
+  const [services, setServices] = useState([]); // servicos marcados pelo fornecedor
 
-  const [errors, setErrors] = useState({}) // mensagens de erro dos campos
+  const [errors, setErrors] = useState({}); // mensagens de erro dos campos
 
   // estado da chamada pro backend
-  const [apiLoading, setApiLoading] = useState(false) // true enquanto espera a resposta do /api/cadastro
-  const [apiError, setApiError] = useState('')        // mensagem de erro geral da API (ex: erro 500)
+  const [apiLoading, setApiLoading] = useState(false); // true enquanto espera a resposta do /api/cadastro
+  const [apiError, setApiError] = useState(""); // mensagem de erro geral da API (ex: erro 500)
 
   // codigo aleatorio do cadastro (ex: TT-A1B2C3), a funcao no useState faz ele ser gerado so uma vez
-  const [code] = useState(() => 'TT-' + Math.random().toString(36).substr(2, 6).toUpperCase())
-  const [areaFor, setAreaFor] = useState('')
+  const [code] = useState(
+    () => "TT-" + Math.random().toString(36).substr(2, 6).toUpperCase(),
+  );
+  const [areaFor, setAreaFor] = useState("");
 
   // quantidade de etapas muda conforme o tipo de conta
   // fornecedor tem a etapa de servicos a mais
-  const totalSteps = role === 'fornecedor' ? 4 : role === 'organizador' ? 3 : 2
+  const totalSteps = role === "fornecedor" ? 4 : role === "organizador" ? 3 : 2;
 
   // valida os campos da etapa atual e devolve um objeto com os erros
   // se voltar vazio e porque ta tudo certo
   function validate() {
     // comeca vazio, e cada campo com problema ganha uma chave aqui (ex: e.email = 'E-mail inválido.')
-    const e = {}
+    const e = {};
 
     // etapa 0: dados basicos
     if (step === 0) {
-      if (!nome.trim()) e.nome = 'Nome obrigatório.'
-      if (!username.trim()) e.username = 'Username obrigatório.'
+      if (!nome.trim()) e.nome = "Nome obrigatório.";
+      if (!username.trim()) e.username = "Username obrigatório.";
 
       // idade: obrigatoria, nao pode ser negativa e tem que ser um numero plausivel
-      if (!idade.trim()) e.idade = 'Idade obrigatória.'
-      else if (Number.isNaN(Number(idade))) e.idade = 'Idade inválida.'
-      else if (Number(idade) < 0) e.idade = 'Idade não pode ser negativa.'
-      else if (Number(idade) > 120) e.idade = 'Idade inválida.'
+      if (!idade.trim()) e.idade = "Idade obrigatória.";
+      else if (Number.isNaN(Number(idade))) e.idade = "Idade inválida.";
+      else if (Number(idade) < 0) e.idade = "Idade não pode ser negativa.";
+      else if (Number(idade) > 120) e.idade = "Idade inválida.";
 
       // regex simples, so confere se tem algo@algo.algo
-      if (!email.trim()) e.email = 'E-mail obrigatório.'
-      else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'E-mail inválido.'
-      if (!senha) e.senha = 'Senha obrigatória.'
-      else if (senha.length < 6) e.senha = 'Mínimo 6 caracteres.'
-      if (!confirmSenha) e.confirmSenha = 'Confirme sua senha.'
-      else if (senha !== confirmSenha) e.confirmSenha = 'As senhas não coincidem.'
+      if (!email.trim()) e.email = "E-mail obrigatório.";
+      else if (!/\S+@\S+\.\S+/.test(email)) e.email = "E-mail inválido.";
+      if (!senha) e.senha = "Senha obrigatória.";
+      else if (senha.length < 6) e.senha = "Mínimo 6 caracteres.";
+      if (!confirmSenha) e.confirmSenha = "Confirme sua senha.";
+      else if (senha !== confirmSenha)
+        e.confirmSenha = "As senhas não coincidem.";
     }
 
     // etapa 2: dados da empresa (cliente nao passa por aqui)
-    if (step === 2 && role !== 'cliente') {
-      if (!empresa.trim()) e.empresa = 'Nome da empresa obrigatório.'
-      if (!cnpj.trim()) e.cnpj = 'CNPJ obrigatório.'
+    if (step === 2 && role !== "cliente") {
+      if (!empresa.trim()) e.empresa = "Nome da empresa obrigatório.";
+      if (!cnpj.trim()) e.cnpj = "CNPJ obrigatório.";
       // organizador precisa preencher pelo menos uma area
-      if (role === 'organizador' && !areas.some(a => a.trim())) e.area = 'Informe ao menos uma área de atuação.'
+      if (role === "organizador" && !areas.some((a) => a.trim()))
+        e.area = "Informe ao menos uma área de atuação.";
     }
 
     // etapa 3: servicos, so pro fornecedor
-    if (step === 3 && role === 'fornecedor') {
-      if (services.length === 0) e.services = 'Selecione ao menos um serviço.'
+    if (step === 3 && role === "fornecedor") {
+      if (services.length === 0) e.services = "Selecione ao menos um serviço.";
     }
 
     // devolve os erros pra quem chamou o validate()
     // se voltar {} vazio pode avancar, senao mostra as mensagens nos campos
-    return e
+    return e;
   }
 
   // envia os dados pro backend (POST /api/cadastro) e so marca como concluido se der certo
   async function finalizarCadastro() {
-    setApiError('')
-    setApiLoading(true)
+    setApiError("");
+    setApiLoading(true);
     try {
       const payload = {
         nome,
@@ -232,66 +251,95 @@ export default function Cadastro() {
         idade: Number(idade),
         senha,
         perfil: role, // 'cliente' | 'organizador' | 'fornecedor'
-      }
+      };
 
       // organizador e fornecedor tem tabela propria no banco, precisam de empresa/cnpj
-      if (role === 'organizador' || role === 'fornecedor') {
-        payload.empresa = empresa
-        payload.cnpj = cnpj
+      if (role === "organizador" || role === "fornecedor") {
+        payload.empresa = empresa;
+        payload.cnpj = cnpj;
       }
 
       // fornecedor.area_atuacao no banco e preenchido com os servicos marcados
       // (o campo "areaFor" do form e geografico e nao tem coluna no banco ainda, entao nao e enviado)
-      if (role === 'fornecedor') {
+      if (role === "fornecedor") {
         payload.areaAtuacao = services
           .map((id) => SERVICES.find((s) => s.id === id)?.label)
           .filter(Boolean)
-          .join(', ')
+          .join(", ");
       }
 
-      await cadastrarUsuario(payload)
-      setDone(true)
+      await cadastrarUsuario(payload);
+      setDone(true);
     } catch (err) {
       if (err.status === 409) {
-        // e-mail ja cadastrado: volta pra etapa 0 e mostra o erro no campo certo
-        setStep(0)
-        setErrors((prev) => ({ ...prev, email: 'E-mail já cadastrado.' }))
+        if (err.campo === "username") {
+          setStep(0);
+          setErrors((prev) => ({
+            ...prev,
+            username: "Username já está em uso.",
+          }));
+        } else if (err.campo === "cnpj") {
+          // CNPJ é preenchido na etapa 2 (organizador/fornecedor)
+          setStep(2);
+          setErrors((prev) => ({ ...prev, cnpj: "CNPJ já cadastrado." }));
+        } else {
+          setStep(0);
+          setErrors((prev) => ({ ...prev, email: "E-mail já cadastrado." }));
+        }
       } else {
-        setApiError('Não foi possível concluir o cadastro. Tente novamente em instantes.')
+        setApiError(
+          "Não foi possível concluir o cadastro. Tente novamente em instantes.",
+        );
       }
     } finally {
-      setApiLoading(false)
+      setApiLoading(false);
     }
   }
 
   // roda quando clica no botao de continuar
   function handleNext() {
-    const errs = validate()
+    const errs = validate();
     // se tiver algum erro, mostra nos campos e para aqui
-    if (Object.keys(errs).length) { setErrors(errs); return }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     // se passou, limpa os erros antigos
-    setErrors({})
+    setErrors({});
 
     // se for a ultima etapa daquele tipo de conta, finaliza o cadastro (chama a API)
-    if (step === 1 && role === 'cliente') { finalizarCadastro(); return }
-    if (step === 2 && role === 'organizador') { finalizarCadastro(); return }
-    if (step === 3 && role === 'fornecedor') { finalizarCadastro(); return }
+    if (step === 1 && role === "cliente") {
+      finalizarCadastro();
+      return;
+    }
+    if (step === 2 && role === "organizador") {
+      finalizarCadastro();
+      return;
+    }
+    if (step === 3 && role === "fornecedor") {
+      finalizarCadastro();
+      return;
+    }
 
     // senao vai pra proxima etapa
-    setStep(s => s + 1)
+    setStep((s) => s + 1);
   }
 
   // marca ou desmarca um servico (se ja ta na lista tira, se nao ta adiciona)
-  const toggleService = id => setServices(p => p.includes(id) ? p.filter(s => s !== id) : [...p, id])
+  const toggleService = (id) =>
+    setServices((p) =>
+      p.includes(id) ? p.filter((s) => s !== id) : [...p, id],
+    );
 
   // funcoes dos campos de area de atuacao
-  const addArea = () => setAreas(p => [...p, ''])                                        // adiciona um campo novo vazio
-  const removeArea = i => setAreas(p => p.filter((_, idx) => idx !== i))                 // remove o campo da posicao i
-  const updateArea = (i, v) => setAreas(p => p.map((a, idx) => idx === i ? v : a))       // atualiza o texto do campo i
+  const addArea = () => setAreas((p) => [...p, ""]); // adiciona um campo novo vazio
+  const removeArea = (i) => setAreas((p) => p.filter((_, idx) => idx !== i)); // remove o campo da posicao i
+  const updateArea = (i, v) =>
+    setAreas((p) => p.map((a, idx) => (idx === i ? v : a))); // atualiza o texto do campo i
 
   // tela final, aparece depois que termina o cadastro
   if (done) {
-    const isUser = role === 'cliente' // cliente ja entra direto, os outros precisam de aprovacao
+    const isUser = role === "cliente"; // cliente ja entra direto, os outros precisam de aprovacao
 
     return (
       <Cena done>

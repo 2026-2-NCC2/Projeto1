@@ -1,5 +1,23 @@
 const api_url = "http://localhost:3000/api"
 
+
+function getToken() {
+  return localStorage.getItem('token')
+}
+
+// fetch com o header Authorization já incluso, pra rotas protegidas pelo middleware `autenticar`
+async function authFetch(path, options = {}) {
+  const token = getToken()
+  return fetch(`${api_url}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
+}
+
 // lança um erro com status e a mensagem vinda do backend, pra quem chamar poder tratar por status
 export async function cadastrarUsuario(dados) {
   const response = await fetch(`${api_url}/cadastro`, {
@@ -38,22 +56,27 @@ export async function loginUsuario(dados) {
 }
 
 export async function buscarCadastros(){
-  const response = await fetch(`${api_url}/admin/cadastros`, {
-    method: 'GET'
-  })
-
+  const response = await authFetch('/admin/cadastros', { method: 'GET' })
   const data = await response.json().catch(()=>({}))
-
   if (!response.ok){
     const erro = new Error(data.erro || 'Erro ao buscar usuários.')
-     erro.status = response.status
+    erro.status = response.status
     throw erro
   }
-
   return data
 }
 
-// CRUD DELETE - JULIA ;)
+export async function deletarUsuario(id){
+  const response = await authFetch(`/deleteUsers/${id}`, { method: 'DELETE' })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    const erro = new Error(data.erro || 'Erro ao deletar.')
+    erro.status = response.status
+    throw erro
+  }
+  return data
+}
+/*
 // apaga um usuario pelo id, chamando a rota DELETE 
 export async function deletarUsuario(id){
 
@@ -75,6 +98,22 @@ export async function deletarUsuario(id){
 // se der certo ele vai devolver { ok: true, mensagem: 'Usuário excluído com sucesso.' }
 return data
 }
+*/
+
+export async function atualizarStatusCadastro(id, tipo, status) {
+  const response = await authFetch(`/admin/cadastros/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ tipo, status }),
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    const erro = new Error(data.erro || 'Erro ao atualizar cadastro.')
+    erro.status = response.status
+    throw erro
+  }
+  return data
+}
+
 // Todas as permissões são conferidas novamente no servidor.
 export async function solicitar(path, options = {}) {
  let usuario
