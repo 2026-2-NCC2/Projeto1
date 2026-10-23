@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Footer from '../components/Footer'
+import Sticker from '../components/Sticker'
 import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
 import { loginUsuario } from '../services/api'
 import { useAuth } from '../services/AuthContext'
@@ -55,9 +56,11 @@ function Login() {
   }
 
   return (
-    <div className={ui.page}>
+    <div className={`${ui.page} relative overflow-x-clip`}>
       <div className={ui.container}>
-        <form className={ui.card} onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+        {/* o relative prende os adesivos no card */}
+        <div className="relative w-full max-w-[440px]">
+        <form className={`${ui.card} relative z-[2]`} onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
           <h1 className={ui.title}>Entrar</h1>
           <p className={ui.subtitle}>Preencha os dados para se conectar.</p>
 
@@ -88,6 +91,14 @@ function Login() {
             Ainda não tem uma conta? <Link to="/Cadastro">Cadastre-se</Link>
           </div>
         </form>
+        {/* adesivo pequeno na quina do card (celular e tablet) */}
+        <Sticker nome="estrela" tamanho={70} rotate={14} className="-right-2 -top-9 z-[3] lg:hidden" />
+        {/* adesivos grandes nas laterais, so em tela larga */}
+        <Sticker nome="fita" tamanho={150} rotate={-9} delay={0.5} className="-left-[124px] top-[8%] z-[3] hidden lg:block" />
+        <Sticker nome="cd" tamanho={120} rotate={12} delay={1.5} className="-left-[94px] bottom-[6%] z-[3] hidden lg:block" />
+        <Sticker nome="estrela" tamanho={100} rotate={-12} delay={1} className="-right-[74px] top-[6%] z-[3] hidden lg:block" />
+        <Sticker nome="vinil" tamanho={140} rotate={8} delay={0.2} className="-right-[114px] bottom-[4%] z-[3] hidden lg:block" />
+        </div>
       </div>
 
       {/* rodape do site */}

@@ -1,4 +1,5 @@
 import Footer from '../components/Footer'
+import Sticker from '../components/Sticker'
 import { Link } from 'react-router-dom'
 
 const CATEGORIAS = [
@@ -79,6 +80,10 @@ function LandingPage() {
     </div>
   </div>
 
+  {/* adesivos colados em volta do ingresso */}
+  <Sticker nome="cd" tamanho={104} rotate={12} className="-top-3 right-0 max-[760px]:right-1 max-[760px]:top-0 max-[760px]:w-[76px]" />
+  <Sticker nome="estrela" tamanho={86} rotate={-14} delay={1.2} className="bottom-6 left-0 max-[760px]:left-1 max-[760px]:w-[64px]" />
+
   <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
       </div>
         </div>
@@ -96,7 +101,8 @@ function LandingPage() {
                </div>
                   </section>
 
-      <section className="mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[84px] pb-[92px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
+      <section className="relative mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[84px] pb-[92px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
+        <Sticker nome="vinil" tamanho={104} rotate={-10} delay={0.6} className="right-[24%] top-[40px] hidden min-[1000px]:block" />
         <div className="mb-10 flex items-end justify-between gap-6 border-t border-tt-azul-marinho pt-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3">
           <div>
             <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Inspire-se</span>
@@ -124,6 +130,8 @@ function LandingPage() {
       <section className="relative overflow-hidden border-y border-tt-azul-marinho bg-tt-branco py-[84px] pb-[92px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="como-funciona">
         <span className="tt-blob tt-blob--rosa -left-24 top-10 size-[380px] opacity-60" aria-hidden="true" />
         <span className="tt-semi-r absolute -right-0 top-12 h-[110px] w-[55px] max-[760px]:hidden" aria-hidden="true" />
+        <Sticker nome="fita" tamanho={150} rotate={-8} delay={1.4} className="left-[3%] top-[56px] hidden min-[1100px]:block" />
+        <Sticker nome="globo" tamanho={84} rotate={10} delay={0.3} className="right-[9%] top-[44px] hidden min-[1100px]:block" />
         <div className="relative z-[1] mx-auto w-[calc(100%_-_48px)] max-w-[1180px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px]">
           <div className="mb-6 flex justify-center gap-6 text-center max-[480px]:items-center max-[480px]:flex-col max-[480px]:gap-3">
             <div>
