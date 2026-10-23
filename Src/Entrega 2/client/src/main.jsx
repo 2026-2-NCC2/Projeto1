@@ -5,7 +5,6 @@ import { router } from './routes'
 import { AuthProvider } from './services/AuthContext.jsx'
 import './styles/index.css'
 
-
 // ponto de entrada do app: coloca o react dentro da div "root" do index.html
 createRoot(document.getElementById('root')).render(
   // StrictMode ajuda a achar problemas durante o desenvolvimento (nao aparece na tela)
