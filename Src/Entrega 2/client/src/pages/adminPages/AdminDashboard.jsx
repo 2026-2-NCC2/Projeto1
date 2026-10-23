@@ -12,8 +12,14 @@ function formatDate(dataCriacao) {
   return new Date(dataCriacao).toLocaleDateString("pt-BR");
 }
 
-
-
+const S = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  viewBox: "0 0 24 24",
+};
 // ─── Icones ───────────────────────────────────────────────────────────────────
 // Estilo padrao dos svgs, assim todos os icones ficam iguais e nao precisa repetir em cada um.
 // currentColor faz o icone pegar a cor do texto onde ele estiver
@@ -133,7 +139,6 @@ export default function AdminDashboard() {
   return (
     // fundo da pagina toda (overflow-x-clip evita barra de rolagem lateral por causa dos adesivos)
     <div className="min-h-screen overflow-x-clip bg-tt-cinza-claro">
-      <AdminNav />
 
       {/* Hero - faixa escura do topo com o titulo da pagina, manchas de luz e adesivos */}
       <section className="relative overflow-hidden border-b-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho px-4 pb-20 pt-10 sm:px-6 md:px-10 md:pb-24 md:pt-14">
