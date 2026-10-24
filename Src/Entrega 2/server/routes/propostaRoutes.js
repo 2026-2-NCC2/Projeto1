@@ -9,7 +9,9 @@ router.get('/',async(req,res,next)=>{
   const fornecedor=req.usuario.perfil==='fornecedor'
   const [rows]=await pool.query(`SELECT s.*,e.titulo_evento,f.nome_organizacao AS fornecedor,o.nome_organizacao AS organizador FROM solicitacao_fornecimento s JOIN evento e ON e.id_evento=s.id_evento_fk JOIN fornecedor f ON f.id_fornecedor=s.id_fornecedor_fk JOIN organizador o ON o.id_organizador=e.id_organizador_fk WHERE ${fornecedor?'s.id_fornecedor_fk':'e.id_organizador_fk'}=? ORDER BY s.criada_em DESC`,[req.usuario.id_usuario])
   if(!rows.length)return res.json([])
-  const [produtos]=await pool.query('SELECT p.* FROM produto_solicitacao p WHERE p.id_solicitacao_fk IN (?)',[rows.map(r=>r.id)])
+  // IN (?) com array: o mysql2 expandia isso sozinho (IN (?,?,?)); o driver
+  // pg não faz essa expansão, então usamos = ANY($1) passando o array direto.
+  const [produtos]=await pool.query('SELECT p.* FROM produto_solicitacao p WHERE p.id_solicitacao_fk = ANY($1)',[rows.map(r=>r.id)])
   res.json(rows.map(r=>({...r,produtos:produtos.filter(p=>p.id_solicitacao_fk===r.id)})))
  }catch(e){next(e)}
 })
@@ -22,11 +24,14 @@ router.post('/',permitir('fornecedor'),async(req,res,next)=>{
  let conn
  try {
   conn=await pool.getConnection();await conn.beginTransaction()
-  const [eventos]=await conn.query('SELECT id_evento FROM evento WHERE id_evento=? AND status_publicacao="publicado" FOR UPDATE',[eventoId])
+  // status_publicacao='publicado' com aspas simples: no Postgres (ao contrário
+  // do MySQL) aspas duplas são sempre identificador, nunca literal de texto.
+  const [eventos]=await conn.query('SELECT id_evento FROM evento WHERE id_evento=? AND status_publicacao=\'publicado\' FOR UPDATE',[eventoId])
   if(!eventos.length){await conn.rollback();return res.status(404).json({erro:'Evento indisponível para propostas.'})}
   const itens=await consultarCobertura(conn,eventoId)
   if(conflitoCobertura(itens,produtos)){await conn.rollback();return res.status(409).json({erro:'A quantidade oferecida ultrapassa o saldo disponível. Atualize os detalhes do evento.'})}
-  const [r]=await conn.query('INSERT INTO solicitacao_fornecimento (id_evento_fk,id_fornecedor_fk,mensagem) VALUES (?,?,?)',[eventoId,req.usuario.id_usuario,mensagem.trim()])
+  // RETURNING id: sem isso o Postgres não devolve o id gerado (sem insertId).
+  const [r]=await conn.query('INSERT INTO solicitacao_fornecimento (id_evento_fk,id_fornecedor_fk,mensagem) VALUES (?,?,?) RETURNING id',[eventoId,req.usuario.id_usuario,mensagem.trim()])
   for(const p of produtos)await conn.query('INSERT INTO produto_solicitacao (id_solicitacao_fk,id_item_custo_fk,produto,quantidade,valor_unitario) VALUES (?,?,?,?,?)',[r.insertId,p.itemId,p.produto.trim(),p.quantidade,p.valorUnitario])
   await conn.commit();res.status(201).json({id:r.insertId})
  }catch(e){if(conn)await conn.rollback();next(e)}finally{conn?.release()}

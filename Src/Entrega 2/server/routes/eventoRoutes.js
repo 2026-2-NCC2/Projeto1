@@ -66,13 +66,13 @@ router.get('/eventos', autenticarSeHouverToken, async (req, res, next) => {
                 SELECT
                     e.id_evento AS id,
                     e.titulo_evento AS titulo,
-                    DATE_FORMAT(
+                    TO_CHAR(
                         e.data_inicio,
-                        '%Y-%m-%d'
+                        'YYYY-MM-DD'
                     ) AS data_inicio,
-                    DATE_FORMAT(
+                    TO_CHAR(
                         e.data_fim,
-                        '%Y-%m-%d'
+                        'YYYY-MM-DD'
                     ) AS data_fim,
                     e.endereco,
                     e.status_publicacao,
@@ -337,6 +337,8 @@ router.post(
             conexao = await pool.getConnection()
             await conexao.beginTransaction()
 
+            // RETURNING id_evento: o Postgres não gera um insertId sozinho
+            // como o MySQL, então pedimos a chave gerada de volta.
             const [resultado] = await conexao.query(
                 `
                 INSERT INTO evento (
@@ -356,6 +358,7 @@ router.post(
                 VALUES (
                     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicado'
                 )
+                RETURNING id_evento
                 `,
                 [
                     req.usuario.id_usuario,
@@ -487,18 +490,18 @@ router.patch(
                 SET
                     titulo_evento = ?,
                     data_evento = ?,
-                    data_inicio = CONCAT(
-                        ?, ' ', TIME(data_inicio)
-                    ),
-                    data_fim = CONCAT(
-                        ?, ' ', TIME(data_fim)
-                    ),
+                    data_inicio = (CONCAT(
+                        ?, ' ', data_inicio::time
+                    ))::timestamptz,
+                    data_fim = (CONCAT(
+                        ?, ' ', data_fim::time
+                    ))::timestamptz,
                     endereco = ?,
                     status_publicacao = ?,
                     ticket_estimado = ?,
                     qtd_lote_minimo = ?,
                     qtd_lote_maximo = CASE
-                        WHEN ? THEN ? ELSE qtd_lote_maximo
+                        WHEN CAST(? AS boolean) THEN ? ELSE qtd_lote_maximo
                     END
                 WHERE
                     id_evento = ?

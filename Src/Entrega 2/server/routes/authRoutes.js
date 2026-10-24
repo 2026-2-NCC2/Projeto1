@@ -49,8 +49,10 @@ router.post("/cadastro", async (req, res) => {
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
+    // RETURNING id_usuario: o Postgres não tem insertId automático como o
+    // MySQL, então pedimos o id gerado de volta explicitamente.
     const [resultadoUsuario] = await connection.query(
-      `INSERT INTO usuario (nome, idade, username, email, senha, perfil) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO usuario (nome, idade, username, email, senha, perfil) VALUES (?, ?, ?, ?, ?, ?) RETURNING id_usuario`,
       [nome, idade, username, email, senhaCriptografada, perfil],
     );
     const idUsuario = resultadoUsuario.insertId;
@@ -75,8 +77,12 @@ router.post("/cadastro", async (req, res) => {
   } catch (erro) {
     await connection.rollback();
 
-    if (erro.code === "ER_DUP_ENTRY") {
-      const msg = erro.sqlMessage || "";
+    // '23505' = unique_violation no Postgres (era erro.code === 'ER_DUP_ENTRY'
+    // no mysql2). O driver `postgres` também não tem `erro.sqlMessage`:
+    // usamos `erro.constraint_name` (nome da constraint única violada, ex:
+    // "usuario_email_key") e `erro.detail` como no mysql2 usava sqlMessage.
+    if (erro.code === "23505") {
+      const msg = `${erro.constraint_name || ""} ${erro.detail || ""}`;
       const campo = msg.includes("username")
         ? "username"
         : msg.includes("cnpj")
