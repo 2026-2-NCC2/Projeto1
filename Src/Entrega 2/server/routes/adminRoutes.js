@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import pool from '../config/db.js'
+import sql from '../config/db.js'
 import { autenticar, permitir } from '../middlewares/autenticacao.js';
 
 
@@ -7,7 +7,7 @@ const router = Router()
 
 router.get("/admin/cadastros", autenticar, permitir("administrador"), async (req,res)=>{
     try{
-        const [resultado] = await pool.query(`
+        const resultado = await sql`
             SELECT u.id_usuario AS id, u.nome, u.email, u.data_criacao,
             'organizador' AS tipo, o.nome_organizacao AS empresa, o.cnpj,
             o.status_aprovacao AS status
@@ -23,8 +23,8 @@ router.get("/admin/cadastros", autenticar, permitir("administrador"), async (req
             JOIN fornecedor f ON u.id_usuario = f.id_fornecedor
 
             ORDER BY data_criacao DESC
-        `)
-        
+        `
+
         res.json(resultado);
     }
     catch(erro){
@@ -50,12 +50,14 @@ router.patch('/admin/cadastros/:id', autenticar, permitir("administrador"), asyn
     const coluna = tipo === 'organizador' ? 'id_organizador' : 'id_fornecedor'
 
     try {
-        const [resultado] = await pool.query(
-            `UPDATE ${tabela} SET status_aprovacao = ? WHERE ${coluna} = ?`,
-            [status, id]
-        )
+        // sql(tabela)/sql(coluna) tratam o valor como identificador (nome de
+        // tabela/coluna), não como parâmetro de valor — é assim que o
+        // postgres.js lida com nomes dinâmicos com segurança.
+        const resultado = await sql`
+            UPDATE ${sql(tabela)} SET status_aprovacao = ${status} WHERE ${sql(coluna)} = ${id}
+        `
 
-        if (resultado.affectedRows === 0) {
+        if (resultado.count === 0) {
             return res.status(404).json({ erro: 'Cadastro não encontrado.' })
         }
 

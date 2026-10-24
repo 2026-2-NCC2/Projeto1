@@ -1,5 +1,5 @@
 import { Router } from "express";
-import pool from "../config/db.js";
+import sql from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { autenticar } from "../middlewares/autenticacao.js";
@@ -40,47 +40,41 @@ router.post("/cadastro", async (req, res) => {
       });
   }
 
-  // pega uma conexao dedicada pra poder usar transacao
-  // (se o insert na tabela organizador/fornecedor falhar, desfaz o insert em usuario tambem)
-  const connection = await pool.getConnection();
-
   try {
-    await connection.beginTransaction();
-
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-    // RETURNING id_usuario: o Postgres não tem insertId automático como o
-    // MySQL, então pedimos o id gerado de volta explicitamente.
-    const [resultadoUsuario] = await connection.query(
-      `INSERT INTO usuario (nome, idade, username, email, senha, perfil) VALUES (?, ?, ?, ?, ?, ?) RETURNING id_usuario`,
-      [nome, idade, username, email, senhaCriptografada, perfil],
-    );
-    const idUsuario = resultadoUsuario.insertId;
+    // sql.begin: se o insert em organizador/fornecedor falhar, desfaz o
+    // insert em usuario também (BEGIN/COMMIT/ROLLBACK automáticos).
+    const idUsuario = await sql.begin(async (sql) => {
+      const [{ id_usuario }] = await sql`
+        INSERT INTO usuario (nome, idade, username, email, senha, perfil)
+        VALUES (${nome}, ${idade}, ${username}, ${email}, ${senhaCriptografada}, ${perfil})
+        RETURNING id_usuario
+      `;
 
-    // id_organizador / id_fornecedor sao o mesmo id_usuario (FK com PK compartilhada)
-    if (perfil === "organizador") {
-      await connection.query(
-        `INSERT INTO organizador (id_organizador, nome_organizacao, cnpj) VALUES (?, ?, ?)`,
-        [idUsuario, empresa, cnpj],
-      );
-    }
+      // id_organizador / id_fornecedor sao o mesmo id_usuario (FK com PK compartilhada)
+      if (perfil === "organizador") {
+        await sql`
+          INSERT INTO organizador (id_organizador, nome_organizacao, cnpj)
+          VALUES (${id_usuario}, ${empresa}, ${cnpj})
+        `;
+      }
 
-    if (perfil === "fornecedor") {
-      await connection.query(
-        `INSERT INTO fornecedor (id_fornecedor, nome_organizacao, cnpj, area_atuacao) VALUES (?, ?, ?, ?)`,
-        [idUsuario, empresa, cnpj, areaAtuacao || ""],
-      );
-    }
+      if (perfil === "fornecedor") {
+        await sql`
+          INSERT INTO fornecedor (id_fornecedor, nome_organizacao, cnpj, area_atuacao)
+          VALUES (${id_usuario}, ${empresa}, ${cnpj}, ${areaAtuacao || ""})
+        `;
+      }
 
-    await connection.commit();
+      return id_usuario;
+    });
+
     return res.status(201).json({ ok: true, id: idUsuario });
   } catch (erro) {
-    await connection.rollback();
-
-    // '23505' = unique_violation no Postgres (era erro.code === 'ER_DUP_ENTRY'
-    // no mysql2). O driver `postgres` também não tem `erro.sqlMessage`:
-    // usamos `erro.constraint_name` (nome da constraint única violada, ex:
-    // "usuario_email_key") e `erro.detail` como no mysql2 usava sqlMessage.
+    // '23505' = unique_violation no Postgres. Erro vem do driver `postgres`
+    // (porsager), que expõe `.constraint_name` e `.detail` em vez do
+    // `.sqlMessage` que o mysql2 usava.
     if (erro.code === "23505") {
       const msg = `${erro.constraint_name || ""} ${erro.detail || ""}`;
       const campo = msg.includes("username")
@@ -104,8 +98,6 @@ router.post("/cadastro", async (req, res) => {
     }
     console.error(erro);
     return res.status(500).json({ erro: "Erro interno." });
-  } finally {
-    connection.release();
   }
 });
 
@@ -113,12 +105,11 @@ router.delete("/deleteUsers/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [resultado] = await pool.query(
-      `DELETE FROM usuario WHERE id_usuario= ?`,
-      [id],
-    );
+    const resultado = await sql`
+      DELETE FROM usuario WHERE id_usuario = ${id}
+    `;
 
-    if (resultado.affectedRows === 0) {
+    if (resultado.count === 0) {
       return res.status(404).json({ erro: "Usuário não encontrado." });
     }
 
@@ -138,12 +129,9 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const [resultado] = await pool.query(
-      `SELECT id_usuario, nome, email, senha, perfil FROM usuario WHERE email=?`,
-      [email],
-    );
-
-    const [usuario] = resultado;
+    const [usuario] = await sql`
+      SELECT id_usuario, nome, email, senha, perfil FROM usuario WHERE email = ${email}
+    `;
 
     if (!usuario) {
       return res.status(401).json({ erro: "E-mail ou senha inválidos." });
@@ -160,10 +148,9 @@ router.post("/login", async (req, res) => {
       const coluna =
         usuario.perfil === "organizador" ? "id_organizador" : "id_fornecedor";
 
-      const [[conta]] = await pool.query(
-        `SELECT status_aprovacao FROM ${tabela} WHERE ${coluna} = ?`,
-        [usuario.id_usuario],
-      );
+      const [conta] = await sql`
+        SELECT status_aprovacao FROM ${sql(tabela)} WHERE ${sql(coluna)} = ${usuario.id_usuario}
+      `;
 
       if (!conta || conta.status_aprovacao !== "aprovado") {
         const motivo =
@@ -199,7 +186,6 @@ router.post("/login", async (req, res) => {
         perfil: usuario.perfil,
       },
     });
-    
   } catch (error) {
     console.error(error);
     return res.status(500).json({ erro: "Erro interno." });
