@@ -27,7 +27,7 @@ router.get('/', async (req, res, next) => {
 
         const produtos = await sql`
             SELECT p.* FROM produto_solicitacao p
-            WHERE p.id_solicitacao_fk = ANY(${sql.array(rows.map((r) => r.id))})
+            WHERE p.id_solicitacao_fk = ANY(${sql.array(rows.map((r) => r.id), 23)})
         `
         res.json(rows.map((r) => ({ ...r, produtos: produtos.filter((p) => p.id_solicitacao_fk === r.id) })))
     } catch (e) { next(e) }
