@@ -3,8 +3,13 @@ import { registerHooks } from 'node:module'
 import { test, after } from 'node:test'
 import assert from 'node:assert/strict'
 import express from 'express'
+import jwt from 'jsonwebtoken'
 
-const tokens={fornecedor:'a'.repeat(64),organizador:'b'.repeat(64),cliente:'c'.repeat(64),outro:'d'.repeat(64)}
+// Tokens JWT de verdade (o middleware `autenticar` valida com jwt.verify).
+process.env.JWT_SECRET='segredo-de-teste'
+
+const assinar=(id_usuario,perfil)=>jwt.sign({id_usuario,perfil},process.env.JWT_SECRET)
+const tokens={fornecedor:assinar(7,'fornecedor'),organizador:assinar(8,'organizador'),cliente:assinar(8,'cliente'),outro:assinar(99,'organizador')}
 let resposta='enviada'
 let coberta=0
 let commits=0, rollbacks=0, inserts=0

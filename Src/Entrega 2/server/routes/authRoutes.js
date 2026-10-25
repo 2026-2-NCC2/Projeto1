@@ -73,8 +73,7 @@ router.post("/cadastro", async (req, res) => {
     return res.status(201).json({ ok: true, id: idUsuario });
   } catch (erro) {
     // '23505' = unique_violation no Postgres. Erro vem do driver `postgres`
-    // (porsager), que expõe `.constraint_name` e `.detail` em vez do
-    // `.sqlMessage` que o mysql2 usava.
+    // (porsager), que expõe `.constraint_name` e `.detail`.
     if (erro.code === "23505") {
       const msg = `${erro.constraint_name || ""} ${erro.detail || ""}`;
       const campo = msg.includes("username")
