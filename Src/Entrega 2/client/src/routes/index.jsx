@@ -12,6 +12,7 @@ import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
 import EventRegistration from '../components/EventRegistration.jsx'
 import AdminDashboard from '../pages/adminPages/AdminDashboard.jsx'
 import ProtectedRoute from '../components/ProtectedRoute'
+import Propostas from '../pages/Propostas'
 
 // todas as rotas do site
 export const router = createBrowserRouter([
@@ -24,6 +25,9 @@ export const router = createBrowserRouter([
       { path: '/Login', element: <Login /> },
       { path: '/PainelDeEventos', element: <PainelDeEventos /> },
 
+      // propostas — fornecedor (enviadas) e organizador (recebidas)
+      { path: '/propostas', element: <ProtectedRoute roles={['fornecedor', 'organizador']}><Propostas /></ProtectedRoute> },
+      
       // admin — so perfil 'administrador'
       { path: '/AprovarCadastros', element: <ProtectedRoute roles={['administrador']}><AprovarCadastros /></ProtectedRoute> },
       { path: '/AdminDashboard', element: <ProtectedRoute roles={['administrador']}><AdminDashboard /></ProtectedRoute> },
@@ -33,6 +37,7 @@ export const router = createBrowserRouter([
         path: '/criar-evento/:etapa?',
         element: <ProtectedRoute roles={['organizador']}><EventRegistration /></ProtectedRoute>,
       },
+
 
       { path: '*', element: <NotFound /> },
     ],

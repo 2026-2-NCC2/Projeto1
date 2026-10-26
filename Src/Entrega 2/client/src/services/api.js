@@ -116,10 +116,15 @@ export async function atualizarStatusCadastro(id, tipo, status) {
 
 // Todas as permissões são conferidas novamente no servidor.
 export async function solicitar(path, options = {}) {
- let usuario
- try { usuario=JSON.parse(localStorage.getItem('usuario')) } catch { usuario=null }
- const response=await fetch(`${api_url}${path}`, {...options,headers:{'Content-Type':'application/json',...(usuario?.token?{Authorization:`Bearer ${usuario.token}`}:{})}})
- const data=await response.json().catch(()=>({}))
- if(!response.ok)throw new Error(data.erro || 'Não foi possível acessar o servidor.')
- return data
+  const token = localStorage.getItem('token')
+  const response = await fetch(`${api_url}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) throw new Error(data.erro || 'Não foi possível acessar o servidor.')
+  return data
 }

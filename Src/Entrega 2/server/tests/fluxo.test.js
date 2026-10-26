@@ -1,36 +1,93 @@
-// Testes HTTP com banco simulado: não substituem uma execução no MySQL.
+// Testes HTTP com banco simulado: não substituem uma execução no Postgres real.
 import { registerHooks } from 'node:module'
-import { createHash } from 'node:crypto'
 import { test, after } from 'node:test'
 import assert from 'node:assert/strict'
 import express from 'express'
-const tokens={fornecedor:'a'.repeat(64),organizador:'b'.repeat(64),cliente:'c'.repeat(64),outro:'d'.repeat(64)}
+import jwt from 'jsonwebtoken'
+
+// Tokens JWT de verdade (o middleware `autenticar` valida com jwt.verify).
+process.env.JWT_SECRET='segredo-de-teste'
+
+const assinar=(id_usuario,perfil)=>jwt.sign({id_usuario,perfil},process.env.JWT_SECRET)
+const tokens={fornecedor:assinar(7,'fornecedor'),organizador:assinar(8,'organizador'),cliente:assinar(8,'cliente'),outro:assinar(99,'organizador')}
 let resposta='enviada'
 let coberta=0
 let commits=0, rollbacks=0, inserts=0
-const pool={getConnection:async()=>({...pool,beginTransaction:async()=>{},commit:async()=>{commits++},rollback:async()=>{rollbacks++},release:()=>{}}),query:async(sql,args=[])=>{
- if(sql.includes('FROM sessao')){
-  const perfil=Object.keys(tokens).find(k=>createHash('sha256').update(tokens[k]).digest('hex')===args[0])
-  return [[...(perfil?[{id_usuario:perfil==='fornecedor'?7:perfil==='outro'?99:8,perfil:perfil==='outro'?'organizador':perfil}]:[])]]
+
+// Resolve a resposta simulada pra cada formato de query que as rotas mandam.
+// `texto` é o SQL com `?` no lugar de cada valor interpolado (facilita
+// comparar com os testes antigos); `args` são os valores na mesma ordem.
+function resolverQuery(texto, args) {
+ if(/SELECT\s+id_evento\s+FROM evento/.test(texto))return Number(args[0])===1?[{id_evento:1}]:[]
+ if(texto.includes('SELECT i.*'))return [{id_item_custo:10,categoria:'Estrutura',descricao_detalhada:'Tenda',quantidade:5,valor_unitario:100,quantidade_coberta:coberta,quantidade_restante:Math.max(0,5-coberta)}]
+ if(texto.includes('SELECT e.id_evento'))return args[1]===8?[{id_evento:1}]:[]
+ if(texto.includes('SELECT * FROM solicitacao_fornecimento'))return [{status:resposta}]
+ if(texto.includes('SELECT * FROM produto_solicitacao'))return [{id_item_custo_fk:10,quantidade:2}]
+ if(texto.includes('SELECT f.id_fornecedor'))return [{id_fornecedor:7,nome_organizacao:'Empresa teste',id:1,produto:'Tenda',quantidade:2,descricao_detalhada:'Tenda'}]
+ if(texto.trim().startsWith('INSERT')){
+  inserts++
+  if(texto.includes('solicitacao_fornecimento'))return [{id:123}]
+  return [{}]
  }
- if(/SELECT\s+id_evento\s+FROM evento/.test(sql))return [[...(Number(args[0])===1?[{id_evento:1}]:[])]]
- if(sql.includes('SELECT i.*'))return [[{id_item_custo:10,categoria:'Estrutura',descricao_detalhada:'Tenda',quantidade:5,valor_unitario:100,quantidade_coberta:coberta,quantidade_restante:Math.max(0,5-coberta)}]]
- if(sql.includes('SELECT e.id_evento'))return [[...(args[1]===8?[{id_evento:1}]:[])]]
- if(sql.includes('SELECT * FROM solicitacao_fornecimento'))return [[{status:resposta}]]
- if(sql.includes('SELECT * FROM produto_solicitacao'))return [[{id_item_custo_fk:10,quantidade:2}]]
- if(sql.includes('SELECT f.id_fornecedor'))return [[{id_fornecedor:7,nome_organizacao:'Empresa teste',id:1,produto:'Tenda',quantidade:2,descricao_detalhada:'Tenda'}]]
- if(sql.startsWith('INSERT')){inserts++;return [{insertId:123}]}
- if(sql.startsWith('UPDATE solicitacao')){
-  resposta=args[0];if(resposta==='aceita')coberta+=2;return [{affectedRows:1}]
+ if(texto.trim().startsWith('UPDATE solicitacao')){
+  resposta=args[0];if(resposta==='aceita')coberta+=2;return []
  }
- if(sql.includes('SELECT s.*')){
-  assert.match(sql,/WHERE (s.id_fornecedor_fk|e.id_organizador_fk)=\?/)
-  return [[]]
+ if(texto.includes('SELECT s.*')){
+  assert.match(texto,/WHERE\s+(s\.id_fornecedor_fk|e\.id_organizador_fk)\s*=\s*\?/)
+  return []
  }
- throw new Error(`SQL inesperado: ${sql}`)
-}}
-globalThis.__testPool=pool
-registerHooks({resolve(spec,ctx,next){if(spec.endsWith('/config/db.js')||spec==='../config/db.js')return {url:'data:text/javascript,export default globalThis.__testPool',shortCircuit:true};return next(spec,ctx)}})
+ if(texto.includes('SELECT p.* FROM produto_solicitacao')){
+  assert.match(texto,/=\s*ANY\(\?\)/)
+  return []
+ }
+ throw new Error(`SQL inesperado: ${texto}`)
+}
+
+const isFragmento = (v) => v && typeof v === 'object' && v.__fragmento
+
+// Dublê mínimo do `sql` do pacote `postgres`: tagged template + sql.begin +
+// sql.array + composição de fragmentos (`WHERE ${condicao}` onde `condicao`
+// também é um `sql\`...\``).
+function montarSql() {
+ function sqlFn(partes, ...valores) {
+  let texto = partes[0]
+  const argsFinais = []
+  valores.forEach((v, i) => {
+   if (isFragmento(v)) {
+    texto += v.texto
+    argsFinais.push(...v.args)
+   } else {
+    argsFinais.push(v)
+    texto += '?'
+   }
+   texto += partes[i + 1]
+  })
+  const fragmento = {
+   __fragmento: true,
+   texto,
+   args: argsFinais,
+   then(resolve, reject) {
+    Promise.resolve().then(() => resolve(resolverQuery(texto, argsFinais))).catch(reject)
+   },
+  }
+  return fragmento
+ }
+ sqlFn.array = (lista) => lista
+ sqlFn.begin = async (fn) => {
+  try {
+   const resultado = await fn(sqlFn)
+   commits++
+   return resultado
+  } catch (e) {
+   rollbacks++
+   throw e
+  }
+ }
+ return sqlFn
+}
+
+globalThis.__testSql = montarSql()
+registerHooks({resolve(spec,ctx,next){if(spec.endsWith('/config/db.js')||spec==='../config/db.js')return {url:'data:text/javascript,export default globalThis.__testSql',shortCircuit:true};return next(spec,ctx)}})
 const {default:propostas}=await import('../routes/propostaRoutes.js')
 const {default:eventos}=await import('../routes/eventoRoutes.js')
 const app=express();app.use(express.json());app.use('/api/propostas',propostas);app.use('/api',eventos);app.use((e,req,res,next)=>res.status(500).json({erro:e.message}))

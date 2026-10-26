@@ -1,6 +1,6 @@
 import { consultarCobertura } from '../services/cobertura.js'
 import { Router } from 'express'
-import pool from '../config/db.js'
+import sql from '../config/db.js'
 import { autenticar, permitir } from '../middlewares/autenticacao.js'
 
 const router = Router()
@@ -61,41 +61,29 @@ router.get('/eventos', autenticarSeHouverToken, async (req, res, next) => {
         const idOrganizador =
             req.usuario?.perfil === 'organizador' ? req.usuario.id_usuario : 0
 
-        const [eventos] = await pool.query(
-            `
-                SELECT
-                    e.id_evento AS id,
-                    e.titulo_evento AS titulo,
-                    DATE_FORMAT(
-                        e.data_inicio,
-                        '%Y-%m-%d'
-                    ) AS data_inicio,
-                    DATE_FORMAT(
-                        e.data_fim,
-                        '%Y-%m-%d'
-                    ) AS data_fim,
-                    e.endereco,
-                    e.status_publicacao,
-                    COALESCE(e.ticket_estimado, e.qtd_lote_minimo) AS ticket_estimado,
-                    COALESCE(e.ticket_estimado, e.qtd_lote_minimo) AS primeiro_lote,
-                    e.qtd_lote_maximo AS segundo_lote,
-                    (
-                        SELECT COUNT(*)
-                        FROM itemcusto ic
-                        WHERE ic.id_evento_fk = e.id_evento
-                    ) AS quantidade_itens,
-                    e.id_organizador_fk AS organizador_id,
-                    o.nome_organizacao AS organizador_nome
-                FROM evento e
-                JOIN organizador o
-                    ON o.id_organizador = e.id_organizador_fk
-                WHERE
-                    e.status_publicacao = 'publicado'
-                    OR e.id_organizador_fk = ?
-                ORDER BY e.created_at DESC
-                `,
-            [idOrganizador],
-        )
+        const eventos = await sql`
+            SELECT
+                e.id_evento AS id,
+                e.titulo_evento AS titulo,
+                TO_CHAR(e.data_inicio, 'YYYY-MM-DD') AS data_inicio,
+                TO_CHAR(e.data_fim, 'YYYY-MM-DD') AS data_fim,
+                e.endereco,
+                e.status_publicacao,
+                COALESCE(e.ticket_estimado, e.qtd_lote_minimo) AS ticket_estimado,
+                COALESCE(e.ticket_estimado, e.qtd_lote_minimo) AS primeiro_lote,
+                e.qtd_lote_maximo AS segundo_lote,
+                (
+                    SELECT COUNT(*) FROM itemcusto ic WHERE ic.id_evento_fk = e.id_evento
+                ) AS quantidade_itens,
+                e.id_organizador_fk AS organizador_id,
+                o.nome_organizacao AS organizador_nome
+            FROM evento e
+            JOIN organizador o ON o.id_organizador = e.id_organizador_fk
+            WHERE
+                e.status_publicacao = 'publicado'
+                OR e.id_organizador_fk = ${idOrganizador}
+            ORDER BY e.created_at DESC
+        `
 
         // Adapta os nomes e valores para o formato usado pelo painel.
         const eventosFormatados = eventos.map((evento) => ({
@@ -123,16 +111,11 @@ router.get(
         try {
             const idEvento = req.params.id
 
-            const [eventos] = await pool.query(
-                `
+            const eventos = await sql`
                 SELECT id_evento
                 FROM evento
-                WHERE
-                    id_evento = ?
-                    AND status_publicacao = 'publicado'
-                `,
-                [idEvento],
-            )
+                WHERE id_evento = ${idEvento} AND status_publicacao = 'publicado'
+            `
 
             if (eventos.length === 0) {
                 return res.status(404).json({
@@ -140,7 +123,7 @@ router.get(
                 })
             }
 
-            const itens = await consultarCobertura(pool, idEvento)
+            const itens = await consultarCobertura(sql, idEvento)
 
             return res.json(itens)
         } catch (erro) {
@@ -151,15 +134,25 @@ router.get(
 
 // Empresas confirmadas, sem expor preços ou mensagens das propostas.
 router.get('/eventos/:id/fornecedores', autenticar, permitir('fornecedor','organizador'), async(req,res,next)=>{
- try {
-  const [eventos]=await pool.query(`SELECT id_evento FROM evento WHERE id_evento=? AND (status_publicacao='publicado' OR id_organizador_fk=?)`,[req.params.id,req.usuario.id_usuario])
-  if(!eventos.length)return res.status(404).json({erro:'Evento não encontrado.'})
-  const [rows]=await pool.query(`SELECT f.id_fornecedor,f.nome_organizacao,p.id,p.produto,p.quantidade,i.descricao_detalhada
-   FROM solicitacao_fornecimento s JOIN fornecedor f ON f.id_fornecedor=s.id_fornecedor_fk
-   JOIN produto_solicitacao p ON p.id_solicitacao_fk=s.id JOIN itemcusto i ON i.id_item_custo=p.id_item_custo_fk
-   WHERE s.id_evento_fk=? AND s.status='aceita' ORDER BY f.nome_organizacao,p.id`,[req.params.id])
-  res.json(rows)
- }catch(e){next(e)}
+    try {
+        const eventos = await sql`
+            SELECT id_evento FROM evento
+            WHERE id_evento = ${req.params.id}
+              AND (status_publicacao = 'publicado' OR id_organizador_fk = ${req.usuario.id_usuario})
+        `
+        if (!eventos.length) return res.status(404).json({ erro: 'Evento não encontrado.' })
+
+        const rows = await sql`
+            SELECT f.id_fornecedor, f.nome_organizacao, p.id, p.produto, p.quantidade, i.descricao_detalhada
+            FROM solicitacao_fornecimento s
+            JOIN fornecedor f ON f.id_fornecedor = s.id_fornecedor_fk
+            JOIN produto_solicitacao p ON p.id_solicitacao_fk = s.id
+            JOIN itemcusto i ON i.id_item_custo = p.id_item_custo_fk
+            WHERE s.id_evento_fk = ${req.params.id} AND s.status = 'aceita'
+            ORDER BY f.nome_organizacao, p.id
+        `
+        res.json(rows)
+    } catch (e) { next(e) }
 })
 
 // Cria o evento, seus itens e os custos independentes.
@@ -330,95 +323,65 @@ router.post(
             })
         }
 
-        // 7. Salva tudo na mesma transação.
-        let conexao
-
+        // 7. Salva tudo na mesma transação. sql.begin reserva uma conexão,
+        // manda BEGIN e faz ROLLBACK sozinho se a callback lançar um erro
+        // (ou COMMIT se ela terminar bem) — não precisa controlar na mão.
         try {
-            conexao = await pool.getConnection()
-            await conexao.beginTransaction()
-
-            const [resultado] = await conexao.query(
+            const idEvento = await sql.begin(async (sql) => {
+                const [{ id_evento: idEvento }] = await sql`
+                    INSERT INTO evento (
+                        id_organizador_fk,
+                        titulo_evento,
+                        data_evento,
+                        data_inicio,
+                        data_fim,
+                        endereco,
+                        publico_minimo,
+                        publico_maximo,
+                        qtd_lote_minimo,
+                        qtd_lote_maximo,
+                        ticket_estimado,
+                        status_publicacao
+                    )
+                    VALUES (
+                        ${req.usuario.id_usuario},
+                        ${dadosEvento.name},
+                        ${dadosEvento.date},
+                        ${`${dadosEvento.date} ${dadosEvento.startTime}`},
+                        ${`${dataFinal} ${dadosEvento.endTime}`},
+                        ${`${dadosEvento.location}, ${dadosEvento.city}`},
+                        ${publicoMinimo},
+                        ${publicoMaximo},
+                        ${primeiroLote},
+                        ${segundoLote},
+                        ${primeiroLote},
+                        'publicado'
+                    )
+                    RETURNING id_evento
                 `
-                INSERT INTO evento (
-                    id_organizador_fk,
-                    titulo_evento,
-                    data_evento,
-                    data_inicio,
-                    data_fim,
-                    endereco,
-                    publico_minimo,
-                    publico_maximo,
-                    qtd_lote_minimo,
-                    qtd_lote_maximo,
-                    ticket_estimado,
-                    status_publicacao
-                )
-                VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicado'
-                )
-                `,
-                [
-                    req.usuario.id_usuario,
-                    dadosEvento.name,
-                    dadosEvento.date,
-                    `${dadosEvento.date} ${dadosEvento.startTime}`,
-                    `${dataFinal} ${dadosEvento.endTime}`,
-                    `${dadosEvento.location}, ${dadosEvento.city}`,
-                    publicoMinimo,
-                    publicoMaximo,
-                    primeiroLote,
-                    segundoLote,
-                    primeiroLote,
-                ],
-            )
 
-            const idEvento = resultado.insertId
-
-            // Salva os itens solicitados pelo organizador.
-            for (const item of itens) {
-                await conexao.query(
+                // Salva os itens solicitados pelo organizador.
+                for (const item of itens) {
+                    await sql`
+                        INSERT INTO itemcusto (
+                            id_evento_fk, categoria, descricao_detalhada, quantidade, valor_unitario
+                        )
+                        VALUES (${idEvento}, ${item.categoria}, ${item.description}, ${item.qty}, ${item.unit})
                     `
-                    INSERT INTO itemcusto (
-                        id_evento_fk,
-                        categoria,
-                        descricao_detalhada,
-                        quantidade,
-                        valor_unitario
-                    )
-                    VALUES (?, ?, ?, ?, ?)
-                    `,
-                    [
-                        idEvento,
-                        item.categoria,
-                        item.description,
-                        item.qty,
-                        item.unit,
-                    ],
-                )
-            }
+                }
 
-            // Salva despesas avulsas, como taxas e licenças.
-            for (const custo of custosIndependentes) {
-                await conexao.query(
+                // Salva despesas avulsas, como taxas e licenças.
+                for (const custo of custosIndependentes) {
+                    await sql`
+                        INSERT INTO custoindependente (
+                            id_evento_fk, tipo_custo, descricao, valor
+                        )
+                        VALUES (${idEvento}, ${custo.type}, ${custo.description}, ${custo.numericValue})
                     `
-                    INSERT INTO custoindependente (
-                        id_evento_fk,
-                        tipo_custo,
-                        descricao,
-                        valor
-                    )
-                    VALUES (?, ?, ?, ?)
-                    `,
-                    [
-                        idEvento,
-                        custo.type,
-                        custo.description,
-                        custo.numericValue,
-                    ],
-                )
-            }
+                }
 
-            await conexao.commit()
+                return idEvento
+            })
 
             return res.status(201).json({
                 id: idEvento,
@@ -427,13 +390,7 @@ router.post(
                 quantidade_itens: itens.length,
             })
         } catch (erro) {
-            if (conexao) {
-                await conexao.rollback()
-            }
-
             next(erro)
-        } finally {
-            conexao?.release()
         }
     },
 )
@@ -481,46 +438,26 @@ router.patch(
         }
 
         try {
-            const [resultado] = await pool.query(
-                `
+            const resultado = await sql`
                 UPDATE evento
                 SET
-                    titulo_evento = ?,
-                    data_evento = ?,
-                    data_inicio = CONCAT(
-                        ?, ' ', TIME(data_inicio)
-                    ),
-                    data_fim = CONCAT(
-                        ?, ' ', TIME(data_fim)
-                    ),
-                    endereco = ?,
-                    status_publicacao = ?,
-                    ticket_estimado = ?,
-                    qtd_lote_minimo = ?,
+                    titulo_evento = ${titulo},
+                    data_evento = ${inicio},
+                    data_inicio = (${inicio} || ' ' || data_inicio::time)::timestamptz,
+                    data_fim = (${fim} || ' ' || data_fim::time)::timestamptz,
+                    endereco = ${endereco},
+                    status_publicacao = ${statusPermitidos[status]},
+                    ticket_estimado = ${valorTicket},
+                    qtd_lote_minimo = ${valorTicket},
                     qtd_lote_maximo = CASE
-                        WHEN ? THEN ? ELSE qtd_lote_maximo
+                        WHEN ${alterarSegundoLote} THEN ${valorSegundoLote} ELSE qtd_lote_maximo
                     END
                 WHERE
-                    id_evento = ?
-                    AND id_organizador_fk = ?
-                `,
-                [
-                    titulo,
-                    inicio,
-                    inicio,
-                    fim,
-                    endereco,
-                    statusPermitidos[status],
-                    valorTicket,
-                    valorTicket,
-                    alterarSegundoLote,
-                    valorSegundoLote,
-                    req.params.id,
-                    req.usuario.id_usuario,
-                ],
-            )
+                    id_evento = ${req.params.id}
+                    AND id_organizador_fk = ${req.usuario.id_usuario}
+            `
 
-            if (resultado.affectedRows === 0) {
+            if (resultado.count === 0) {
                 return res.status(404).json({
                     erro: 'Evento não encontrado.',
                 })
@@ -542,17 +479,12 @@ router.delete(
     permitir('organizador'),
     async (req, res, next) => {
         try {
-            const [resultado] = await pool.query(
-                `
+            const resultado = await sql`
                 DELETE FROM evento
-                WHERE
-                    id_evento = ?
-                    AND id_organizador_fk = ?
-                `,
-                [req.params.id, req.usuario.id_usuario],
-            )
+                WHERE id_evento = ${req.params.id} AND id_organizador_fk = ${req.usuario.id_usuario}
+            `
 
-            if (resultado.affectedRows === 0) {
+            if (resultado.count === 0) {
                 return res.status(404).json({
                     erro: 'Evento não encontrado.',
                 })

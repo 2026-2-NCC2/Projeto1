@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'
+/*import mysql from 'mysql2/promise'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -31,42 +31,54 @@ async function testConnection() {
 
 testConnection()
 
-export default pool
+export default pool*/
 
-/*import postgres from 'postgres'
+import postgres from 'postgres'
 import dotenv from 'dotenv'
 dotenv.config()
 
+// String de conexão do Supabase: Project Settings > Database > Connection string > URI
+// formato: postgresql://postgres:[SUA-SENHA]@[HOST]:5432/postgres
 const connectionString = process.env.DATABASE_URL
 
 if (!connectionString) {
-    console.error("❌ ERRO: A variável DATABASE_URL não foi encontrada no arquivo .env!")
+    console.error('❌ ERRO: a variável DATABASE_URL não foi encontrada no arquivo .env!')
     process.exit(1)
 }
 
-// Configuração do cliente postgres.js ajustada para o Supabase
-const pool = postgres(connectionString, {
+const sql = postgres(connectionString, {
     max: 10,
-    ssl: 'require', // 💡 O Supabase EXIGE conexão segura (SSL) ativa
-    connect_timeout: 10 // Tempo máximo de espera para conectar (em segundos)
+    ssl: 'require', // o Supabase exige SSL
+    connect_timeout: 10,
+    // O Postgres devolve colunas BIGINT (ex.: COUNT(*)) como string, pra
+    // evitar perda de precisão em números muito grandes. Nesse projeto esses
+    // valores são sempre contagens pequenas (ex.: quantidade_itens), então
+    // convertemos pra Number aqui.
+    types: {
+        bigint: {
+            to: 20, // OID 20 = int8/bigint
+            from: [20],
+            serialize: (valor) => String(valor),
+            parse: (valor) => parseInt(valor, 10),
+        },
+    },
 })
 
-// Função para testar se a conexão está realmente funcionando
+// Testa a conexão ao iniciar o servidor
 async function testConnection() {
     try {
-        // Roda uma query simples de teste
-        const result = await sql`SELECT 1 as conexao_ativa`
-        console.log('🚀 Conectado ao Supabase com sucesso! Teste:', result[0].conexao_ativa)
+        await sql`select 1`
+        console.log('Banco (Supabase/Postgres) conectado com sucesso!')
     } catch (error) {
-        console.error('❌ Erro crítico ao conectar ao Supabase!')
-        console.error('Detalhes do erro:', error.message)
-        console.error('Código do erro:', error.code)
-        
-        if (error.message.includes('password authentication failed')) {
-            console.error('💡 Dica: Verifique se a senha do banco no seu .env está correta.')
+        console.error('Erro ao conectar:', {
+            message: error.message,
+            code: error.code,
+        })
+        if (error.message?.includes('password authentication failed')) {
+            console.error('💡 Dica: verifique a senha do banco (DATABASE_URL) no seu .env.')
         }
-        if (error.message.includes('ENOTFOUND') || error.message.includes('ETIMEDOUT')) {
-            console.error('💡 Dica: Verifique se o Host do banco no seu .env está correto ou se há bloqueio de internet.')
+        if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+            console.error('💡 Dica: verifique o host do banco no .env ou se há bloqueio de rede.')
         }
         process.exit(1)
     }
@@ -74,4 +86,5 @@ async function testConnection() {
 
 testConnection()
 
-export default pool*/
+export default sql
+
