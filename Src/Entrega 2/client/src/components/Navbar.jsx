@@ -55,7 +55,6 @@ export default function Navbar() {
   ] : perfil === 'fornecedor' ? [
     // links do fornecedor
     { to: '/', label: 'Início' },
-    { to: '/PainelFornecedor', label: 'Oportunidades' },
     { to: '/PainelDeEventos', label: 'Eventos' },
   ] : [
     // links do usuario comum e de quem nao entrou

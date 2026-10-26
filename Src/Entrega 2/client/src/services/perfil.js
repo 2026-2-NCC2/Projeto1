@@ -9,7 +9,7 @@ export const PERFIS_DEMO = [
   { perfil: 'admin',       label: 'Administrador', emoji: '🛡️', home: '/AdminDashboard',            usuario: { id_usuario: 1,  nome: 'Ana Administradora', email: 'admin@demo.trocaticket', perfil: 'admin', demo: true } },
   { perfil: 'organizador', label: 'Organizador',   emoji: '🎪', home: '/PainelDeEventos?tab=meus',  usuario: { id_usuario: 99, nome: 'Otávio Organizador', email: 'organizador@demo.trocaticket', perfil: 'organizador', demo: true } },
   { perfil: 'cliente',     label: 'Usuário',       emoji: '👤', home: '/PainelDeEventos',           usuario: { id_usuario: 3,  nome: 'Carla Cliente', email: 'cliente@demo.trocaticket', perfil: 'cliente', demo: true } },
-  { perfil: 'fornecedor',  label: 'Fornecedor',    emoji: '🏢', home: '/PainelFornecedor',          usuario: { id_usuario: 4,  nome: 'Felipe Fornecedor', email: 'fornecedor@demo.trocaticket', perfil: 'fornecedor', demo: true } },
+  { perfil: 'fornecedor',  label: 'Fornecedor',    emoji: '🏢', home: '/PainelDeEventos',           usuario: { id_usuario: 4,  nome: 'Felipe Fornecedor', email: 'fornecedor@demo.trocaticket', perfil: 'fornecedor', demo: true } },
 ];
 
 // le o usuario salvo ({ id_usuario, nome, email, perfil }) ou null se ninguem entrou

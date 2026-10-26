@@ -1,3 +1,4 @@
+-- ATENCAO: seed so para MySQL (banco.sql).
 
 -- Dados de teste pra nao precisar recriar conta pela tela toda vez.
 -- Roda isso DEPOIS do banco.sql (schema). Nao usar em producao.
