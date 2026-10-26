@@ -66,40 +66,6 @@ export async function buscarCadastros(){
   return data
 }
 
-export async function deletarUsuario(id){
-  const response = await authFetch(`/deleteUsers/${id}`, { method: 'DELETE' })
-  const data = await response.json().catch(() => ({}))
-  if (!response.ok) {
-    const erro = new Error(data.erro || 'Erro ao deletar.')
-    erro.status = response.status
-    throw erro
-  }
-  return data
-}
-/*
-// apaga um usuario pelo id, chamando a rota DELETE 
-export async function deletarUsuario(id){
-
-  // manda a requisicao com o id na url (o backend le esse id em req.params)
-  const response = await fetch (`${api_url}/deleteUsers/${id}`, {method: 'delete'})
-  
-  // le a resposta em json se vier vazia ou invalida usa um objeto vazio pra nao quebrar
-  const data = await response.json().catch(() => ({}))
-  
-  // se o status nao for 2xx (ex: 404 usuario nao encontrado, 500 erro no servidor) = erro
-  if (!response.ok) {
-    // usa a mensagem que veio do backend ou uma mensagem que precisamos colocar como padrao
-    const erro = new Error(data.erro || 'Erro ao deletar.')
-    
-    // guarda o status no erro pra quem chamar poder tratar cada um
-    erro.status = response.status
-    throw erro
-  }
-// se der certo ele vai devolver { ok: true, mensagem: 'Usuário excluído com sucesso.' }
-return data
-}
-*/
-
 export async function atualizarStatusCadastro(id, tipo, status) {
   const response = await authFetch(`/admin/cadastros/${id}`, {
     method: 'PATCH',

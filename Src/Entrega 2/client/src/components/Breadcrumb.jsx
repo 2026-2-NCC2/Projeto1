@@ -68,7 +68,6 @@ function montarCaminho(pathname, search) {
   if (path === '/cadastro') return [inicio, { label: 'Criar conta', to: '/Cadastro' }];
   if (path === '/validation') return [inicio, { label: 'Validação de e-mail', to: '/validation' }];
   if (path === '/admindashboard') return [inicio, admin];
-  if (path === '/painelfornecedor') return [inicio, { label: 'Oportunidades', to: '/PainelFornecedor' }];
   if (path === '/aprovarcadastros') return [inicio, admin, { label: 'Aprovar cadastros', to: '/AprovarCadastros' }];
   // qualquer outro endereco = pagina que nao existe
   return [inicio, { label: 'Página não encontrada', to: pathname }];

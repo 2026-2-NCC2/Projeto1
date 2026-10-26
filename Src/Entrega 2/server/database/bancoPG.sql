@@ -1,7 +1,5 @@
--- Limpeza segura do ambiente caso o script precise ser rodado novamente
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO public;
+-- Cria as tabelas no schema public. NAO apaga nada.
+-- Banco novo: rode so este arquivo. Para recomecar do zero, rode antes reset.sql (apaga TUDO).
 
 -- =========================================================================
 -- 0. CRIAÇÃO DOS TIPOS ENUM (Globais e fortemente tipados)
@@ -106,7 +104,7 @@ CREATE TABLE proposta (
     status_proposta tipo_status_proposta NOT NULL DEFAULT 'enviada',
     data_envio TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, -- [MELHORIA] TIMESTAMPTZ
     CONSTRAINT fk_proposta_fornecedor FOREIGN KEY (id_fornecedor_fk) REFERENCES fornecedor(id_fornecedor) ON DELETE CASCADE,
-    CONSTRAINT fk_proposta_itemcusto KEY (id_item_custo_fk) REFERENCES itemcusto(id_item_custo) ON DELETE CASCADE,
+    CONSTRAINT fk_proposta_itemcusto FOREIGN KEY (id_item_custo_fk) REFERENCES itemcusto(id_item_custo) ON DELETE CASCADE,
     CONSTRAINT uq_fornecedor_item UNIQUE (id_fornecedor_fk, id_item_custo_fk)
 );
 
@@ -139,3 +137,15 @@ CREATE TABLE produto_solicitacao (
 CREATE INDEX idx_usuario_email ON usuario(email);
 CREATE INDEX idx_evento_data ON evento(data_evento);
 CREATE INDEX idx_proposta_status ON proposta(status_proposta);
+
+ALTER TABLE usuario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE organizador ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fornecedor ENABLE ROW LEVEL SECURITY;
+ALTER TABLE administrador ENABLE ROW LEVEL SECURITY;
+ALTER TABLE evento ENABLE ROW LEVEL SECURITY;
+ALTER TABLE itemcusto ENABLE ROW LEVEL SECURITY;
+ALTER TABLE custoindependente ENABLE ROW LEVEL SECURITY;
+ALTER TABLE proposta ENABLE ROW LEVEL SECURITY;
+ALTER TABLE solicitacao_fornecimento ENABLE ROW LEVEL SECURITY;
+ALTER TABLE produto_solicitacao ENABLE ROW LEVEL SECURITY;
+
