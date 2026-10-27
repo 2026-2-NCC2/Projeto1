@@ -106,6 +106,9 @@
   /* tira o quadrado azul que aparece ao tocar no celular */
   button, a { -webkit-tap-highlight-color: transparent; }
 
+  /* foco visivel pra quem navega pelo teclado (mouse nao mostra) */
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--tt-roxo-vivo); outline-offset: 2px; }
+
   /* ── Tokens de compatibilidade ──
      As telas Admin e os componentes de ui/ usam var(--color-*) com os nomes abaixo.
      Sao apelidos dos tokens da paleta, nao crie cores novas aqui. */

@@ -13,6 +13,7 @@ import EventRegistration from '../components/EventRegistration.jsx'
 import AdminDashboard from '../pages/adminPages/AdminDashboard.jsx'
 import ProtectedRoute from '../components/ProtectedRoute'
 import Propostas from '../pages/Propostas'
+import Usuario from '../pages/Usuario'
 
 // todas as rotas do site
 export const router = createBrowserRouter([
@@ -24,6 +25,9 @@ export const router = createBrowserRouter([
       { path: '/Cadastro', element: <Cadastro /> },
       { path: '/Login', element: <Login /> },
       { path: '/PainelDeEventos', element: <PainelDeEventos /> },
+
+      // perfil do usuario — qualquer perfil logado
+      { path: '/usuario', element: <ProtectedRoute><Usuario /></ProtectedRoute> },
 
       // propostas — fornecedor (enviadas) e organizador (recebidas)
       { path: '/propostas', element: <ProtectedRoute roles={['fornecedor', 'organizador']}><Propostas /></ProtectedRoute> },
