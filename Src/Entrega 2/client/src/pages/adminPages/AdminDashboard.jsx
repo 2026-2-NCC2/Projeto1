@@ -36,19 +36,22 @@ const IconReport = () => <svg width="20" height="20" {...S}><path d="M14 2H6a2 2
 // accentColor = cor da faixa do topo e da sombra no hover / bgClass = fundo do quadradinho do icone
 function StatCard({ label, value, icon, accentColor, bgClass }) {
   return (
+    // versao compacta: icone e numero na mesma linha, so a faixa do topo carrega a cor
     <div
-      className="group relative overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-branco p-5 transition duration-150 hover:-translate-y-[3px] hover:shadow-[6px_6px_0_var(--accent)]"
+      className="group relative overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-branco px-4 py-3.5 transition duration-150 hover:-translate-y-[2px] hover:shadow-[4px_4px_0_var(--accent)]"
       style={{ '--accent': accentColor }}
     >
       {/* faixa colorida no topo, cor muda por card */}
-      <span className="absolute left-0 top-0 h-1.5 w-full" style={{ background: accentColor }} aria-hidden="true" />
-      <div className="flex items-start justify-between gap-3 pt-1">
+      <span className="absolute left-0 top-0 h-1 w-full" style={{ background: accentColor }} aria-hidden="true" />
+      <div className="flex items-center gap-3 pt-1">
         {/* quadradinho do icone */}
-        <span className={`grid size-10 shrink-0 place-items-center border-[1.5px] border-tt-azul-marinho ${bgClass}`}>{icon}</span>
-        <p className="text-right text-[11px] font-extrabold uppercase leading-tight tracking-[0.1em] text-tt-grafite/70">{label}</p>
+        <span className={`grid size-8 shrink-0 place-items-center border-[1.5px] border-tt-azul-marinho ${bgClass}`}>{icon}</span>
+        <div className="min-w-0">
+          {/* numero no estilo dos titulos do site */}
+          <p className="tt-display text-[clamp(24px,3vw,32px)] text-tt-azul-marinho">{value}</p>
+          <p className="mt-0.5 truncate text-[10px] font-extrabold uppercase leading-tight tracking-[0.1em] text-tt-grafite/70">{label}</p>
+        </div>
       </div>
-      {/* numero grande no estilo dos titulos do site */}
-      <p className="tt-display mt-6 text-[clamp(40px,5vw,60px)] text-tt-azul-marinho">{value}</p>
     </div>
   );
 }
@@ -166,7 +169,7 @@ export default function AdminDashboard() {
 
         {/* Stat cards - o -mt-12 puxa eles pra cima, ficando em cima da faixa escura */}
         {/* 2 colunas no celular e 4 em tela grande */}
-        <div className="relative z-[2] -mt-12 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        <div className="relative z-[2] -mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {/* um card pra cada status, cada um com sua cor e icone */}
           <StatCard label="Total de cadastros" value={stats.total}
             icon={<span className="text-tt-azul-marinho"><IconUsers /></span>}
