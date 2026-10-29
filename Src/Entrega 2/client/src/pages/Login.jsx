@@ -49,10 +49,7 @@ function Login() {
       navigate('/PainelDeEventos')
     } catch (err) {
         setErros({ senha: err.message })
-    }
-    
-      // por enquanto so mostra no console e volta pra home, depois vai chamar a API
-      console.log('Dados válidos! Enviando...', { email, senha }) // corrigido: "nome" nao existia aqui
+    } 
   }
 
   return (
