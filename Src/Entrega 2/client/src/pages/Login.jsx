@@ -5,6 +5,7 @@ import Sticker from '../components/Sticker'
 import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
 import { loginUsuario } from '../services/api'
 import { useAuth } from '../services/AuthContext'
+import { erroEmail } from '../utils/validacao'
 
 // pagina de login
 
@@ -23,9 +24,9 @@ function Login() {
   function validar() {
     const novosErros = {}
 
-    // regex simples, so confere se tem algo@algo.algo
-    if (!email.trim()) novosErros.email = 'E-mail obrigatório.'
-    else if (!/\S+@\S+\.\S+/.test(email)) novosErros.email = 'E-mail inválido.'
+    // mesma regra do cadastro (utils/validacao.js)
+    const erroDoEmail = erroEmail(email)
+    if (erroDoEmail) novosErros.email = erroDoEmail
 
     if (!senha) novosErros.senha = 'Senha obrigatória.'
     else if (senha.length < 6) novosErros.senha = 'Senha inválida.'
@@ -49,7 +50,9 @@ function Login() {
       navigate('/PainelDeEventos')
     } catch (err) {
         setErros({ senha: err.message })
-    } 
+    } finally {
+      setApiLoading(false) // sem isso o botao ficaria preso depois de um erro
+    }
   }
 
   return (
@@ -80,7 +83,7 @@ function Login() {
           {/* voltar pra home e entrar */}
           <div className={ui.botoes}>
             <Link to="/" className={ui.btnVoltar}>Voltar</Link>
-            <button type="submit" className={ui.btnPrimary}>Login</button>
+            <button type="submit" className={ui.btnPrimary} disabled={apiLoading}>{apiLoading ? 'Entrando...' : 'Login'}</button>
           </div>
 
           {/* link pra quem ainda nao tem conta */}

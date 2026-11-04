@@ -3,6 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Sticker from '../components/Sticker'
 import { cadastrarUsuario } from '../services/api'
+import {
+  LIMITES, erroCnpj, erroConfirmacaoSenha, erroEmail, erroIdade, erroSenha, erroTexto,
+  formatarCnpj, normalizarCnpj,
+} from '../utils/validacao'
 
 // tipos de conta que a pessoa pode escolher no cadastro
 // id = valor que vai pro back-end (bate com o ENUM da tabela usuario.perfil) / emoji, titulo e desc = o que aparece no card
@@ -154,6 +158,12 @@ function Campo({ id, label, type, placeholder, value, onChange, error }) {
   );
 }
 
+// etapa do formulario onde cada campo e preenchido (pra voltar nela quando o servidor recusa o campo)
+const ETAPA_DO_CAMPO = {
+  nome: 0, username: 0, email: 0, idade: 0, senha: 0, confirmarSenha: 0,
+  empresa: 2, cnpj: 2, areaAtuacao: 3,
+};
+
 // pagina de cadastro, dividida em etapas
 export default function Cadastro() {
   const navigate = useNavigate(); // pra mudar de pagina pelo codigo
@@ -193,6 +203,14 @@ export default function Cadastro() {
   // fornecedor tem a etapa de servicos a mais
   const totalSteps = role === "fornecedor" ? 4 : role === "organizador" ? 3 : 2;
 
+  // texto que vai pra coluna fornecedor.area_atuacao (os servicos marcados, separados por virgula)
+  function areaAtuacaoDosServicos() {
+    return services
+      .map((id) => SERVICES.find((s) => s.id === id)?.label)
+      .filter(Boolean)
+      .join(", ");
+  }
+
   // valida os campos da etapa atual e devolve um objeto com os erros
   // se voltar vazio e porque ta tudo certo
   function validate() {
@@ -201,29 +219,26 @@ export default function Cadastro() {
 
     // etapa 0: dados basicos
     if (step === 0) {
-      if (!nome.trim()) e.nome = "Nome obrigatório.";
-      if (!username.trim()) e.username = "Username obrigatório.";
-
-      // idade: obrigatoria, nao pode ser negativa e tem que ser um numero plausivel
-      if (!idade.trim()) e.idade = "Idade obrigatória.";
-      else if (Number.isNaN(Number(idade))) e.idade = "Idade inválida.";
-      else if (Number(idade) < 0) e.idade = "Idade não pode ser negativa.";
-      else if (Number(idade) > 120) e.idade = "Idade inválida.";
-
-      // regex simples, so confere se tem algo@algo.algo
-      if (!email.trim()) e.email = "E-mail obrigatório.";
-      else if (!/\S+@\S+\.\S+/.test(email)) e.email = "E-mail inválido.";
-      if (!senha) e.senha = "Senha obrigatória.";
-      else if (senha.length < 6) e.senha = "Mínimo 6 caracteres.";
-      if (!confirmSenha) e.confirmSenha = "Confirme sua senha.";
-      else if (senha !== confirmSenha)
-        e.confirmSenha = "As senhas não coincidem.";
+      // as regras ficam em utils/validacao.js (o servidor repete todas elas)
+      const regras = {
+        nome: erroTexto(nome, "Nome", LIMITES.nome),
+        username: erroTexto(username, "Username", LIMITES.username),
+        idade: erroIdade(idade),
+        email: erroEmail(email),
+        senha: erroSenha(senha),
+        confirmSenha: erroConfirmacaoSenha(senha, confirmSenha),
+      };
+      for (const [campo, mensagem] of Object.entries(regras)) {
+        if (mensagem) e[campo] = mensagem;
+      }
     }
 
     // etapa 2: dados da empresa (cliente nao passa por aqui)
     if (step === 2 && role !== "cliente") {
-      if (!empresa.trim()) e.empresa = "Nome da empresa obrigatório.";
-      if (!cnpj.trim()) e.cnpj = "CNPJ obrigatório.";
+      const erroEmpresa = erroTexto(empresa, "Nome da empresa", LIMITES.empresa);
+      if (erroEmpresa) e.empresa = erroEmpresa;
+      const erroDoCnpj = erroCnpj(cnpj); // formato e dígitos verificadores
+      if (erroDoCnpj) e.cnpj = erroDoCnpj;
       // organizador precisa preencher pelo menos uma area
       if (role === "organizador" && !areas.some((a) => a.trim()))
         e.area = "Informe ao menos uma área de atuação.";
@@ -232,6 +247,8 @@ export default function Cadastro() {
     // etapa 3: servicos, so pro fornecedor
     if (step === 3 && role === "fornecedor") {
       if (services.length === 0) e.services = "Selecione ao menos um serviço.";
+      else if (areaAtuacaoDosServicos().length > LIMITES.areaAtuacao)
+        e.services = `Os serviços escolhidos passam de ${LIMITES.areaAtuacao} caracteres. Escolha menos opções.`;
     }
 
     // devolve os erros pra quem chamou o validate()
@@ -250,42 +267,50 @@ export default function Cadastro() {
         email,
         idade: Number(idade),
         senha,
+        confirmarSenha: confirmSenha,
         perfil: role, // 'cliente' | 'organizador' | 'fornecedor'
       };
 
       // organizador e fornecedor tem tabela propria no banco, precisam de empresa/cnpj
       if (role === "organizador" || role === "fornecedor") {
-        payload.empresa = empresa;
-        payload.cnpj = cnpj;
+        payload.empresa = empresa.trim();
+        payload.cnpj = normalizarCnpj(cnpj); // o banco guarda só os 14 dígitos (CHAR(14))
       }
 
       // fornecedor.area_atuacao no banco e preenchido com os servicos marcados
       // (o campo "areaFor" do form e geografico e nao tem coluna no banco ainda, entao nao e enviado)
       if (role === "fornecedor") {
-        payload.areaAtuacao = services
-          .map((id) => SERVICES.find((s) => s.id === id)?.label)
-          .filter(Boolean)
-          .join(", ");
+        payload.areaAtuacao = areaAtuacaoDosServicos();
       }
 
       await cadastrarUsuario(payload);
       setDone(true);
     } catch (err) {
-      if (err.status === 409) {
-        if (err.campo === "username") {
-          setStep(0);
-          setErrors((prev) => ({
-            ...prev,
-            username: "Username já está em uso.",
-          }));
-        } else if (err.campo === "cnpj") {
-          // CNPJ é preenchido na etapa 2 (organizador/fornecedor)
-          setStep(2);
-          setErrors((prev) => ({ ...prev, cnpj: "CNPJ já cadastrado." }));
-        } else {
-          setStep(0);
-          setErrors((prev) => ({ ...prev, email: "E-mail já cadastrado." }));
-        }
+      // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem
+      const camposComErro =
+        err.status === 400 && err.campos
+          ? err.campos
+          : err.status === 409 && err.campo
+            ? { [err.campo]: err.message }
+            : null;
+      const etapas = camposComErro
+        ? Object.keys(camposComErro)
+            .map((campo) => ETAPA_DO_CAMPO[campo])
+            .filter((n) => n !== undefined)
+        : [];
+
+      if (etapas.length) {
+        setErrors(
+          Object.fromEntries(
+            Object.entries(camposComErro).map(([campo, msg]) => [
+              campo === "areaAtuacao" ? "services" : campo,
+              msg,
+            ]),
+          ),
+        );
+        setStep(Math.min(...etapas)); // volta pra primeira etapa que tem erro
+      } else if (err.status === 400 || err.status === 409) {
+        setApiError(err.message);
       } else {
         setApiError(
           "Não foi possível concluir o cadastro. Tente novamente em instantes.",
@@ -480,7 +505,7 @@ export default function Cadastro() {
             <StepDots current={step} total={totalSteps} />
 
             <Campo id="empresa" label="Nome da empresa" type="text" placeholder="Razão social" value={empresa} onChange={setEmpresa} error={errors.empresa} />
-            <Campo id="cnpj" label="CNPJ" type="text" placeholder="XX.XXX.XXX/XXXX-XX" value={cnpj} onChange={setCnpj} error={errors.cnpj} />
+            <Campo id="cnpj" label="CNPJ" type="text" placeholder="XX.XXX.XXX/XXXX-XX" value={cnpj} onChange={(v) => setCnpj(formatarCnpj(v))} error={errors.cnpj} />
 
             {/* areas de atuacao: da pra adicionar mais de uma */}
             <label className={LABEL_CLS}>Área de atuação <span className="font-normal text-tt-grafite/70">— tipo de evento</span></label>
@@ -526,7 +551,7 @@ export default function Cadastro() {
             <StepDots current={step} total={totalSteps} />
 
             <Campo id="empresa" label="Nome da empresa" type="text" placeholder="Razão social" value={empresa} onChange={setEmpresa} error={errors.empresa} />
-            <Campo id="cnpj" label="CNPJ" type="text" placeholder="XX.XXX.XXX/XXXX-XX" value={cnpj} onChange={setCnpj} error={errors.cnpj} />
+            <Campo id="cnpj" label="CNPJ" type="text" placeholder="XX.XXX.XXX/XXXX-XX" value={cnpj} onChange={(v) => setCnpj(formatarCnpj(v))} error={errors.cnpj} />
 
             {/* voltar e avancar (fornecedor ainda tem a etapa de servicos) */}
             <div className="mt-8 flex flex-col-reverse justify-between gap-4 sm:flex-row">

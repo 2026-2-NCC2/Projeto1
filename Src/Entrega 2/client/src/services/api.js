@@ -31,6 +31,8 @@ export async function cadastrarUsuario(dados) {
   if (!response.ok) {
     const erro = new Error(data.erro || 'Erro ao cadastrar.')
     erro.status = response.status
+    erro.campo = data.campo // 409: qual campo já existe ('email' | 'username' | 'cnpj')
+    erro.campos = data.campos // 400: { campo: mensagem } vindo da validação do servidor
     throw erro
   }
 

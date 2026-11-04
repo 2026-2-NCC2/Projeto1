@@ -1,4 +1,5 @@
 import { consultarCobertura } from '../services/cobertura.js'
+import { lerMargem, montarTicketDoEvento } from '../services/ticket.js'
 import { Router } from 'express'
 import sql from '../config/db.js'
 import { autenticar, permitir } from '../middlewares/autenticacao.js'
@@ -300,6 +301,15 @@ router.post(
             })
         }
 
+        // Margem de lucro (%) sobre a receita, usada no cálculo do ticket (opcional, padrão 0).
+        const margemLucro = lerMargem(dadosLotes.margin)
+
+        if (!Number.isFinite(margemLucro)) {
+            return res.status(400).json({
+                erro: 'Informe a margem de lucro entre 0 e 99,99%, com até duas casas decimais.',
+            })
+        }
+
         // 6. Valida os custos independentes.
         const custosInvalidos = custosIndependentes.some((custo) => {
             if (!custo) {
@@ -341,7 +351,8 @@ router.post(
                         qtd_lote_minimo,
                         qtd_lote_maximo,
                         ticket_estimado,
-                        status_publicacao
+                        status_publicacao,
+                        margem_lucro_percentual
                     )
                     VALUES (
                         ${req.usuario.id_usuario},
@@ -355,7 +366,8 @@ router.post(
                         ${primeiroLote},
                         ${segundoLote},
                         ${primeiroLote},
-                        'publicado'
+                        'publicado',
+                        ${margemLucro}
                     )
                     RETURNING id_evento
                 `
@@ -388,6 +400,7 @@ router.post(
                 primeiro_lote: primeiroLote,
                 segundo_lote: segundoLote,
                 quantidade_itens: itens.length,
+                margem_percentual: margemLucro,
             })
         } catch (erro) {
             next(erro)
@@ -493,6 +506,71 @@ router.delete(
             return res.json({
                 ok: true,
             })
+        } catch (erro) {
+            next(erro)
+        }
+    },
+)
+
+// Ticket estimado (RF13): custos consolidados (itens + propostas aceitas + custos
+// independentes), margem e cenários de público mínimo e máximo. Só o organizador
+// dono do evento e o administrador enxergam.
+router.get(
+    '/eventos/:id/ticket',
+    autenticar,
+    permitir('organizador', 'administrador'),
+    async (req, res, next) => {
+        try {
+            if (!/^\d+$/.test(req.params.id)) {
+                return res.status(404).json({ erro: 'Evento não encontrado.' })
+            }
+
+            const [evento] = await sql`
+                SELECT id_evento, id_organizador_fk, titulo_evento,
+                    publico_minimo, publico_maximo, margem_lucro_percentual
+                FROM evento WHERE id_evento = ${req.params.id}
+            `
+
+            const podeVer =
+                req.usuario.perfil === 'administrador' ||
+                evento?.id_organizador_fk === req.usuario.id_usuario
+
+            if (!evento || !podeVer) {
+                return res.status(404).json({ erro: 'Evento não encontrado.' })
+            }
+
+            return res.json(await montarTicketDoEvento(sql, evento))
+        } catch (erro) {
+            next(erro)
+        }
+    },
+)
+
+// Define a margem de lucro (%) do evento. Só o organizador dono.
+router.patch(
+    '/eventos/:id/margem',
+    autenticar,
+    permitir('organizador'),
+    async (req, res, next) => {
+        const margem = lerMargem(req.body?.margem, false)
+
+        if (!Number.isFinite(margem)) {
+            return res.status(400).json({
+                erro: 'Informe a margem de lucro entre 0 e 99,99%, com até duas casas decimais.',
+            })
+        }
+
+        try {
+            const resultado = await sql`
+                UPDATE evento SET margem_lucro_percentual = ${margem}
+                WHERE id_evento = ${req.params.id} AND id_organizador_fk = ${req.usuario.id_usuario}
+            `
+
+            if (resultado.count === 0) {
+                return res.status(404).json({ erro: 'Evento não encontrado.' })
+            }
+
+            return res.json({ ok: true, margem_percentual: margem })
         } catch (erro) {
             next(erro)
         }

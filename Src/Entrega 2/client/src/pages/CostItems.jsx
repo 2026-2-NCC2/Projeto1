@@ -42,9 +42,12 @@ export function CostItems({
   const [erro, setErro] = useState('');
   const [drafts, setDrafts] = useState({}); // o que ta sendo digitado antes de adicionar o item
 
-  // soma dos custos avulsos
+  // soma dos custos avulsos FIXOS (o tipo "Variável" é valor por participante e só entra no cálculo do ticket)
   const independentTotal = useMemo(
-    () => independentCosts.reduce((sum, item) => sum + money(item.value), 0),
+    () =>
+      independentCosts
+        .filter((item) => item.type !== 'Variável')
+        .reduce((sum, item) => sum + money(item.value), 0),
     [independentCosts],
   );
 
@@ -212,7 +215,7 @@ export function CostItems({
         {/* total dos custos avulsos */}
         <div className="grid gap-1 rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro px-4 py-[15px]">
           <span className="text-[.68rem] font-bold text-tt-grafite/70">
-            Custos independentes
+            Custos independentes fixos
           </span>
           <strong className="text-base text-tt-azul-marinho">
             {formatBRL(independentTotal)}
@@ -221,7 +224,7 @@ export function CostItems({
         {/* total geral, com fundo escuro pra destacar */}
         <div className="grid gap-1 rounded-xl border border-tt-azul-marinho bg-tt-azul-marinho px-4 py-[15px]">
           <span className="text-[.68rem] font-bold text-tt-branco/65">
-            Total estimado
+            Total fixo estimado
           </span>
           <strong className="text-base text-tt-laranja-principal">
             {formatBRL(categoryTotal + independentTotal)}

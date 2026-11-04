@@ -38,6 +38,8 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
       secondLot: validate(data.secondLot, false, pricePattern),
       minAudience: validate(data.minAudience, false, audiencePattern),
       maxAudience: validate(data.maxAudience, true, audiencePattern),
+      // margem de lucro (%) usada no cálculo do ticket; vazio = 0
+      margin: validate(data.margin, false, pricePattern),
     };
 
     Object.entries(validations).forEach(([field, error]) => {
@@ -64,6 +66,10 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
 
     if (!nextErrors.maxAudience && Number(data.maxAudience) < 1) {
       nextErrors.maxAudience = 'O público máximo deve ser pelo menos 1.';
+    }
+
+    if (!nextErrors.margin && Number(String(data.margin ?? '').replace(',', '.')) >= 100) {
+      nextErrors.margin = 'A margem deve ser menor que 100%.';
     }
 
     const hasMinAudience = String(data.minAudience ?? '').trim() !== '';
@@ -135,6 +141,22 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
             value={data.maxAudience ?? ''}
             onChange={patch('maxAudience')}
             placeholder="Ex: 2000"
+          />
+        </Field>
+      </div>
+
+      <div className="form-grid two-cols">
+        <Field
+          label="Margem de lucro (%)"
+          error={errors.margin}
+          hint="Opcional. Percentual da receita usado no cálculo do ticket. Você pode ajustar depois."
+        >
+          <Input
+            type="text"
+            inputMode="decimal"
+            value={data.margin ?? ''}
+            onChange={patch('margin')}
+            placeholder="Ex: 15"
           />
         </Field>
       </div>
