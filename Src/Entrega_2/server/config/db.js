@@ -3,16 +3,28 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 // String de conexão do Supabase: Project Settings > Database > Connection string > URI
-// formato: postgresql://postgres:[SUA-SENHA]@[HOST]:5432/postgres
+// - Local: pode ser a conexão direta  postgresql://postgres:[SENHA]@db.[REF].supabase.co:5432/postgres
+// - Vercel: use o POOLER (Transaction mode, porta 6543), porque a conexão direta é só IPv6
+//   e a Vercel não tem IPv6:  postgresql://postgres.[REF]:[SENHA]@aws-0-[REGIAO].pooler.supabase.com:6543/postgres
 const connectionString = process.env.DATABASE_URL
 
+// Na Vercel cada requisição pode rodar em uma instância nova (serverless)
+const naVercel = Boolean(process.env.VERCEL)
+
 if (!connectionString) {
-    console.error('❌ ERRO: a variável DATABASE_URL não foi encontrada no arquivo .env!')
-    process.exit(1)
+    // Não usamos process.exit aqui: na Vercel isso derrubaria a função inteira.
+    // O erro aparece no log e as rotas respondem 500 pelo tratador de erros.
+    console.error('❌ ERRO: a variável DATABASE_URL não foi definida (.env local ou Environment Variables da Vercel)!')
 }
 
-const sql = postgres(connectionString, {
-    max: 10,
+// O pooler do Supabase em modo transação (porta 6543) não suporta prepared statements
+const usandoPooler = /:6543(\/|$)/.test(connectionString || '')
+
+const sql = postgres(connectionString || 'postgres://indefinido@localhost/indefinido', {
+    // serverless: poucas conexões por instância para não estourar o limite do banco
+    max: naVercel ? 1 : 10,
+    idle_timeout: naVercel ? 20 : undefined,
+    prepare: !usandoPooler,
     ssl: 'require', // o Supabase exige SSL
     connect_timeout: 10,
     // O Postgres devolve colunas BIGINT (ex.: COUNT(*)) como string, pra
@@ -29,11 +41,12 @@ const sql = postgres(connectionString, {
     },
 })
 
-// Testa a conexão ao iniciar o servidor
-async function testConnection() {
+// Testa a conexão. Chamado pelo index.js ao subir o servidor local.
+export async function testarConexao({ encerrarSeFalhar = false } = {}) {
     try {
         await sql`select 1`
         console.log('Banco (Supabase/Postgres) conectado com sucesso!')
+        return true
     } catch (error) {
         console.error('Erro ao conectar:', {
             message: error.message,
@@ -45,11 +58,9 @@ async function testConnection() {
         if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
             console.error('💡 Dica: verifique o host do banco no .env ou se há bloqueio de rede.')
         }
-        process.exit(1)
+        if (encerrarSeFalhar) process.exit(1)
+        return false
     }
 }
 
-testConnection()
-
 export default sql
-

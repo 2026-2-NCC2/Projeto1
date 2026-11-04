@@ -1,5 +1,19 @@
-// Em produção, defina VITE_API_URL (ex: https://meu-backend.com/api). Sem ela, usa o servidor local.
-const api_url = import.meta.env.VITE_API_URL || "http://localhost:3000/api"
+// Endereço do backend. Pode ser sobrescrito por VITE_API_URL (Vercel ou .env).
+// - build de produção (Vercel): API publicada em trocaticket-api.vercel.app
+// - desenvolvimento (npm run dev): servidor local na porta 3000
+const URL_PADRAO = import.meta.env.PROD
+  ? "https://trocaticket-api.vercel.app/api"
+  : "http://localhost:3000/api"
+
+// Normaliza a URL: tira barras sobrando no fim e garante o sufixo /api.
+// Assim "https://x.vercel.app/", "https://x.vercel.app" e "https://x.vercel.app/api/" viram "https://x.vercel.app/api".
+// (Uma barra dupla como "//eventos" faz a Vercel redirecionar, e o navegador bloqueia redirect no preflight do CORS.)
+function normalizarApiUrl(url) {
+  const semBarraFinal = url.trim().replace(/\/+$/, "")
+  return semBarraFinal.endsWith("/api") ? semBarraFinal : `${semBarraFinal}/api`
+}
+
+const api_url = normalizarApiUrl(import.meta.env.VITE_API_URL || URL_PADRAO)
 
 // Único lugar que faz fetch: manda o token (se existir), lê o JSON e, se a resposta
 // não for OK, lança um erro com `status` e a mensagem vinda do backend.
