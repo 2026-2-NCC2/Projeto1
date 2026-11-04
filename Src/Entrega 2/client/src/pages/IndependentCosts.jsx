@@ -68,6 +68,8 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
         <Field label="Tipo de custo">
           <Select value={draft.type} onChange={patch('type')}>
             <option>Fiscal</option>
+            <option>Operacional</option>
+            <option>Variável</option>
             <option>Licença</option>
             <option>Taxa</option>
             <option>Serviço</option>
@@ -82,7 +84,11 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
             placeholder="Ex: Taxa municipal para realização do evento"
           />
         </Field>
-        <Field label="Valor da despesa" error={errors.value}>
+        <Field
+          label={draft.type === 'Variável' ? 'Valor por participante (R$)' : 'Valor da despesa'}
+          error={errors.value}
+          hint={draft.type === 'Variável' ? 'Custo que cresce com o público (ex.: copo, kit, seguro por pessoa). Entra no ticket multiplicado pelo número de participantes.' : undefined}
+        >
           <CurrencyInput value={draft.value} onChange={patch('value')} />
         </Field>
         {/* botao de adicionar, fica alinhado na direita */}

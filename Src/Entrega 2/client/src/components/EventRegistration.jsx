@@ -52,6 +52,7 @@ export default function EventRegistration() {
     secondLot: '',
     minAudience: '',
     maxAudience: '',
+    margin: '',
   });
   const [independentCosts, setIndependentCosts] = useState([]);
   const [groups, setGroups] = useState(() =>
@@ -332,6 +333,9 @@ export default function EventRegistration() {
                     style: 'currency',
                     currency: 'BRL',
                   })}
+                </p>
+                <p className="text-sm">
+                  Margem de lucro: {lotData.margin?.trim() ? `${lotData.margin}%` : 'não informada (0%)'}
                 </p>
                 <p className="text-sm">
                   Custos independentes adicionados: {independentCosts.length}

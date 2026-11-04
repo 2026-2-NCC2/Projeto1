@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import Footer from '../components/Footer'
 import Sticker from '../components/Sticker'
 import { Link } from 'react-router-dom'
+import { solicitar } from '../services/api'
 
 const CATEGORIAS = [
   { titulo: 'Shows e música', texto: 'Descubra apresentações e novos artistas.', icone: '♫', cor: 'text-tt-branco', fundo: 'bg-tt-azul-marinho', brilho: 'bg-tt-roxo-vivo' },
@@ -14,13 +16,30 @@ const ETAPAS = [
   { titulo: 'Aproveite com tranquilidade', texto: 'Tenha os detalhes do seu evento sempre à mão.' },
 ]
 
-const EVENTOS = [
-  { rotulo: 'Eventos Cadastrados', valor: '2.400+' },
-  { rotulo: 'Ingressos Emitidos', valor: '180k+' },
-  { rotulo: 'Cidades Atendidas', valor: '360+' }
-]
+// Indicadores da faixa escura: vêm do banco (GET /api/eventos), nada fixo no código.
+// O sistema ainda não vende ingressos nem tem cidades cadastradas, então só existe
+// o número de eventos publicados. Se a API falhar ou não houver eventos, a faixa não aparece.
+function useIndicadores() {
+  const [indicadores, setIndicadores] = useState([])
+
+  useEffect(() => {
+    let ativo = true
+    solicitar('/eventos')
+      .then((eventos) => {
+        if (!ativo) return
+        const publicados = eventos.filter((e) => e.status_publicacao === 'Publicado').length
+        setIndicadores(publicados > 0 ? [{ rotulo: 'Eventos publicados', valor: publicados.toLocaleString('pt-BR') }] : [])
+      })
+      .catch(() => {})
+    return () => { ativo = false }
+  }, [])
+
+  return indicadores
+}
 
 function LandingPage() {
+  const indicadores = useIndicadores()
+
   return (
     <main className="bg-tt-branco text-tt-azul-marinho">
       <section className="relative overflow-hidden border-b border-tt-azul-marinho bg-tt-branco">
@@ -89,10 +108,11 @@ function LandingPage() {
         </div>
       </section>
 
+      {indicadores.length > 0 && (
        <section className="relative overflow-hidden bg-tt-azul-marinho">
               <span className="tt-blob tt-blob--violeta left-[30%] -top-24 h-[200px] w-[420px] opacity-40" aria-hidden="true" />
               <div className="relative z-[1] mx-auto flex w-[calc(100%-48px)] max-w-[1180px] divide-x divide-tt-branco/30 py-9 max-[560px]:flex-col max-[560px]:divide-x-0 max-[560px]:divide-y max-[560px]:py-4">
-                 {EVENTOS.map((s) => (
+                 {indicadores.map((s) => (
               <div key={s.rotulo} className="flex flex-1 flex-col items-start gap-1 px-6 max-[560px]:py-4">
                  <span className="tt-display text-[clamp(30px,4.4vw,56px)] text-tt-branco">{s.valor}</span>
                    <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-tt-branco/75">{s.rotulo}</span>
@@ -100,6 +120,7 @@ function LandingPage() {
                      ))}
                </div>
                   </section>
+      )}
 
       <section className="relative mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[84px] pb-[92px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
         <Sticker nome="vinil" tamanho={104} rotate={-10} delay={0.6} className="right-[24%] top-[40px] hidden min-[1000px]:block" />

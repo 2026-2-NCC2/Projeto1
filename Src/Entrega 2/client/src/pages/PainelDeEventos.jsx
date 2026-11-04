@@ -1,6 +1,7 @@
 import FornecedoresConfirmados from '../components/FornecedoresConfirmados';
 import { solicitar } from '../services/api';
 import CustosFornecedor from '../components/CustosFornecedor';
+import TicketEstimado from '../components/TicketEstimado';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
@@ -540,6 +541,14 @@ export default function PainelDeEventos() {
                   evento={eventoSelecionado}
                 />
               )}
+              {/* ticket estimado (RF13): so o organizador dono do evento */}
+              {perfil === 'organizador' &&
+                eventoSelecionado.organizador_id === ORGANIZADOR_LOGADO_ID && (
+                  <TicketEstimado
+                    key={`ticket-${eventoSelecionado.id}`}
+                    eventoId={eventoSelecionado.id}
+                  />
+                )}
               {/* botoes de excluir e editar */}
               {perfil === 'organizador' &&
                 eventoSelecionado.organizador_id === ORGANIZADOR_LOGADO_ID && (
