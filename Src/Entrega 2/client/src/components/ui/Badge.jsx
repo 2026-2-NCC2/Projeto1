@@ -1,4 +1,3 @@
-import React from 'react';
 import './Badge.css';
 
 // liga cada status/tipo a uma cor do Badge.css

@@ -7,7 +7,8 @@ import propostaRoutes from './routes/propostaRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import { tratarErros } from './middlewares/erros.js'
 const app = express()
-const port = 3000
+// em produção a plataforma de hospedagem define a porta pela variável PORT; localmente continua 3000
+const port = process.env.PORT || 3000
 
 // Middleware: permite que o frontend (outra porta) acesse o backend
 app.use(cors())

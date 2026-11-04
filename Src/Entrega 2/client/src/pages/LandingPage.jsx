@@ -79,7 +79,7 @@ function LandingPage() {
   <div className="absolute -z-10 aspect-square w-[min(380px,90%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-40 blur-[40px]" />
 
   {/* wrapper novo: só cuida do tamanho e da animação */}
-  <div className="relative w-[min(330px,86%)] max-[760px]:w-[min(300px,78%)] animate__animated animate__flip">
+  <div className="relative w-[min(330px,86%)] max-[760px]:w-[min(300px,78%)]">
     {/* ingresso: mantém a inclinação e ocupa 100% do wrapper */}
     <div className="relative w-full rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
       <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />

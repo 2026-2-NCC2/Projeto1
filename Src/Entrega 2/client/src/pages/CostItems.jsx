@@ -13,31 +13,10 @@ const money = (value) =>
 const formatBRL = (value) =>
   value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-// categorias de custo que ja comecam na tela, todas vazias
-const seed = [
-  { name: 'Iluminação', items: [] },
-  { name: 'Alimentação', items: [] },
-  { name: 'Bebidas', items: [] },
-  { name: 'Segurança', items: [] },
-  { name: 'Estrutura', items: [] },
-];
-
 // etapa do formulario de criar evento: itens de custo
 // independentCosts = custos avulsos que vem da etapa anterior / onBack e onFinish = voltar e finalizar
-export function CostItems({
-  independentCosts,
-  onBack,
-  onFinish,
-  groups: savedGroups,
-  setGroups: saveGroups,
-}) {
-  const [localGroups, setLocalGroups] = useState(seed);
-  const groups = savedGroups ?? localGroups;
-  const setGroups = (update) => {
-    const next = typeof update === 'function' ? update(groups) : update;
-    if (saveGroups) saveGroups(next);
-    else setLocalGroups(next);
-  }; // categorias com os itens de cada uma
+// groups/setGroups = categorias com os itens de cada uma (o estado fica no componente pai, que ja cria as categorias iniciais)
+export function CostItems({ independentCosts, onBack, onFinish, groups, setGroups }) {
   const [open, setOpen] = useState('Iluminação'); // categoria aberta no momento
   const [erro, setErro] = useState('');
   const [drafts, setDrafts] = useState({}); // o que ta sendo digitado antes de adicionar o item
