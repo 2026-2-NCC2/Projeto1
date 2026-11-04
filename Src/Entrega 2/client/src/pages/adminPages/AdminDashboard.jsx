@@ -1,9 +1,9 @@
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Footer from '../../components/Footer';
 import Sticker from '../../components/Sticker';
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { buscarCadastros } from "../../services/api";
 
 // formata o timestamp vindo do banco (data_criacao) pro formato brasileiro
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
       try {
         const dados = await buscarCadastros();
         setCadastros(dados);
-      } catch (err) {
+      } catch {
         setErroApi("Não foi possível carregar os cadastros. Tente novamente.");
       } finally {
         setLoading(false);

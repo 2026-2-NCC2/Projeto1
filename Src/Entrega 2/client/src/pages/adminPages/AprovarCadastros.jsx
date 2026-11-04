@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
 import Footer from '../../components/Footer';
 import Sticker from '../../components/Sticker';
-import { buscarCadastros } from '../../services/api';
-import { atualizarStatusCadastro } from '../../services/api';
+import { buscarCadastros, atualizarStatusCadastro } from '../../services/api';
 
 // formata o timestamp vindo do banco (data_criacao) pro formato brasileiro
 function formatDate(dataCriacao) {
@@ -47,7 +46,7 @@ export default function AprovarCadastros() {
       try {
         const dados = await buscarCadastros();
         setCadastros(dados);
-      } catch (err) {
+      } catch {
         setErroApi('Não foi possível carregar os cadastros. Tente novamente.');
       } finally {
         setLoading(false);
@@ -85,7 +84,7 @@ export default function AprovarCadastros() {
       setCadastros(prev =>
         prev.map(c => c.id === id ? { ...c, status } : c)
       );
-    } catch (err) {
+    } catch {
       alert('Não foi possível atualizar o cadastro. Tente novamente.');
     }
   }

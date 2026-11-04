@@ -5,7 +5,7 @@ import { autenticar, permitir } from '../middlewares/autenticacao.js';
 
 const router = Router()
 
-router.get("/admin/cadastros", autenticar, permitir("administrador"), async (req,res)=>{
+router.get("/admin/cadastros", autenticar, permitir("administrador"), async (req, res, next) => {
     try{
         const resultado = await sql`
             SELECT u.id_usuario AS id, u.nome, u.email, u.data_criacao,
@@ -28,13 +28,12 @@ router.get("/admin/cadastros", autenticar, permitir("administrador"), async (req
         res.json(resultado);
     }
     catch(erro){
-        console.error(erro)
-        res.status(500).json({erro: "Erro no servidor"})
+        next(erro) // o tratador central (middlewares/erros.js) responde 500 sem vazar detalhes
     }
 })
 
 // PATCH /api/admin/cadastros/:id — aprova ou rejeita um cadastro
-router.patch('/admin/cadastros/:id', autenticar, permitir("administrador"), async (req, res) => {
+router.patch('/admin/cadastros/:id', autenticar, permitir("administrador"), async (req, res, next) => {
     const { id } = req.params
     const { tipo, status } = req.body
 
@@ -63,8 +62,7 @@ router.patch('/admin/cadastros/:id', autenticar, permitir("administrador"), asyn
 
         res.json({ ok: true, status })
     } catch (erro) {
-        console.error(erro)
-        res.status(500).json({ erro: 'Erro no servidor' })
+        next(erro)
     }
 })
 

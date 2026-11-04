@@ -1,4 +1,3 @@
-import React from 'react';
 import './Spinner.css';
 
 // indicador de carregamento, o texto padrao e "Carregando..."

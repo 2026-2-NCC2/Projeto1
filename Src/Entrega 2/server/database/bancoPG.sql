@@ -138,6 +138,18 @@ CREATE INDEX idx_usuario_email ON usuario(email);
 CREATE INDEX idx_evento_data ON evento(data_evento);
 CREATE INDEX idx_proposta_status ON proposta(status_proposta);
 
+-- O Postgres NAO cria indice automatico para chave estrangeira. Estes indices
+-- aceleram os JOINs e os DELETE ... CASCADE usados pelas rotas de eventos e propostas.
+-- IF NOT EXISTS: pode ser rodado de novo, inclusive no banco que ja existe, sem apagar nada.
+CREATE INDEX IF NOT EXISTS idx_evento_organizador ON evento(id_organizador_fk);
+CREATE INDEX IF NOT EXISTS idx_itemcusto_evento ON itemcusto(id_evento_fk);
+CREATE INDEX IF NOT EXISTS idx_custoindependente_evento ON custoindependente(id_evento_fk);
+CREATE INDEX IF NOT EXISTS idx_proposta_itemcusto ON proposta(id_item_custo_fk);
+CREATE INDEX IF NOT EXISTS idx_solicitacao_evento ON solicitacao_fornecimento(id_evento_fk);
+CREATE INDEX IF NOT EXISTS idx_solicitacao_fornecedor ON solicitacao_fornecimento(id_fornecedor_fk);
+CREATE INDEX IF NOT EXISTS idx_produto_solicitacao ON produto_solicitacao(id_solicitacao_fk);
+CREATE INDEX IF NOT EXISTS idx_produto_itemcusto ON produto_solicitacao(id_item_custo_fk);
+
 ALTER TABLE usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organizador ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fornecedor ENABLE ROW LEVEL SECURITY;

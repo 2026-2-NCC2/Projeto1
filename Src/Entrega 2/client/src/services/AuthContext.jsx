@@ -46,6 +46,8 @@ export function AuthProvider({ children }) {
 }
 
 // hook pra consumir o contexto em qualquer componente (ex: const { perfil, logout } = useAuth())
+// (provider e hook ficam juntos de propósito; a regra só afeta o recarregamento rápido do Vite em dev)
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) throw new Error('useAuth precisa ser usado dentro de um <AuthProvider>')

@@ -1,7 +1,5 @@
 # Fluxo de cadastro de eventos
 
-Execute `npm ci` e `npm run dev`. Abra `/PainelDeEventos` e clique em **Criar Evento**, ou acesse `/criar-evento/evento`.
+Abra `/PainelDeEventos` e clique em **Criar Evento**, ou acesse `/criar-evento/evento` (rota só para o perfil organizador).
 
-As quatro telas originais estão em `src/features/eventRegistration/`. As páginas e rotas da implementação preliminar foram removidas. O estado do formulário dura apenas enquanto o fluxo está aberto; concluir exibe uma mensagem visual e não grava dados ou chama uma API.
-
-Arquivos alterados: `src/pages/PainelDeEventos.jsx`, `src/routes/index.jsx` e a nova pasta `src/features/eventRegistration/`. Os demais arquivos do projeto foram mantidos.
+O formulário tem 4 etapas (`evento`, `publico-lotes`, `custos-independentes`, `itens-custos`), implementadas em `src/components/EventRegistration.jsx` e nas telas de `src/pages/` (`EventBasics`, `AudienceLots`, `IndependentCosts`, `CostItems`). Os dados ficam em memória enquanto o fluxo está aberto; na etapa 4 abre-se uma revisão e, ao confirmar, o frontend envia o evento para `POST /api/eventos`, que grava o evento e seus itens em uma única transação.

@@ -195,7 +195,7 @@ export default function Cadastro() {
 
   // codigo aleatorio do cadastro (ex: TT-A1B2C3), a funcao no useState faz ele ser gerado so uma vez
   const [code] = useState(
-    () => "TT-" + Math.random().toString(36).substr(2, 6).toUpperCase(),
+    () => "TT-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
   );
   const [areaFor, setAreaFor] = useState("");
 
@@ -333,15 +333,8 @@ export default function Cadastro() {
     setErrors({});
 
     // se for a ultima etapa daquele tipo de conta, finaliza o cadastro (chama a API)
-    if (step === 1 && role === "cliente") {
-      finalizarCadastro();
-      return;
-    }
-    if (step === 2 && role === "organizador") {
-      finalizarCadastro();
-      return;
-    }
-    if (step === 3 && role === "fornecedor") {
+    const ultimaEtapa = { cliente: 1, organizador: 2, fornecedor: 3 };
+    if (step === ultimaEtapa[role]) {
       finalizarCadastro();
       return;
     }
