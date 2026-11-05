@@ -23,15 +23,16 @@ function useIndicadores() {
   const [indicadores, setIndicadores] = useState([])
 
   useEffect(() => {
-    let ativo = true
-    solicitar('/eventos')
-      .then((eventos) => {
-        if (!ativo) return
+    async function carregar() {
+      try {
+        const eventos = await solicitar('/eventos')
         const publicados = eventos.filter((e) => e.status_publicacao === 'Publicado').length
         setIndicadores(publicados > 0 ? [{ rotulo: 'Eventos publicados', valor: publicados.toLocaleString('pt-BR') }] : [])
-      })
-      .catch(() => {})
-    return () => { ativo = false }
+      } catch {
+        // se der erro a faixa so nao aparece
+      }
+    }
+    carregar()
   }, [])
 
   return indicadores
@@ -162,7 +163,8 @@ function LandingPage() {
           </div>
           <div className="mt-12 grid grid-cols-3 border-[1.5px] border-tt-azul-marinho bg-tt-branco/80 backdrop-blur-sm max-[760px]:grid-cols-1">
             {ETAPAS.map((etapa, index) => (
-              <article className="border-tt-azul-marinho p-[28px_26px] [&:not(:first-child)]:border-l-[1.5px] max-[760px]:[&:not(:first-child)]:border-l-0 max-[760px]:[&:not(:first-child)]:border-t-[1.5px]" key={etapa.titulo}>
+              // linha separando as etapas (menos antes da primeira): do lado no computador, em cima no celular
+              <article className={`border-tt-azul-marinho p-[28px_26px] ${index > 0 ? 'border-l-[1.5px] max-[760px]:border-l-0 max-[760px]:border-t-[1.5px]' : ''}`} key={etapa.titulo}>
                 <span className="tt-display tt-outline mb-6 block text-[64px] leading-none">{String(index + 1).padStart(2, '0')}</span>
                 <h3 className="mb-2 text-lg font-extrabold text-tt-azul-marinho">{etapa.titulo}</h3>
                 <p className="m-0 text-[13px] leading-[1.6] text-tt-grafite/75">{etapa.texto}</p>

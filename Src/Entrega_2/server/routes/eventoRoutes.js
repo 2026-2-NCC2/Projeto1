@@ -87,14 +87,13 @@ router.get('/eventos', autenticarSeHouverToken, async (req, res, next) => {
         `
 
         // Adapta os nomes e valores para o formato usado pelo painel.
+        // (quantidade_itens já chega como número: veja a conversão de bigint em config/db.js)
         const eventosFormatados = eventos.map((evento) => ({
             ...evento,
             status_publicacao:
                 evento.status_publicacao[0].toUpperCase() +
                 evento.status_publicacao.slice(1),
             banner_color: 'var(--tt-azul-principal)',
-            // Alias mantido para compatibilidade com versões anteriores do painel.
-            itens_pendentes: Number(evento.quantidade_itens),
         }))
 
         return res.json(eventosFormatados)
@@ -372,7 +371,7 @@ router.post(
                     RETURNING id_evento
                 `
 
-                // Salva os itens solicitados pelo organizador.
+                // Salva os itens solicitados pelo organizador (um INSERT por item).
                 for (const item of itens) {
                     await sql`
                         INSERT INTO itemcusto (

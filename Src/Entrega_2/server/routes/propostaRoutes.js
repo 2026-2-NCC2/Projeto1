@@ -33,17 +33,45 @@ router.get('/', async (req, res, next) => {
     } catch (e) { next(e) }
 })
 
+// Confere os campos de um produto da proposta (o objeto já foi validado antes).
+function produtoValido(p) {
+    const quantidade = Number(p.quantidade)
+    const valor = Number(p.valorUnitario)
+
+    return (
+        Number.isInteger(Number(p.itemId)) &&
+        typeof p.produto === 'string' &&
+        p.produto.trim() !== '' &&
+        p.produto.length <= 255 &&
+        Number.isInteger(quantidade) &&
+        quantidade >= 1 &&
+        quantidade <= 1000000 &&
+        /^\d+(\.\d{1,2})?$/.test(String(p.valorUnitario)) && // até 2 casas decimais
+        valor > 0 &&
+        valor <= 9999999999
+    )
+}
+
 router.post('/', permitir('fornecedor'), async (req, res, next) => {
     const { eventoId, mensagem, produtos } = req.body
-    if (!Number.isInteger(Number(eventoId)) || typeof mensagem !== 'string' || !mensagem.trim() || mensagem.length > 1000 || !Array.isArray(produtos) || !produtos.length || produtos.length > 100)
+
+    const mensagemValida = typeof mensagem === 'string' && mensagem.trim() !== '' && mensagem.length <= 1000
+    const listaValida = Array.isArray(produtos) && produtos.length > 0 && produtos.length <= 100
+
+    if (!Number.isInteger(Number(eventoId)) || !mensagemValida || !listaValida) {
         return res.status(400).json({ erro: 'Informe os produtos e uma mensagem de até 1.000 caracteres.' })
-    if (produtos.some((p) => !p || typeof p !== 'object')) return res.status(400).json({ erro: 'Produtos inválidos.' })
+    }
+    if (produtos.some((p) => !p || typeof p !== 'object')) {
+        return res.status(400).json({ erro: 'Produtos inválidos.' })
+    }
+
+    // O mesmo item de custo não pode aparecer duas vezes na mesma proposta.
     const ids = produtos.map((p) => Number(p.itemId))
-    if (
-        new Set(ids).size !== ids.length ||
-        produtos.some((p) => !Number.isInteger(Number(p.itemId)) || typeof p.produto !== 'string' || !p.produto.trim() || p.produto.length > 255 || !Number.isInteger(Number(p.quantidade)) || Number(p.quantidade) < 1 || Number(p.quantidade) > 1000000 || !/^\d+(\.\d{1,2})?$/.test(String(p.valorUnitario)) || Number(p.valorUnitario) <= 0 || Number(p.valorUnitario) > 9999999999)
-    )
+    const temItemRepetido = new Set(ids).size !== ids.length
+
+    if (temItemRepetido || !produtos.every(produtoValido)) {
         return res.status(400).json({ erro: 'Confira os produtos, quantidades e valores positivos com até duas casas decimais.' })
+    }
 
     try {
         const id = await sql.begin(async (sql) => {
@@ -69,6 +97,7 @@ router.post('/', permitir('fornecedor'), async (req, res, next) => {
                 RETURNING id
             `
 
+            // Salva cada produto da proposta.
             for (const p of produtos) {
                 await sql`
                     INSERT INTO produto_solicitacao (id_solicitacao_fk, id_item_custo_fk, produto, quantidade, valor_unitario)

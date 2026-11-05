@@ -276,7 +276,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                       {/* no celular fica em 2 colunas com o botao de remover na direita, no desktop vira as 5 colunas da tabela */}
                       {group.items.map((item) => (
                         <div
-                          className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 border-t border-tt-azul-marinho/12 bg-tt-branco p-3 text-[.72rem] first:border-t-0 min-[761px]:grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] min-[761px]:gap-2.5 min-[761px]:px-2.5 min-[761px]:py-[9px] [&>span:nth-child(5)]:col-start-2 [&>span:nth-child(5)]:row-[1/span_2] min-[761px]:[&>span:nth-child(5)]:col-auto min-[761px]:[&>span:nth-child(5)]:row-auto"
+                          className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 border-t border-tt-azul-marinho/12 bg-tt-branco p-3 text-[.72rem] first:border-t-0 min-[761px]:grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] min-[761px]:gap-2.5 min-[761px]:px-2.5 min-[761px]:py-[9px]"
                           key={item.id}
                         >
                           <span>{item.description}</span>
@@ -286,8 +286,8 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                           <span>
                             <strong>{formatBRL(item.qty * item.unit)}</strong>
                           </span>
-                          {/* botao de remover o item */}
-                          <span>
+                          {/* botao de remover o item: no celular fica na direita ocupando as duas linhas */}
+                          <span className="col-start-2 row-[1/span_2] min-[761px]:col-auto min-[761px]:row-auto">
                             <button
                               className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
                               onClick={() => removeItem(group.name, item.id)}

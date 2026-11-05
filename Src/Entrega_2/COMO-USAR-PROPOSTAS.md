@@ -5,7 +5,7 @@ O projeto usa **PostgreSQL (Supabase)**. Antes de alterar um banco que já tem d
 - **Banco novo (vazio):** execute `server/database/bancoPG.sql`. Opcionalmente, depois execute `server/database/seed.sql` para criar contas de teste (a senha delas está no começo do arquivo).
 - **Recomeçar do zero em desenvolvimento:** execute `reset.sql` (apaga TUDO), depois `bancoPG.sql` e, se quiser, `seed.sql`.
 - **Banco que já existe:** não rode o `bancoPG.sql` inteiro (ele cria os tipos e as tabelas de novo e dá erro). Para ganhar os índices de desempenho, rode só as linhas `CREATE INDEX IF NOT EXISTS ...` da seção 4: elas não apagam nem alteram dados.
-- `server/database/banco.sql` é a versão antiga em MySQL e não é mais usada.
+- A versão antiga do banco, em MySQL, foi removida desta pasta (continua em `Src/Entrega 1/server/banco.sql` e no histórico do Git).
 - Copie `server/.env.example` para `server/.env` e preencha `DATABASE_URL` e `JWT_SECRET`.
 
 ## Iniciar

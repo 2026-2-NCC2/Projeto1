@@ -226,7 +226,7 @@ export default function Cadastro() {
         idade: erroIdade(idade),
         email: erroEmail(email),
         senha: erroSenha(senha),
-        confirmSenha: erroConfirmacaoSenha(senha, confirmSenha),
+        confirmarSenha: erroConfirmacaoSenha(senha, confirmSenha), // mesmo nome de campo que o servidor usa
       };
       for (const [campo, mensagem] of Object.entries(regras)) {
         if (mensagem) e[campo] = mensagem;
@@ -433,9 +433,9 @@ export default function Cadastro() {
             <Campo id="nome" label="Nome completo" type="text" placeholder="Seu nome completo" value={nome} onChange={setNome} error={errors.nome} />
             <Campo id="username" label="Username" type="text" placeholder="Seu nome para a plataforma" value={username} onChange={setUsername} error={errors.username} />
             <Campo id="email" label="E-mail" type="email" placeholder="seuemail@exemplo.com" value={email} onChange={setEmail} error={errors.email} />
-            <Campo id="idade" label="Idade" type="number" placeholder="20" min="0" max="100" value={idade} onChange={setIdade} error={errors.idade} />
+            <Campo id="idade" label="Idade" type="number" placeholder="20" value={idade} onChange={setIdade} error={errors.idade} />
             <Campo id="senha" label="Senha" type="password" placeholder="••••••••" value={senha} onChange={setSenha} error={errors.senha} />
-            <Campo id="csenha" label="Confirmar senha" type="password" placeholder="••••••••" value={confirmSenha} onChange={setConfirmSenha} error={errors.confirmSenha} />
+            <Campo id="csenha" label="Confirmar senha" type="password" placeholder="••••••••" value={confirmSenha} onChange={setConfirmSenha} error={errors.confirmarSenha} />
 
             {/* botao de avancar, passa pela validacao antes */}
             <div className="mt-8 flex justify-end gap-4">

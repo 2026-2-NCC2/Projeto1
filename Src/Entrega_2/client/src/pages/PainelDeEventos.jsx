@@ -1,10 +1,11 @@
-import FornecedoresConfirmados from '../components/FornecedoresConfirmados';
-import { solicitar } from '../services/api';
-import CustosFornecedor from '../components/CustosFornecedor';
-import TicketEstimado from '../components/TicketEstimado';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import FornecedoresConfirmados from '../components/FornecedoresConfirmados';
+import CustosFornecedor from '../components/CustosFornecedor';
+import TicketEstimado from '../components/TicketEstimado';
+import { solicitar } from '../services/api';
 import { useAuth } from '../services/AuthContext';
+import { brl } from '../styles/propostas';
 
 // cor da etiqueta de cada status
 const BADGE_CLASS = {
@@ -22,13 +23,10 @@ function formatDate(iso) {
   return `${d}/${m}/${y}`;
 }
 
-// formata numero como dinheiro (ex: 890 vira "R$ 890,00")
+// formata numero como dinheiro (ex: 890 vira "R$ 890,00"); sem valor mostra "Não informado"
 function formatCurrency(val) {
   if (val === null || val === undefined || val === '') return 'Não informado';
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(val);
+  return brl(val);
 }
 
 // ─── Ícones SVG ───────────────────────────────────────────────────────────────
@@ -89,7 +87,7 @@ const IconArrowLeft = () => (
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
   const { perfil, usuario } = useAuth();
-  const ORGANIZADOR_LOGADO_ID = usuario?.id_usuario;
+  const idUsuarioLogado = usuario?.id_usuario;
   // ── Aba ativa vem do query param gerenciado pelo Header ──────────────────
   // ex: ?tab=meus mostra so os meus eventos, sem nada mostra todos
   const [searchParams] = useSearchParams();
@@ -97,77 +95,63 @@ export default function PainelDeEventos() {
 
   // ── Estado interno da página ──────────────────────────────────────────────
   // telaAtual = "painel" (lista) ou "detalhes" / eventoSelecionado = evento aberto nos detalhes
-  // modoModal = "criar" ou "editar" / os form... sao os campos do formulario do modal
   const [telaAtual, setTelaAtual] = useState('painel');
   const [eventos, setEventos] = useState([]);
   const [eventoSelecionado, setEventoSel] = useState(null);
   const [filtroStatus, setFiltroStatus] = useState('Todos');
   const [busca, setBusca] = useState('');
-  const [modalAberto, setModalAberto] = useState(false);
-  const [modoModal, setModoModal] = useState('criar');
-  const [formId, setFormId] = useState(null);
-  const [formTitulo, setFormTitulo] = useState('');
-  const [formInicio, setFormInicio] = useState('');
-  const [formFim, setFormFim] = useState('');
-  const [formEndereco, setFormEndereco] = useState('');
-  const [formStatus, setFormStatus] = useState('Publicado');
-  const [formTicket, setFormTicket] = useState('');
-  const [formSegundoLote, setFormSegundoLote] = useState('');
+  // campos do modal de edicao num objeto so; null = modal fechado
+  const [form, setForm] = useState(null);
 
   const [erroApi, setErroApi] = useState('');
   const [carregando, setCarregando] = useState(true);
+  // busca os eventos quando a pagina abre
   useEffect(() => {
-    let ativo = true;
-    solicitar('/eventos')
-      .then((d) => {
-        if (ativo) setEventos(d);
-      })
-      .catch((e) => {
-        if (ativo) setErroApi(e.message);
-      })
-      .finally(() => {
-        if (ativo) setCarregando(false);
-      });
-    return () => {
-      ativo = false;
-    };
+    async function carregar() {
+      try {
+        setEventos(await solicitar('/eventos'));
+      } catch (e) {
+        setErroApi(e.message);
+      } finally {
+        setCarregando(false);
+      }
+    }
+    carregar();
   }, []);
 
   // ── Filtragem (usa activeTab vindo da URL) ────────────────────────────────
   // o evento so aparece se passar nos 3 filtros: aba, status e busca
   // a busca procura no titulo ou no endereco, sem diferenciar maiuscula
+  // (quem pode ver cada evento o servidor ja decide: GET /eventos so devolve os
+  // publicados e, para o organizador, tambem os dele)
+  const textoBusca = busca.toLowerCase();
   const eventosFiltrados = eventos.filter((ev) => {
-    const matchAba =
-      activeTab === 'painel' || ev.organizador_id === ORGANIZADOR_LOGADO_ID;
-    const matchStatus =
-      filtroStatus === 'Todos' || ev.status_publicacao === filtroStatus;
+    const matchAba = activeTab === 'painel' || ev.organizador_id === idUsuarioLogado;
+    const matchStatus = filtroStatus === 'Todos' || ev.status_publicacao === filtroStatus;
     const matchBusca =
-      ev.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-      ev.endereco.toLowerCase().includes(busca.toLowerCase());
-    return (
-      matchAba &&
-      matchStatus &&
-      matchBusca &&
-      (ev.status_publicacao === 'Publicado' ||
-        (perfil === 'organizador' &&
-          ev.organizador_id === ORGANIZADOR_LOGADO_ID))
-    );
+      ev.titulo.toLowerCase().includes(textoBusca) ||
+      ev.endereco.toLowerCase().includes(textoBusca);
+    return matchAba && matchStatus && matchBusca;
   });
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   // abre o modal ja preenchido com os dados do evento
   function abrirModalEditar(ev) {
-    setModoModal('editar');
-    setFormId(ev.id);
-    setFormTitulo(ev.titulo);
-    setFormInicio(ev.data_inicio);
-    setFormFim(ev.data_fim);
-    setFormEndereco(ev.endereco);
-    setFormStatus(ev.status_publicacao);
-    setFormTicket(String(ev.primeiro_lote ?? ev.ticket_estimado ?? ''));
-    setFormSegundoLote(String(ev.segundo_lote ?? ''));
-    setModalAberto(true);
+    setForm({
+      id: ev.id,
+      titulo: ev.titulo,
+      inicio: ev.data_inicio,
+      fim: ev.data_fim,
+      endereco: ev.endereco,
+      status: ev.status_publicacao,
+      ticket: String(ev.primeiro_lote ?? ''),
+      segundoLote: String(ev.segundo_lote ?? ''),
+    });
   }
+
+  // funcao generica pra atualizar qualquer campo do modal, e so passar o nome dele
+  const alterarForm = (campo) => (e) =>
+    setForm((prev) => ({ ...prev, [campo]: e.target.value }));
 
   // Atualiza o banco e busca os dados reais para manter o painel sincronizado.
   async function salvarFormulario(e) {
@@ -175,23 +159,23 @@ export default function PainelDeEventos() {
     setErroApi('');
 
     try {
-      await solicitar(`/eventos/${formId}`, {
+      await solicitar(`/eventos/${form.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
-          titulo: formTitulo,
-          inicio: formInicio,
-          fim: formFim || formInicio,
-          endereco: formEndereco,
-          status: formStatus,
-          ticket: formTicket,
-          segundoLote: formSegundoLote,
+          titulo: form.titulo,
+          inicio: form.inicio,
+          fim: form.fim || form.inicio,
+          endereco: form.endereco,
+          status: form.status,
+          ticket: form.ticket,
+          segundoLote: form.segundoLote,
         }),
       });
 
       const atualizados = await solicitar('/eventos');
       setEventos(atualizados);
-      setEventoSel(atualizados.find((evento) => evento.id === formId) ?? null);
-      setModalAberto(false);
+      setEventoSel(atualizados.find((evento) => evento.id === form.id) ?? null);
+      setForm(null);
     } catch (erro) {
       setErroApi(erro.message);
     }
@@ -384,9 +368,7 @@ export default function PainelDeEventos() {
                             Lote inicial
                           </span>
                           <span className="text-sm font-bold text-tt-azul-principal">
-                            {formatCurrency(
-                              ev.primeiro_lote ?? ev.ticket_estimado,
-                            )}
+                            {formatCurrency(ev.primeiro_lote)}
                           </span>
                           {ev.segundo_lote != null && (
                             <span className="text-xs text-tt-grafite/70">
@@ -399,7 +381,7 @@ export default function PainelDeEventos() {
                             Itens de custo
                           </span>
                           <span className="text-sm font-bold text-tt-azul-marinho">
-                            {ev.quantidade_itens ?? ev.itens_pendentes ?? 0}
+                            {ev.quantidade_itens}
                           </span>
                         </div>
                       </div>
@@ -503,10 +485,7 @@ export default function PainelDeEventos() {
                       Lote inicial
                     </p>
                     <p className="font-bold text-tt-azul-principal">
-                      {formatCurrency(
-                        eventoSelecionado.primeiro_lote ??
-                          eventoSelecionado.ticket_estimado,
-                      )}
+                      {formatCurrency(eventoSelecionado.primeiro_lote)}
                     </p>
                     {eventoSelecionado.segundo_lote != null && (
                       <p className="mt-1 text-sm text-tt-grafite/70">
@@ -525,25 +504,23 @@ export default function PainelDeEventos() {
                       Itens de custo
                     </p>
                     <p className="font-medium text-tt-azul-marinho">
-                      {eventoSelecionado.quantidade_itens ??
-                        eventoSelecionado.itens_pendentes ??
-                        0}{' '}
+                      {eventoSelecionado.quantidade_itens}{' '}
                       itens registrados
                     </p>
                   </div>
                 </div>
               </div>
 
-              {['organizador', 'fornecedor'].includes(perfil) && <FornecedoresConfirmados key={eventoSelecionado.id} eventoId={eventoSelecionado.id} />}
+              {['organizador', 'fornecedor'].includes(perfil) && <FornecedoresConfirmados key={`fornecedores-${eventoSelecionado.id}`} eventoId={eventoSelecionado.id} />}
               {perfil === 'fornecedor' && (
                 <CustosFornecedor
-                  key={eventoSelecionado.id}
+                  key={`custos-${eventoSelecionado.id}`}
                   evento={eventoSelecionado}
                 />
               )}
               {/* ticket estimado (RF13): so o organizador dono do evento */}
               {perfil === 'organizador' &&
-                eventoSelecionado.organizador_id === ORGANIZADOR_LOGADO_ID && (
+                eventoSelecionado.organizador_id === idUsuarioLogado && (
                   <TicketEstimado
                     key={`ticket-${eventoSelecionado.id}`}
                     eventoId={eventoSelecionado.id}
@@ -551,7 +528,7 @@ export default function PainelDeEventos() {
                 )}
               {/* botoes de excluir e editar */}
               {perfil === 'organizador' &&
-                eventoSelecionado.organizador_id === ORGANIZADOR_LOGADO_ID && (
+                eventoSelecionado.organizador_id === idUsuarioLogado && (
                   <div className="flex gap-3 justify-end pt-4 border-t border-tt-azul-marinho/8">
                     <button
                       onClick={() => excluirEvento(eventoSelecionado.id)}
@@ -572,16 +549,13 @@ export default function PainelDeEventos() {
         </div>
       )}
 
-      {/* ── MODAL CRIAR / EDITAR ── */}
+      {/* ── MODAL EDITAR ── */}
       {/* fundo escuro por cima da tela toda com o formulario no meio */}
-      {modalAberto && (
+      {form && (
         <div className="fixed inset-0 z-[200] bg-tt-azul-marinho/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-tt-branco rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-tt-azul-marinho/8">
-            {/* titulo muda se ta criando ou editando */}
             <h2 className="text-xl font-bold text-tt-azul-marinho mb-4">
-              {modoModal === 'criar'
-                ? 'Criar Novo Evento'
-                : 'Editar Dados do Evento'}
+              Editar Dados do Evento
             </h2>
             {/* ao enviar chama o salvarFormulario */}
             <form onSubmit={salvarFormulario} className="space-y-4">
@@ -593,8 +567,8 @@ export default function PainelDeEventos() {
                 <input
                   type="text"
                   required
-                  value={formTitulo}
-                  onChange={(e) => setFormTitulo(e.target.value)}
+                  value={form.titulo}
+                  onChange={alterarForm('titulo')}
                   className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                   placeholder="Ex: Lollapalooza 2026"
                 />
@@ -608,8 +582,8 @@ export default function PainelDeEventos() {
                   <input
                     type="date"
                     required
-                    value={formInicio}
-                    onChange={(e) => setFormInicio(e.target.value)}
+                    value={form.inicio}
+                    onChange={alterarForm('inicio')}
                     className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                   />
                 </div>
@@ -619,8 +593,8 @@ export default function PainelDeEventos() {
                   </label>
                   <input
                     type="date"
-                    value={formFim}
-                    onChange={(e) => setFormFim(e.target.value)}
+                    value={form.fim}
+                    onChange={alterarForm('fim')}
                     className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                   />
                 </div>
@@ -633,8 +607,8 @@ export default function PainelDeEventos() {
                 <input
                   type="text"
                   required
-                  value={formEndereco}
-                  onChange={(e) => setFormEndereco(e.target.value)}
+                  value={form.endereco}
+                  onChange={alterarForm('endereco')}
                   className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                   placeholder="Ex: Allianz Parque, São Paulo"
                 />
@@ -646,8 +620,8 @@ export default function PainelDeEventos() {
                     Status de Publicação
                   </label>
                   <select
-                    value={formStatus}
-                    onChange={(e) => setFormStatus(e.target.value)}
+                    value={form.status}
+                    onChange={alterarForm('status')}
                     className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-laranja-principal"
                   >
                     <option value="Publicado">Publicado</option>
@@ -666,8 +640,8 @@ export default function PainelDeEventos() {
                     min="0"
                     max="99999999.99"
                     step="0.01"
-                    value={formTicket}
-                    onChange={(e) => setFormTicket(e.target.value)}
+                    value={form.ticket}
+                    onChange={alterarForm('ticket')}
                     className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                     placeholder="890"
                   />
@@ -680,8 +654,8 @@ export default function PainelDeEventos() {
                   min="0"
                   max="99999999.99"
                   step="0.01"
-                  value={formSegundoLote}
-                  onChange={(e) => setFormSegundoLote(e.target.value)}
+                  value={form.segundoLote}
+                  onChange={alterarForm('segundoLote')}
                   className="mt-1 w-full rounded-xl border border-tt-azul-marinho/12 p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                   placeholder="Deixe vazio se não houver segundo lote"
                 />
@@ -690,7 +664,7 @@ export default function PainelDeEventos() {
               <div className="flex gap-2 justify-end pt-4 border-t border-tt-azul-marinho/8">
                 <button
                   type="button"
-                  onClick={() => setModalAberto(false)}
+                  onClick={() => setForm(null)}
                   className="px-4 py-2 rounded-xl text-sm font-semibold text-tt-grafite/70 hover:bg-tt-cinza-claro"
                 >
                   Cancelar

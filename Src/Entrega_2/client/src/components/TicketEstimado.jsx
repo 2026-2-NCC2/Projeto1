@@ -12,25 +12,22 @@ export default function TicketEstimado({ eventoId }) {
   const [salvando, setSalvando] = useState(false)
   const [aviso, setAviso] = useState('')
 
-  function carregar() {
-    return solicitar(`/eventos/${eventoId}/ticket`).then((d) => {
-      setDados(d)
-      setMargem(String(d.margem_percentual).replace('.', ','))
-    })
+  // guarda o que o servidor mandou e preenche o campo da margem com virgula
+  function mostrar(d) {
+    setDados(d)
+    setMargem(String(d.margem_percentual).replace('.', ','))
   }
 
+  // busca o ticket quando a tela abre
   useEffect(() => {
-    let ativo = true
-    solicitar(`/eventos/${eventoId}/ticket`)
-      .then((d) => {
-        if (!ativo) return
-        setDados(d)
-        setMargem(String(d.margem_percentual).replace('.', ','))
-      })
-      .catch((e) => ativo && setErro(e.message))
-    return () => {
-      ativo = false
+    async function carregar() {
+      try {
+        mostrar(await solicitar(`/eventos/${eventoId}/ticket`))
+      } catch (e) {
+        setErro(e.message)
+      }
     }
+    carregar()
   }, [eventoId])
 
   async function salvarMargem(e) {
@@ -43,7 +40,7 @@ export default function TicketEstimado({ eventoId }) {
         method: 'PATCH',
         body: JSON.stringify({ margem }),
       })
-      await carregar() // o ticket é recalculado no servidor
+      mostrar(await solicitar(`/eventos/${eventoId}/ticket`)) // o servidor calcula o ticket de novo
       setAviso('Margem atualizada.')
     } catch (err) {
       setErro(err.message)

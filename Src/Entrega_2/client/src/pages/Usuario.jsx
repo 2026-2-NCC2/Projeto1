@@ -8,15 +8,12 @@ import Spinner from '../components/ui/Spinner'
 
 // ---------------------------------------------------------------------------
 // PONTO DE INTEGRACAO COM O BACKEND (ainda nao existe)
-// Hoje o login so devolve { id_usuario, nome, email, perfil }, entao o perfil vem da sessao.
-// Quando existir um endpoint de perfil (ex: GET /usuario/me), e so trocar o corpo desta funcao
-// por `return solicitar('/usuario/me')`. A tela ja usa estes campos, todos opcionais:
+// Hoje o login so devolve { id_usuario, nome, email, perfil }, entao os dados vem da sessao.
+// Quando existir um endpoint de perfil (ex: GET /usuario/me), basta buscar os dados dele e
+// usar no lugar de `dadosPerfil`. A tela ja usa estes campos, todos opcionais:
 //   username, empresa, cnpj, area_atuacao, data_criacao, saldo
 // Campo ausente = a linha/valor simplesmente nao aparece.
 // ---------------------------------------------------------------------------
-function montarPerfil(usuario) {
-  return { ...usuario }
-}
 
 // segue o mesmo padrao dos cards do site: borda marinho 1.5px + sombra roxa chapada
 const card = 'border-[1.5px] border-tt-azul-marinho bg-tt-branco p-5 shadow-[6px_6px_0_var(--tt-roxo-vivo)] sm:p-6'
@@ -58,7 +55,7 @@ function Vazio({ titulo, texto, acao }) {
 
 export default function Usuario() {
   const { usuario, perfil } = useAuth()
-  const dadosPerfil = montarPerfil(usuario)
+  const dadosPerfil = usuario // veja o comentario "PONTO DE INTEGRACAO" no topo
 
   // organizador -> eventos dele (GET /eventos, filtrado pelo id); fornecedor -> propostas (GET /propostas)
   // cliente e administrador nao tem lista para buscar
@@ -68,14 +65,15 @@ export default function Usuario() {
 
   useEffect(() => {
     if (!rota) return
-    let ativo = true
-    solicitar(rota)
-      .then((dados) => {
-        if (!ativo) return
+    async function carregar() {
+      try {
+        const dados = await solicitar(rota)
         setLista(rota === '/eventos' ? dados.filter((e) => e.organizador_id === usuario.id_usuario) : dados)
-      })
-      .catch((e) => { if (ativo) setErro(e.message) })
-    return () => { ativo = false }
+      } catch (e) {
+        setErro(e.message)
+      }
+    }
+    carregar()
   }, [rota, usuario.id_usuario])
 
   const carregando = Boolean(rota) && lista === null && !erro
@@ -202,7 +200,7 @@ export default function Usuario() {
             {iniciais}
           </div>
           <p className="m-0 break-all text-center text-lg font-bold">@{username}</p>
-          <Badge label={perfil} variant={perfil === 'administrador' ? 'admin' : perfil} />
+          <Badge label={perfil} variant={perfil} />
         </aside>
 
         <div className="flex min-w-0 flex-col gap-6">

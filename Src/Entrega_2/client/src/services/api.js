@@ -18,7 +18,8 @@ const api_url = normalizarApiUrl(import.meta.env.VITE_API_URL || URL_PADRAO)
 // Único lugar que faz fetch: manda o token (se existir), lê o JSON e, se a resposta
 // não for OK, lança um erro com `status` e a mensagem vinda do backend.
 // Todas as permissões são conferidas novamente no servidor.
-async function requisitar(path, options = {}, mensagemPadrao = 'Não foi possível acessar o servidor.') {
+// as telas de eventos, propostas e ticket chamam essa funcao direto
+export async function solicitar(path, options = {}, mensagemPadrao = 'Não foi possível acessar o servidor.') {
   const token = localStorage.getItem('token')
   const response = await fetch(`${api_url}${path}`, {
     ...options,
@@ -28,7 +29,13 @@ async function requisitar(path, options = {}, mensagemPadrao = 'Não foi possív
     },
   })
 
-  const data = await response.json().catch(() => ({}))
+  // le o JSON da resposta; se o servidor nao mandar JSON (ex: erro do proxy), fica um objeto vazio
+  let data
+  try {
+    data = await response.json()
+  } catch {
+    data = {}
+  }
 
   if (!response.ok) {
     const erro = new Error(data.erro || mensagemPadrao)
@@ -42,22 +49,17 @@ async function requisitar(path, options = {}, mensagemPadrao = 'Não foi possív
 }
 
 export function cadastrarUsuario(dados) {
-  return requisitar('/cadastro', { method: 'POST', body: JSON.stringify(dados) }, 'Erro ao cadastrar.')
+  return solicitar('/cadastro', { method: 'POST', body: JSON.stringify(dados) }, 'Erro ao cadastrar.')
 }
 
 export function loginUsuario(dados) {
-  return requisitar('/login', { method: 'POST', body: JSON.stringify(dados) }, 'Erro ao entrar.')
+  return solicitar('/login', { method: 'POST', body: JSON.stringify(dados) }, 'Erro ao entrar.')
 }
 
 export function buscarCadastros() {
-  return requisitar('/admin/cadastros', { method: 'GET' }, 'Erro ao buscar usuários.')
+  return solicitar('/admin/cadastros', { method: 'GET' }, 'Erro ao buscar usuários.')
 }
 
 export function atualizarStatusCadastro(id, tipo, status) {
-  return requisitar(`/admin/cadastros/${id}`, { method: 'PATCH', body: JSON.stringify({ tipo, status }) }, 'Erro ao atualizar cadastro.')
-}
-
-// usada pelas demais telas (eventos, propostas, ticket...)
-export function solicitar(path, options = {}) {
-  return requisitar(path, options)
+  return solicitar(`/admin/cadastros/${id}`, { method: 'PATCH', body: JSON.stringify({ tipo, status }) }, 'Erro ao atualizar cadastro.')
 }

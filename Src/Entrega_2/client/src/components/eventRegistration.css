@@ -5,39 +5,21 @@
 :scope {
   --purple: var(--tt-azul-vivo);
   --midnight: var(--tt-azul-marinho);
-  --midnight-2: var(--tt-azul-principal);
-  --midnight-3: var(--tt-azul-vivo);
   --gold: var(--tt-laranja-principal);
   --gold-dark: var(--tt-laranja-vivo);
   --gold-light: var(--tt-laranja-vivo);
   --cream: var(--tt-branco);
-  --cream-alt: var(--tt-laranja-claro);
-  --cream-dim: color-mix(in srgb, var(--tt-azul-marinho) 20%, transparent);
   --line: color-mix(in srgb, var(--tt-azul-marinho) 12%, transparent);
   --ink: var(--tt-azul-marinho);
   --muted: color-mix(in srgb, var(--tt-grafite) 70%, transparent);
-  --ok: var(--tt-verde-sucesso);
-  --white: var(--tt-branco);
   --shadow: 0 22px 60px color-mix(in srgb, var(--tt-azul-marinho) 12%, transparent);
 }
 
-/* estilos base: fundo branco e fonte Inter */
-* { box-sizing: border-box; }
-:scope { background: var(--cream); }
+/* fundo branco e texto escuro (fonte, box-sizing etc. ja vem do styles/index.css) */
 :scope {
-  margin: 0;
-  min-width: 320px;
   color: var(--ink);
   background: var(--cream);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  -webkit-font-smoothing: antialiased;
 }
-button, input, textarea, select { font: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-
-/* cabecalho escuro fixo no topo com a logo e o link da conta */
-.brand { color: var(--tt-branco); text-decoration: none; display: flex; align-items: center; gap: 10px; font-weight: 850; letter-spacing: -.025em; font-size: 1.15rem; }
-/* bolinha dourada da logo */
 
 /* conteudo ocupa a tela toda menos o cabecalho */
 .main-content { min-height: calc(100vh - 72px); }
@@ -56,11 +38,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .hero-strip p { margin: 0; color: color-mix(in srgb, var(--tt-branco) 72%, transparent); }
 /* textinho pequeno em cima do titulo */
 .hero-kicker { color: var(--gold-light); text-transform: uppercase; font-size: .72rem; font-weight: 850; letter-spacing: .13em; }
-/* etiqueta "Rascunho salvo" com a bolinha verde */
-
-/* barra de etapas (1 2 3 4), o margin negativo faz ela subir em cima da faixa do topo */
-/* bolinha de cada etapa: feita fica dourada e clicavel, a atual ganha um anel em volta */
-/* linha que liga uma bolinha na outra, fica dourada quando a etapa ja foi feita */
 
 /* card branco de cada etapa do formulario (cabecalho, corpo e rodape) */
 .content-wrap { width: min(900px, calc(100% - 36px)); margin: 0 auto 80px; }
@@ -118,45 +95,27 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .info-banner p { margin: 0; font-size: .78rem; line-height: 1.5; }
 .info-icon { flex: 0 0 auto; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; color: var(--midnight); background: var(--gold); font-weight: 900; font-family: Georgia, serif; }
 
-/* lista de custos independentes ja adicionados (etapa 3) */
-
-/* resumo dos 3 totais (etapa 4), o ultimo fica escuro com o valor dourado */
-
-/* sanfona das categorias de custo (etapa 4) */
-/* borda entre uma categoria e outra */
-/* cabecalho clicavel da categoria: nome, qtd de itens, total e o icone + ou - */
-/* conteudo da categoria aberta */
-/* tabela de itens com 5 colunas: descricao, qtd, unitario, total e remover */
-/* formulario de adicionar item numa linha so */
-
 /* mensagem verde de evento criado */
 .success-banner { margin-bottom: 18px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--tt-verde-sucesso) 32%, transparent); background: var(--tt-verde-claro); padding: 13px 15px; display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; color: var(--tt-verde-sucesso); font-size: .77rem; }
 
 /* tablet e celular (ate 760px) */
 @media (max-width: 760px) {
-  /* faixa do topo fica em coluna e some o aviso de rascunho */
+  /* faixa do topo fica em coluna */
   .hero-strip { min-height: 150px; align-items: flex-start; flex-direction: column; padding-top: 26px; padding-bottom: 44px; }
   .form-card-header, .form-card-body, .form-card-footer { padding-left: 20px; padding-right: 20px; }
   /* campos e totais passam pra 1 coluna */
   .form-grid.two-cols { grid-template-columns: 1fr; }
-  /* tabela de itens: esconde o cabecalho e escreve "Qtd.", "Unit." e "Total" antes de cada valor */
-  /* botao de remover vai pra direita ocupando duas linhas */
-  /* formulario de adicionar item quebra em duas linhas */
 }
 
 /* celular pequeno (ate 460px) */
 @media (max-width: 460px) {
-  /* cabecalho e logo menores */
-  .brand { font-size: 1rem; }
   .hero-strip { padding-inline: 18px; }
   .content-wrap { width: min(100% - 20px, 900px); }
-  /* barra de etapas com bolinhas menores */
   .form-card { border-radius: 16px; }
   .form-card-header { padding-top: 24px; }
   /* botoes um embaixo do outro, com o de avancar em cima, ocupando a largura toda */
   .action-row { flex-direction: column-reverse; }
   .action-row .btn { width: 100%; }
-  /* valor e botao de remover dos custos ficam empilhados */
 }
 
 }

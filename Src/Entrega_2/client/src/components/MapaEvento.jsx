@@ -70,9 +70,15 @@ export default function MapaEvento({ endereco }) {
     // vira true se o endereco mudar antes da busca terminar
     let cancelado = false;
     // faz a busca; quando terminar guarda o resultado (ou o erro)
-    buscarCoordenadas(endereco)
-      .then((coords) => { if (!cancelado) setResultado({ endereco, coords, erro: false }); })
-      .catch(() => { if (!cancelado) setResultado({ endereco, coords: null, erro: true }); });
+    async function carregar() {
+      try {
+        const coords = await buscarCoordenadas(endereco);
+        if (!cancelado) setResultado({ endereco, coords, erro: false });
+      } catch {
+        if (!cancelado) setResultado({ endereco, coords: null, erro: true });
+      }
+    }
+    carregar();
     // evita atualizar o estado de uma busca antiga se o endereco mudou no meio
     return () => { cancelado = true; };
   }, [endereco]);

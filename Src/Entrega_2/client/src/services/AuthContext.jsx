@@ -20,8 +20,7 @@ export function AuthProvider({ children }) {
   const [sessao, setSessao] = useState(lerSessaoSalva)
 
   // chamado depois que o POST /api/login retorna com sucesso
-    function login({ usuario, token }) {
-
+  function login({ usuario, token }) {
     localStorage.setItem('usuario', JSON.stringify(usuario))
     localStorage.setItem('token', token)
     setSessao({ usuario, token })

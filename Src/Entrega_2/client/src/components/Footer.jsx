@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import logo from '../assets/branding/logos/logo_navbar_web.png'
+import logo from '../assets/branding/logos/logo_navbar_web_128.png' // versao 128px (a original de 1024px pesa 1,3 MB)
 
 export default function Footer() {
   return (

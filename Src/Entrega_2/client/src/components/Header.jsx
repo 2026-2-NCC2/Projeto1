@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import logo from '../assets/branding/logos/logo_navbar_web.png'
+import logo from '../assets/branding/logos/logo_navbar_web_128.png' // versao 128px (a original de 1024px pesa 1,3 MB)
 import { useAuth } from '../services/AuthContext.jsx'
 
 // secoes de eventos do organizador (a pagina PainelDeEventos le o ?tab= da url)
@@ -35,13 +35,11 @@ export default function Header() {
   const { pathname } = useLocation()
   const [searchParams] = useSearchParams()
   const path = pathname.toLowerCase()
-  const paginaDeConta = ['/cadastro', '/login', '/teladeescolha'].includes(path)
+  const paginaDeConta = path === '/cadastro' || path === '/login'
   const criandoEvento = path.startsWith('/criar-evento')
   const noPainel = path === '/paineldeeventos'
   const activeTab = searchParams.get('tab') || 'painel'
-  // aceita os dois valores: 'administrador' vem do enum do banco (login real),
-  // 'admin' é o usado pelo modo demonstração (services/perfil.js)
-  const isAdmin = ['administrador', 'admin'].includes(perfil)
+  const isAdmin = perfil === 'administrador' // valor do enum tipo_perfil do banco
   const naAreaAdmin = path === '/admindashboard' || path === '/aprovarcadastros'
 
   // link contextual de "voltar" (so um deles aparece por pagina)

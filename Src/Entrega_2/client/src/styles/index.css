@@ -110,43 +110,26 @@
   a:focus-visible, button:focus-visible { outline: 2px solid var(--tt-roxo-vivo); outline-offset: 2px; }
 
   /* ── Tokens de compatibilidade ──
-     As telas Admin e os componentes de ui/ usam var(--color-*) com os nomes abaixo.
+     As telas Admin (AdminDashboard e AprovarCadastros) usam var(--color-*) com os nomes abaixo.
      Sao apelidos dos tokens da paleta, nao crie cores novas aqui. */
   :root {
     --color-primary:       var(--tt-azul-principal);
-    --color-primary-light: var(--tt-azul-vivo);
-    --color-primary-dark:  var(--tt-azul-marinho);
-    --color-accent:        var(--tt-laranja-principal);
-    --color-accent-dark:   var(--tt-laranja-vivo);
-    --color-white:         var(--tt-branco);
-    /* fundo, cards e bordas */
+    /* fundo e bordas */
     --color-bg:            var(--tt-cinza-claro);
-    --color-surface:       var(--tt-branco);
     --color-border:        color-mix(in srgb, var(--tt-azul-marinho) 12%, transparent);
     /* textos */
-    --color-text:          var(--tt-grafite);
     --color-text-muted:    color-mix(in srgb, var(--tt-grafite) 70%, transparent);
-    --color-text-light:    color-mix(in srgb, var(--tt-grafite) 45%, transparent);
-    /* status: erro em rosa, aviso em ambar, sucesso em verde, pendente em roxo */
+    /* status: erro em rosa, sucesso em verde, pendente em roxo */
     --color-danger:        var(--tt-rosa-principal);
     --color-danger-light:  var(--tt-rosa-claro);
-    --color-warning:       var(--tt-ambar);
-    --color-warning-light: var(--tt-laranja-claro);
     --color-success:       var(--tt-verde-sucesso);
     --color-success-light: var(--tt-verde-claro);
     --color-pending:       var(--tt-roxo-principal);
     --color-pending-light: var(--tt-lilas-claro);
 
-    /* sombras pequena, media e grande */
+    /* sombra pequena */
     --shadow-sm: 0 1px 3px color-mix(in srgb, var(--tt-azul-marinho) 8%, transparent);
-    --shadow-md: 0 4px 12px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
-    --shadow-lg: 0 8px 24px color-mix(in srgb, var(--tt-azul-marinho) 14%, transparent);
   }
-
-  /* cores das partes do logo */
-  .logo-troca  { color: var(--tt-azul-principal); }
-  .logo-ticket { color: var(--tt-laranja-principal); }
-  .logo-symbol { background: var(--tt-gradiente-principal); }
 }
 
 
