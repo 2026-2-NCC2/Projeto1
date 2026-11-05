@@ -402,7 +402,7 @@ export default function Cadastro() {
           )}
           {/* texto explicando o proximo passo, muda conforme o tipo de conta */}
           <p className="mb-8 max-w-[400px] text-sm leading-relaxed text-tt-grafite/75">
-            {isUser ? 'Você já pode comprar e trocar ingressos na plataforma.' : 'Um administrador irá revisar sua conta. Você receberá um e-mail quando for aprovada.'}
+            {isUser ? 'Você já pode comprar e trocar ingressos na plataforma.' : 'Um administrador irá revisar sua conta. Logo ela deverá ser aprovada ou rejeitada.'}
           </p>
 
           {/* botao que volta pra home, so o texto muda */}
