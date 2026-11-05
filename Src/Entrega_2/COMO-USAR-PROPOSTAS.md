@@ -41,7 +41,7 @@ O fornecedor pode oferecer uma quantidade parcial até o limite solicitado para 
 
 ## Permissões e persistência
 
-O login devolve um token JWT (válido por 2 dias) que o navegador envia no cabeçalho `Authorization`. A API valida o token e consulta o perfil real no banco: IDs e perfis enviados pelo navegador não autorizam ações. Fornecedores veem as próprias propostas; organizadores veem as propostas dos seus eventos e somente eles podem respondê-las. Clientes e administradores não acessam esse fluxo. Criar, editar e excluir eventos exige o perfil de organizador, e edição/exclusão verificam a propriedade do evento.
+O login devolve um token JWT (válido por 2 dias) que o navegador envia no cabeçalho `Authorization`. A API confere a assinatura e a validade do token e usa o perfil e o id que estão dentro dele (assinados pelo servidor): IDs e perfis enviados pelo navegador no corpo da requisição não autorizam ações. A aprovação do cadastro é conferida no login: quem está pendente ou rejeitado não recebe token. A lista de eventos publicados (`GET /api/eventos`) é pública de propósito, para quem ainda não tem conta ver os eventos disponíveis; itens de custo, propostas e ticket continuam restritos por perfil. Fornecedores veem as próprias propostas; organizadores veem as propostas dos seus eventos e somente eles podem respondê-las. Clientes e administradores não acessam esse fluxo. Criar, editar e excluir eventos exige o perfil de organizador, e edição/exclusão verificam a propriedade do evento.
 
 Os produtos ofertados ficam nas tabelas `solicitacao_fornecimento` e `produto_solicitacao`. A tabela `proposta` (modelo anterior) continua no banco por compatibilidade.
 
