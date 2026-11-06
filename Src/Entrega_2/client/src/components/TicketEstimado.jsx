@@ -68,7 +68,7 @@ export default function TicketEstimado({ eventoId }) {
               const cen = dados.cenarios[chave]
               return (
                 <div key={chave} className=" bg-tt-cinza-claro p-4">
-                  <p className="text-xs font-bold uppercase text-tt-grafite/60">
+                  <p className="text-xs font-bold uppercase text-tt-grafite/65">
                     Público {chave === 'minimo' ? 'mínimo' : 'máximo'}
                     {cen.disponivel && ` · ${cen.publico.toLocaleString('pt-BR')} pessoas`}
                   </p>
@@ -81,7 +81,7 @@ export default function TicketEstimado({ eventoId }) {
                         Ticket-alvo ({String(dados.margem_percentual).replace('.', ',')}% de margem):{' '}
                         <strong className="text-lg text-tt-azul-principal">{brl(cen.ticket_alvo)}</strong>
                       </p>
-                      <p className="mt-1 text-xs text-tt-grafite/60">Custo total: {brl(cen.custo_total)}</p>
+                      <p className="mt-1 text-xs text-tt-grafite/65">Custo total: {brl(cen.custo_total)}</p>
                     </>
                   ) : (
                     <p className="mt-2 text-sm">{cen.motivo}</p>

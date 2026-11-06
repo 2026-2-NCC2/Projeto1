@@ -306,7 +306,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                   <div className="grid grid-cols-[1fr_80px] gap-2 min-[761px]:grid-cols-[minmax(160px,2fr)_82px_150px_auto]">
                     {/* descricao, o placeholder muda conforme a categoria */}
                     <input
-                      className="min-h-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
+                      className="min-h-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/65 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
                       placeholder={`Adicionar item de ${group.name.toLowerCase()}`}
                       value={draft.description}
                       onChange={(e) =>
@@ -315,7 +315,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                     />
                     {/* quantidade */}
                     <input
-                      className="min-h-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
+                      className="min-h-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/65 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
                       type="number"
                       min="1"
                       placeholder="Qtd."
@@ -332,7 +332,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                       </span>
                       {/* inputMode decimal abre o teclado numerico no celular */}
                       <input
-                        className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5 outline-0 placeholder:text-tt-grafite/45"
+                        className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5 outline-0 placeholder:text-tt-grafite/65"
                         inputMode="decimal"
                         placeholder="0,00"
                         value={draft.unit}

@@ -114,7 +114,7 @@ export default function MapaEvento({ endereco }) {
           </a>
         )}
         {/* credito obrigatorio do OpenStreetMap (a licenca pede) */}
-        <p className="mt-3 text-[11px] text-tt-grafite/60">
+        <p className="mt-3 text-[11px] text-tt-grafite/65">
           Dados do mapa © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="underline">OpenStreetMap</a>
         </p>
       </div>

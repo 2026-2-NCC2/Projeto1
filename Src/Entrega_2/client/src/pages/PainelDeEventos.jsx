@@ -99,7 +99,7 @@ export default function PainelDeEventos() {
   const [eventos, setEventos] = useState([]);
   const [eventoSelecionado, setEventoSel] = useState(null);
   const [filtroStatus, setFiltroStatus] = useState('Todos');
-  const [busca, setBusca] = useState('');
+  const [busca, setBusca] = useState(searchParams.get('q') || ''); // ?q= vem da busca da landing page
   // campos do modal de edicao num objeto so; null = modal fechado
   const [form, setForm] = useState(null);
 
@@ -270,10 +270,11 @@ export default function PainelDeEventos() {
                   <button
                     key={s}
                     onClick={() => setFiltroStatus(s)}
-                    className={`border-[1.5px] px-4 py-1.5 text-xs font-bold cursor-pointer transition ${
+                    aria-pressed={filtroStatus === s}
+                    className={`border-[1.5px] border-t-[3px] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.1em] cursor-pointer transition-colors ${
                       filtroStatus === s
-                        ? 'bg-tt-laranja-principal text-tt-azul-marinho border-tt-branco'
-                        : 'bg-transparent text-tt-branco/80 border-tt-branco/40 hover:border-tt-branco hover:text-tt-branco'
+                        ? 'bg-tt-grafite text-tt-branco border-tt-branco'
+                        : 'bg-tt-branco text-tt-grafite/65 border-tt-azul-marinho hover:text-tt-azul-marinho hover:bg-tt-cinza-claro'
                     }`}
                   >
                     {s}
@@ -331,7 +332,7 @@ export default function PainelDeEventos() {
                       <h2 className="text-base font-bold text-tt-azul-marinho leading-tight line-clamp-1">
                         {ev.titulo}
                       </h2>
-                      <div className="text-[11.5px] text-tt-grafite/50 -mt-1">
+                      <div className="text-[11.5px] text-tt-grafite/65 -mt-1">
                         Por:{' '}
                         <strong className="text-tt-grafite/70 font-semibold">
                           {ev.organizador_nome}
@@ -339,7 +340,7 @@ export default function PainelDeEventos() {
                       </div>
                       <div className="flex flex-col gap-1.5 mt-1">
                         <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex">
+                          <span className="text-tt-grafite/65 flex">
                             <IconCalendar />
                           </span>
                           {/* se for um dia so mostra uma data, senao mostra inicio → fim */}
@@ -350,7 +351,7 @@ export default function PainelDeEventos() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex">
+                          <span className="text-tt-grafite/65 flex">
                             <IconPin />
                           </span>
                           <span className="truncate">{ev.endereco}</span>
@@ -360,7 +361,7 @@ export default function PainelDeEventos() {
                       {/* ticket estimado e pendencias lado a lado */}
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
+                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/65">
                             <span className="text-tt-laranja-principal flex">
                               <IconTicket />
                             </span>
@@ -376,7 +377,7 @@ export default function PainelDeEventos() {
                           )}
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
+                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/65">
                             Itens de custo
                           </span>
                           <span className="text-sm font-bold text-tt-azul-marinho">
@@ -451,7 +452,7 @@ export default function PainelDeEventos() {
                     <IconCalendar />
                   </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/65 font-bold">
                       Data do Evento
                     </p>
                     <p className="font-medium text-tt-azul-marinho">
@@ -467,7 +468,7 @@ export default function PainelDeEventos() {
                     <IconPin />
                   </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/65 font-bold">
                       Localização
                     </p>
                     <p className="font-medium text-tt-azul-marinho truncate max-w-[260px]">
@@ -480,7 +481,7 @@ export default function PainelDeEventos() {
                     <IconTicket />
                   </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/65 font-bold">
                       Lote inicial
                     </p>
                     <p className="font-bold text-tt-azul-principal">
@@ -499,7 +500,7 @@ export default function PainelDeEventos() {
                     <IconPending />
                   </span>
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
+                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/65 font-bold">
                       Itens de custo
                     </p>
                     <p className="font-medium text-tt-azul-marinho">

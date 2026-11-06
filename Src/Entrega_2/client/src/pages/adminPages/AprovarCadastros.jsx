@@ -148,7 +148,7 @@ export default function AprovarCadastros() {
               <IconSearch />
             </span>
             <input
-              className="w-full border-[1.5px] border-tt-azul-marinho bg-tt-branco py-2 pl-10 pr-4 text-sm text-tt-azul-marinho outline-none transition-colors placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)]"
+              className="w-full border-[1.5px] border-tt-azul-marinho bg-tt-branco py-2 pl-10 pr-4 text-sm text-tt-azul-marinho outline-none transition-colors placeholder:text-tt-grafite/65 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)]"
               placeholder="Buscar por nome, empresa ou e-mail..."
               value={busca}
               onChange={e => setBusca(e.target.value)}
@@ -231,7 +231,7 @@ export default function AprovarCadastros() {
                             </div>
                           ) : (
                             // quem ja foi analisado mostra so um tracinho
-                            <span className="text-tt-grafite/45">—</span>
+                            <span className="text-tt-grafite/65">—</span>
                           )}
                         </td>
                       </tr>

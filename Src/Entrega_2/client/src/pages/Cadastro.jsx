@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Sticker from '../components/Sticker'
-import { cadastrarUsuario } from '../services/api'
+import { cadastrarUsuario, loginUsuario } from '../services/api'
+import { useAuth } from '../services/AuthContext'
 import {
   LIMITES, erroCnpj, erroConfirmacaoSenha, erroEmail, erroIdade, erroSenha, erroTexto,
   formatarCnpj, normalizarCnpj,
@@ -51,7 +52,7 @@ const BTN_PRIMARIO = `${BTN_BASE} bg-tt-laranja-principal text-tt-azul-marinho h
 const BTN_VOLTAR = `${BTN_BASE} bg-tt-branco text-tt-azul-marinho hover:-translate-y-px hover:bg-tt-lilas-claro hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]`
 // input de texto, a borda fica rosa se tiver erro e ganha sombra roxa no foco
 const inputCls = (erro) =>
-  `w-full border-[1.5px] px-3.5 py-3 text-[15px] text-tt-azul-marinho outline-none transition duration-150 placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)] ${
+  `w-full border-[1.5px] px-3.5 py-3 text-[15px] text-tt-azul-marinho outline-none transition duration-150 placeholder:text-tt-grafite/65 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)] ${
     erro ? 'border-tt-rosa-principal bg-tt-rosa-claro/40' : 'border-tt-azul-marinho bg-tt-branco'
   }`
 // legenda de campo
@@ -134,7 +135,7 @@ function StepDots({ current, total }) {
     const isDone = i < current     // etapas que ja passaram
     // atual = preto com sombra roxa / feitas = roxo com ✓ no lugar do numero / proximas = branco
     items.push(
-      <div key={`d${i}`} className={`flex size-9 shrink-0 items-center justify-center border-[1.5px] border-tt-azul-marinho text-sm font-extrabold transition duration-150 ${isActive ? 'bg-tt-azul-marinho text-tt-branco shadow-[3px_3px_0_var(--tt-roxo-vivo)]' : isDone ? 'bg-tt-roxo-vivo text-tt-branco' : 'bg-tt-branco text-tt-grafite/60'}`}>{isDone ? '✓' : i + 1}</div>
+      <div key={`d${i}`} className={`flex size-9 shrink-0 items-center justify-center border-[1.5px] border-tt-azul-marinho text-sm font-extrabold transition duration-150 ${isActive ? 'bg-tt-azul-marinho text-tt-branco shadow-[3px_3px_0_var(--tt-roxo-vivo)]' : isDone ? 'bg-tt-roxo-vivo text-tt-branco' : 'bg-tt-branco text-tt-grafite/65'}`}>{isDone ? '✓' : i + 1}</div>
     )
     // linha entre os quadrados (menos depois do ultimo), fica preta quando a etapa ja foi feita
     if (i < total - 1) {
@@ -167,6 +168,7 @@ const ETAPA_DO_CAMPO = {
 // pagina de cadastro, dividida em etapas
 export default function Cadastro() {
   const navigate = useNavigate(); // pra mudar de pagina pelo codigo
+  const { login, logado } = useAuth();
 
   // controle das etapas
   const [step, setStep] = useState(0); // etapa atual
@@ -284,6 +286,15 @@ export default function Cadastro() {
       }
 
       await cadastrarUsuario(payload);
+
+      // cliente nao precisa de aprovacao: ja entra logado (organizador/fornecedor esperam o admin)
+      if (role === "cliente") {
+        try {
+          login(await loginUsuario({ email, senha }));
+        } catch {
+          // conta criada; se o login automatico falhar, a pessoa entra pela tela de login
+        }
+      }
       setDone(true);
     } catch (err) {
       // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem
@@ -385,18 +396,18 @@ export default function Cadastro() {
               <div className="flex items-center justify-between px-[10%]">
                 <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho bg-tt-verde-sucesso text-xs font-semibold text-tt-branco"><svg viewBox="0 0 24 24" className="size-4 fill-none stroke-tt-branco stroke-[2.5]"><polyline points="20 6 9 17 4 12" /></svg></div>
                 <div className="h-[1.5px] flex-1 bg-tt-azul-marinho/25" />
-                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho/40 bg-tt-branco text-xs font-bold text-tt-grafite/60">2</div>
+                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho/40 bg-tt-branco text-xs font-bold text-tt-grafite/65">2</div>
                 <div className="h-[1.5px] flex-1 bg-tt-azul-marinho/25" />
-                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho/40 bg-tt-branco text-xs font-bold text-tt-grafite/60">3</div>
+                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho/40 bg-tt-branco text-xs font-bold text-tt-grafite/65">3</div>
               </div>
 
               {/* nomes embaixo de cada quadrado */}
               <div className="mt-2 flex justify-between">
                 <span className="w-[70px] text-[11px] font-bold leading-tight text-tt-verde-sucesso">Cadastro<br />Enviado</span>
                 <div className="flex-1" />
-                <span className="w-[70px] text-[11px] font-semibold leading-tight text-tt-grafite/60">Em<br />Análise</span>
+                <span className="w-[70px] text-[11px] font-semibold leading-tight text-tt-grafite/65">Em<br />Análise</span>
                 <div className="flex-1" />
-                <span className="w-[70px] text-[11px] font-semibold leading-tight text-tt-grafite/60">Conta<br />Aprovada</span>
+                <span className="w-[70px] text-[11px] font-semibold leading-tight text-tt-grafite/65">Conta<br />Aprovada</span>
               </div>
             </div>
           )}
@@ -406,7 +417,7 @@ export default function Cadastro() {
           </p>
 
           {/* botao que volta pra home, so o texto muda */}
-          <button className={`${BTN_PRIMARIO} sm:w-full`} onClick={() => navigate('/')}>
+          <button className={`${BTN_PRIMARIO} sm:w-full`} onClick={() => navigate(isUser && logado ? '/PainelDeEventos' : isUser ? '/Login' : '/')}>
             {isUser ? 'Ir para a plataforma' : 'Voltar ao início'}
           </button>
 

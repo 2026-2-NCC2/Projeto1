@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import logo from '../assets/branding/logos/logo_navbar_web_128.png' // versao 128px (a original de 1024px pesa 1,3 MB)
 import { useAuth } from '../services/AuthContext.jsx'
+import { rolarAteSecao } from '../utils/rolagem'
 
 // secoes de eventos do organizador (a pagina PainelDeEventos le o ?tab= da url)
 const EVENTOS_ORGANIZADOR = [
@@ -84,8 +85,8 @@ export default function Header() {
             </>
           )}
 
-          {path === '/' && <a className={`${LINK_BASE} ${LINK_IDLE}`} href="#categorias">Categorias</a>}
-          {path === '/' && <a className={`${LINK_BASE} ${LINK_IDLE}`} href="#como-funciona">Como funciona</a>}
+          {path === '/' && <a className={`${LINK_BASE} ${LINK_IDLE} select-none`} href="#categorias" onClick={rolarAteSecao}>Categorias</a>}
+          {path === '/' && <a className={`${LINK_BASE} ${LINK_IDLE} select-none`} href="#como-funciona" onClick={rolarAteSecao}>Como funciona</a>}
 
           {/* no celular o "voltar" vai pra segunda linha, pra linha da conta nunca quebrar.
               Os que levam pra "/" ficam so no desktop: no celular o logo ja faz isso */}

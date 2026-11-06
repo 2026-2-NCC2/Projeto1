@@ -37,7 +37,7 @@ function Linha({ rotulo, valor }) {
   if (!valor) return null
   return (
     <div className="flex flex-col gap-0.5 border-b border-tt-azul-marinho/10 py-2.5 last:border-b-0">
-      <dt className="text-xs font-semibold uppercase tracking-wide text-tt-grafite/60">{rotulo}</dt>
+      <dt className="text-xs font-semibold uppercase tracking-wide text-tt-grafite/65">{rotulo}</dt>
       <dd className="m-0 break-words text-sm font-medium text-tt-azul-marinho">{valor}</dd>
     </div>
   )
@@ -145,7 +145,7 @@ export default function Usuario() {
           <p className="mt-2 mb-5 text-sm text-tt-grafite/70">
             {temSaldo ? 'Disponível para usar na compra de ingressos.' : 'O saldo para usar em eventos ainda não está disponível.'}
           </p>
-          <button type="button" disabled className="w-full cursor-not-allowed border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho/12 py-3 text-[15px] font-bold text-tt-grafite/45">
+          <button type="button" disabled className="w-full cursor-not-allowed border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho/12 py-3 text-[15px] font-bold text-tt-grafite/65">
             Adicionar saldo (em breve)
           </button>
         </>
@@ -177,7 +177,7 @@ export default function Usuario() {
           <dl className="m-0 grid grid-cols-1 gap-3">
             {resumo.map(([rotulo, valor]) => (
               <div key={rotulo} className="border-[1.5px] border-tt-azul-marinho bg-tt-cinza-claro p-4">
-                <dt className="text-xs font-semibold uppercase tracking-wide text-tt-grafite/60">{rotulo}</dt>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-tt-grafite/65">{rotulo}</dt>
                 <dd className="m-0 font-display text-3xl font-black text-tt-azul-marinho">{valor ?? 0}</dd>
               </div>
             ))}

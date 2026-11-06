@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Sticker from '../components/Sticker'
 import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
@@ -16,6 +16,7 @@ function Login() {
   const [senha, setSenha] = useState('')
   const [erros, setErros] = useState({}) // mensagens de erro dos campos
   const navigate = useNavigate()         // pra mudar de pagina pelo codigo
+  const location = useLocation()
 
   const [apiLoading, setApiLoading] = useState(false)
 
@@ -47,7 +48,9 @@ function Login() {
     try {
       const usuario = await loginUsuario({ email, senha })
       login(usuario) // <-- em vez de localStorage.setItem direto
-      navigate('/PainelDeEventos')
+      // volta pra pagina que a pessoa tentou abrir antes de ser mandada pro login (ver ProtectedRoute)
+      const destino = location.state?.from
+      navigate(destino ? `${destino.pathname}${destino.search}` : '/PainelDeEventos', { replace: true })
     } catch (err) {
         setErros({ senha: err.message })
     } finally {
