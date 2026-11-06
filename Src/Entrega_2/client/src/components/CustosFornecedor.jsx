@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom'
 import { solicitar } from '../services/api'
 import { brl, campo, botao } from '../styles/propostas'
 
+// data de hoje (YYYY-MM-DD) no horario local, usada como minimo da validade
+function hojeLocal() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 // area do fornecedor nos detalhes do evento: mostra os itens de custo (com quanto ainda falta)
 // e envia a proposta com os produtos escolhidos
 // o servidor confere tudo de novo (saldo, valores e permissao) antes de salvar
@@ -10,6 +16,8 @@ export default function CustosFornecedor({ evento }) {
   const [itens, setItens] = useState([])
   const [selecionados, setSelecionados] = useState({}) // ex: { 10: { itemId, produto, quantidade, valorUnitario } }
   const [mensagem, setMensagem] = useState('')
+  const [validade, setValidade] = useState('') // opcional
+  const [observacoes, setObservacoes] = useState('') // opcional
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
@@ -73,7 +81,7 @@ export default function CustosFornecedor({ evento }) {
     try {
       await solicitar('/propostas', {
         method: 'POST',
-        body: JSON.stringify({ eventoId: evento.id, mensagem, produtos }),
+        body: JSON.stringify({ eventoId: evento.id, mensagem, produtos, validade, observacoes }),
       })
       setSucesso(true)
     } catch (e) {
@@ -167,6 +175,30 @@ export default function CustosFornecedor({ evento }) {
             placeholder="Descreva sua oferta, condições e prazo de entrega."
           />
         </label>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-sm font-bold">
+            Validade da proposta — opcional
+            <input
+              type="date"
+              min={hojeLocal()}
+              className={`${campo} mt-2`}
+              value={validade}
+              onChange={(e) => setValidade(e.target.value)}
+            />
+          </label>
+          <label className="block text-sm font-bold sm:col-span-2">
+            Observações — opcional
+            <textarea
+              maxLength={1000}
+              rows={2}
+              className={`${campo} mt-2`}
+              value={observacoes}
+              onChange={(e) => setObservacoes(e.target.value)}
+              placeholder="Condições de pagamento, garantia, restrições…"
+            />
+          </label>
+        </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-tt-cinza-claro p-4">
           <strong>Total: {brl(total)}</strong>

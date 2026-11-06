@@ -146,6 +146,17 @@ export default function Propostas() {
                 <span>{brl(totalDaProposta(p.produtos))}</span>
               </div>
               <p className="mt-4 whitespace-pre-wrap break-words rounded-xl border border-tt-azul-marinho/10 p-4 text-sm">{p.mensagem}</p>
+              {p.observacoes && (
+                <p className="mt-3 whitespace-pre-wrap break-words rounded-xl border border-tt-azul-marinho/10 p-4 text-sm">
+                  <strong>Observações:</strong> {p.observacoes}
+                </p>
+              )}
+              {p.data_validade && (
+                <p className={`mt-3 text-sm font-bold ${p.vencida && p.status === 'enviada' ? 'text-tt-rosa-principal' : ''}`}>
+                  Válida até {p.data_validade.split('-').reverse().join('/')}
+                  {p.vencida && p.status === 'enviada' ? ' · vencida' : ''}
+                </p>
+              )}
 
               {/* so o organizador responde, e so se a proposta ainda ta aguardando */}
               {perfil === 'organizador' && p.status === 'enviada' && (
@@ -157,7 +168,7 @@ export default function Propostas() {
                   >
                     Recusar proposta
                   </button>
-                  <button disabled={ocupado === p.id} onClick={() => responder(p.id, 'aceita')} className={botao}>
+                  <button disabled={ocupado === p.id || p.vencida} onClick={() => responder(p.id, 'aceita')} className={botao}>
                     {ocupado === p.id ? 'Salvando…' : 'Aceitar proposta'}
                   </button>
                 </div>
