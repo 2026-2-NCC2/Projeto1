@@ -65,6 +65,8 @@ export default function EventRegistration() {
   const [resumo, setResumo] = useState(null);
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
+  // true = salva como rascunho em vez de publicar
+  const [rascunho, setRascunho] = useState(false);
   // A etapa 4 apenas abre a revisão; não envia nada para a API.
   function revisar(dados) {
     if (step !== 4 || salvando || finished) return;
@@ -89,6 +91,7 @@ export default function EventRegistration() {
         body: JSON.stringify({
           eventData,
           lotData,
+          status: rascunho ? 'rascunho' : 'publicado',
           groups: gruposFinais,
           independentCosts: independentCosts.map((cost) => ({
             ...cost,
@@ -318,8 +321,19 @@ export default function EventRegistration() {
                   Revise antes de salvar o evento
                 </h2>
                 <p className="mt-2 text-sm text-tt-grafite/70">
-                  O evento só será publicado ao clicar em Confirmar e salvar.
+                  {rascunho
+                    ? 'O evento será salvo como rascunho e só você poderá vê-lo.'
+                    : 'O evento só será publicado ao clicar em Confirmar e salvar.'}
                 </p>
+                <label className="mt-3 flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={rascunho}
+                    disabled={salvando}
+                    onChange={(e) => setRascunho(e.target.checked)}
+                  />
+                  Salvar como rascunho (não publicar ainda)
+                </label>
                 <p className="mt-4 font-bold">{eventData.name}</p>
                 <p className="text-sm">
                   {eventData.date} · {eventData.startTime} às{' '}

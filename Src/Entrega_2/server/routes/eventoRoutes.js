@@ -69,6 +69,8 @@ router.get('/eventos', autenticarSeHouverToken, async (req, res, next) => {
                 TO_CHAR(e.data_inicio, 'YYYY-MM-DD') AS data_inicio,
                 TO_CHAR(e.data_fim, 'YYYY-MM-DD') AS data_fim,
                 e.endereco,
+                e.publico_minimo,
+                e.publico_maximo,
                 e.status_publicacao,
                 COALESCE(e.ticket_estimado, e.qtd_lote_minimo) AS ticket_estimado,
                 COALESCE(e.ticket_estimado, e.qtd_lote_minimo) AS primeiro_lote,
@@ -274,7 +276,7 @@ router.post(
         // 5. Lotes são PREÇOS; o público é uma QUANTIDADE de pessoas.
         const primeiroLote = lerPreco(dadosLotes.firstLot)
         const segundoLote = lerPreco(dadosLotes.secondLot, true)
-        const publicoMinimo = lerPublico(dadosLotes.minAudience, true)
+        const publicoMinimo = lerPublico(dadosLotes.minAudience)
         const publicoMaximo = lerPublico(dadosLotes.maxAudience)
 
         if (
@@ -296,9 +298,12 @@ router.post(
             publicoMinimo > publicoMaximo
         ) {
             return res.status(400).json({
-                erro: 'Confira o público: máximo de pelo menos 1 pessoa e mínimo não superior ao máximo.',
+                erro: 'Confira o público: informe o mínimo e o máximo (máximo de pelo menos 1 pessoa e mínimo não superior ao máximo).',
             })
         }
+
+        // O organizador pode salvar como rascunho; o padrão é publicar.
+        const statusEvento = req.body.status === 'rascunho' ? 'rascunho' : 'publicado'
 
         // Margem de lucro (%) sobre a receita, usada no cálculo do ticket (opcional, padrão 0).
         const margemLucro = lerMargem(dadosLotes.margin)
@@ -365,7 +370,7 @@ router.post(
                         ${primeiroLote},
                         ${segundoLote},
                         ${primeiroLote},
-                        'publicado',
+                        ${statusEvento},
                         ${margemLucro}
                     )
                     RETURNING id_evento
@@ -413,8 +418,20 @@ router.patch(
     autenticar,
     permitir('organizador'),
     async (req, res, next) => {
-        const { titulo, inicio, fim, endereco, status, ticket, segundoLote } =
-            req.body
+        const {
+            titulo,
+            inicio,
+            fim,
+            endereco,
+            status,
+            ticket,
+            segundoLote,
+            publicoMinimo: minimoBruto,
+            publicoMaximo: maximoBruto,
+        } = req.body
+
+        const publicoMinimo = lerPublico(minimoBruto)
+        const publicoMaximo = lerPublico(maximoBruto)
 
         const statusPermitidos = {
             Publicado: 'publicado',
@@ -439,6 +456,12 @@ router.patch(
             !Number.isFinite(valorTicket) ||
             valorTicket < 0 ||
             valorTicket > 99999999.99 ||
+            !Number.isInteger(publicoMinimo) ||
+            !Number.isInteger(publicoMaximo) ||
+            publicoMaximo < 1 ||
+            publicoMinimo > 1000000000 ||
+            publicoMaximo > 1000000000 ||
+            publicoMinimo > publicoMaximo ||
             (alterarSegundoLote &&
                 valorSegundoLote !== null &&
                 !Number.isFinite(valorSegundoLote))
@@ -458,6 +481,8 @@ router.patch(
                     data_inicio = (${inicio} || ' ' || data_inicio::time)::timestamptz,
                     data_fim = (${fim} || ' ' || data_fim::time)::timestamptz,
                     endereco = ${endereco},
+                    publico_minimo = ${publicoMinimo},
+                    publico_maximo = ${publicoMaximo},
                     status_publicacao = ${statusPermitidos[status]},
                     ticket_estimado = ${valorTicket},
                     qtd_lote_minimo = ${valorTicket},

@@ -143,6 +143,8 @@ export default function PainelDeEventos() {
       inicio: ev.data_inicio,
       fim: ev.data_fim,
       endereco: ev.endereco,
+      publicoMinimo: String(ev.publico_minimo ?? ''),
+      publicoMaximo: String(ev.publico_maximo ?? ''),
       status: ev.status_publicacao,
       ticket: String(ev.primeiro_lote ?? ''),
       segundoLote: String(ev.segundo_lote ?? ''),
@@ -166,6 +168,8 @@ export default function PainelDeEventos() {
           inicio: form.inicio,
           fim: form.fim || form.inicio,
           endereco: form.endereco,
+          publicoMinimo: form.publicoMinimo,
+          publicoMaximo: form.publicoMaximo,
           status: form.status,
           ticket: form.ticket,
           segundoLote: form.segundoLote,
@@ -612,6 +616,39 @@ export default function PainelDeEventos() {
                   className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
                   placeholder="Ex: Allianz Parque, São Paulo"
                 />
+              </div>
+              {/* público mínimo e máximo */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                    Público mínimo *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    max="1000000000"
+                    step="1"
+                    value={form.publicoMinimo}
+                    onChange={alterarForm('publicoMinimo')}
+                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
+                    Público máximo *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    max="1000000000"
+                    step="1"
+                    value={form.publicoMaximo}
+                    onChange={alterarForm('publicoMaximo')}
+                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  />
+                </div>
               </div>
               {/* status e ticket lado a lado */}
               <div className="grid grid-cols-2 gap-3">

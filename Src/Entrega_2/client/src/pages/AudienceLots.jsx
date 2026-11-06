@@ -36,7 +36,7 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
     const validations = {
       firstLot: validate(data.firstLot, true, pricePattern),
       secondLot: validate(data.secondLot, false, pricePattern),
-      minAudience: validate(data.minAudience, false, audiencePattern),
+      minAudience: validate(data.minAudience, true, audiencePattern),
       maxAudience: validate(data.maxAudience, true, audiencePattern),
       // margem de lucro (%) usada no cálculo do ticket; vazio = 0
       margin: validate(data.margin, false, pricePattern),
@@ -124,7 +124,7 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
           />
         </Field>
 
-        <Field label="Público mínimo" error={errors.minAudience}>
+        <Field label="Público mínimo" required error={errors.minAudience}>
           <Input
             type="text"
             inputMode="numeric"

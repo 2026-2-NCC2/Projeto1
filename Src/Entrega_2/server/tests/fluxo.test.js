@@ -13,6 +13,7 @@ const tokens={fornecedor:assinar(7,'fornecedor'),organizador:assinar(8,'organiza
 let resposta='enviada'
 let coberta=0
 let commits=0, rollbacks=0, inserts=0
+let ultimoEvento=null
 
 // Resolve a resposta simulada pra cada formato de query que as rotas mandam.
 // `texto` é o SQL com `?` no lugar de cada valor interpolado (facilita
@@ -24,6 +25,8 @@ function resolverQuery(texto, args) {
  if(texto.includes('SELECT * FROM solicitacao_fornecimento'))return [{status:resposta}]
  if(texto.includes('SELECT * FROM produto_solicitacao'))return [{id_item_custo_fk:10,quantidade:2}]
  if(texto.includes('SELECT f.id_fornecedor'))return [{id_fornecedor:7,nome_organizacao:'Empresa teste',id:1,produto:'Tenda',quantidade:2,descricao_detalhada:'Tenda'}]
+ if(texto.trim().startsWith('INSERT INTO evento (')){ultimoEvento=args;return [{id_evento:55}]}
+ if(texto.trim().startsWith('UPDATE evento')){ultimoEvento=args;const r=[];r.count=1;return r}
  if(texto.trim().startsWith('INSERT')){
   inserts++
   if(texto.includes('solicitacao_fornecimento'))return [{id:123}]
@@ -147,4 +150,32 @@ test('empresas confirmadas disponíveis aos dois perfis; clientes bloqueados',as
   assert.equal((await r.json())[0].nome_organizacao,'Empresa teste')
  }
  assert.equal((await request('/eventos/1/fornecedores','cliente')).status,403)
+})
+// RF05: cadastro e edição de eventos (público mínimo/máximo e rascunho)
+const amanha=new Date(Date.now()+86400000).toISOString().slice(0,10)
+const novoEvento=(lotes={},extra={})=>({
+ eventData:{name:'Festa',date:amanha,startTime:'20:00',endTime:'23:00',location:'Clube',city:'São Paulo, SP'},
+ lotData:{firstLot:'50,00',secondLot:'',minAudience:'100',maxAudience:'500',margin:'',...lotes},
+ groups:[],independentCosts:[],...extra
+})
+test('criar evento exige público mínimo e máximo coerentes',async()=>{
+ ultimoEvento=null
+ for(const lotes of [{minAudience:''},{maxAudience:''},{minAudience:'600'},{maxAudience:'0'},{minAudience:'abc'}])
+  assert.equal((await request('/eventos','organizador','POST',novoEvento(lotes))).status,400)
+ assert.equal(ultimoEvento,null)
+})
+test('criar evento publica por padrão e aceita rascunho',async()=>{
+ let r=await request('/eventos','organizador','POST',novoEvento())
+ assert.equal(r.status,201)
+ assert.ok(ultimoEvento.includes(100)&&ultimoEvento.includes(500)&&ultimoEvento.includes('publicado'))
+ r=await request('/eventos','organizador','POST',novoEvento({},{status:'rascunho'}))
+ assert.equal(r.status,201);assert.ok(ultimoEvento.includes('rascunho'))
+ assert.equal((await request('/eventos','cliente','POST',novoEvento())).status,403)
+})
+test('editar evento altera público mínimo e máximo e valida os limites',async()=>{
+ const base={titulo:'Festa',inicio:amanha,fim:amanha,endereco:'Clube, SP',status:'Publicado',ticket:'50',publicoMinimo:'200',publicoMaximo:'900'}
+ const r=await request('/eventos/55','organizador','PATCH',base)
+ assert.equal(r.status,200);assert.ok(ultimoEvento.includes(200)&&ultimoEvento.includes(900))
+ for(const mudanca of [{publicoMinimo:''},{publicoMaximo:undefined},{publicoMinimo:'1000'},{publicoMaximo:'0',publicoMinimo:'0'},{publicoMinimo:'-1'}])
+  assert.equal((await request('/eventos/55','organizador','PATCH',{...base,...mudanca})).status,400)
 })
