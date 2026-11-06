@@ -94,7 +94,7 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
         {/* botao de adicionar, fica alinhado na direita */}
         <button
           type="button"
-          className="-mt-1 min-h-[42px] cursor-pointer justify-self-end rounded-[10px] border-0 bg-tt-azul-principal px-4 py-2.5 text-[.78rem] font-extrabold text-tt-branco transition-transform duration-150 hover:-translate-y-px"
+          className="-mt-1 min-h-[42px] cursor-pointer justify-self-end border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal px-4 py-2.5 text-[.78rem] font-extrabold text-tt-azul-marinho transition-transform duration-150 hover:-translate-y-px"
           onClick={addCost}
         >
           + Adicionar outro tipo de custo
@@ -125,7 +125,7 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
                 <strong className="text-[.8rem]">R$ {cost.value}</strong>
                 <button
                   type="button"
-                  className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
+                  className="size-[30px] cursor-pointer border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
                   onClick={() => removeCost(cost.id)}
                   aria-label="Remover custo"
                 >

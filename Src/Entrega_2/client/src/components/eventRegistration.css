@@ -17,15 +17,20 @@
 
 /* fundo branco e texto escuro (fonte, box-sizing etc. ja vem do styles/index.css) */
 :scope {
-  color: var(--ink);
-  background: var(--cream);
+  color: var(--tt-branco);
+  background-color: var(--tt-azul-marinho);
+  background-image:
+    radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-roxo-vivo) 45%, transparent), transparent),
+    radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-rosa-vivo) 30%, transparent), transparent);
+  background-attachment: fixed;
 }
 
 /* conteudo ocupa a tela toda menos o cabecalho */
 .main-content { min-height: calc(100vh - 72px); }
 /* faixa roxa/azul do topo com o titulo da pagina */
 .hero-strip {
-  background: var(--tt-gradiente-azul-roxo);
+  background: transparent;
+  border-bottom: 1.5px solid color-mix(in srgb, var(--tt-branco) 25%, transparent);
   color: var(--tt-branco);
   min-height: 170px;
   padding: 34px max(24px, calc((100vw - 1132px) / 2));
@@ -34,30 +39,31 @@
   justify-content: space-between;
   gap: 24px;
 }
-.hero-strip h2 { margin: 4px 0 6px; font-size: clamp(1.6rem, 3vw, 2.35rem); line-height: 1.1; letter-spacing: -.045em; }
+.hero-strip h2 { margin: 4px 0 6px; font-family: var(--font-display); font-stretch: 125%; font-weight: 900; font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1; letter-spacing: -.035em; }
 .hero-strip p { margin: 0; color: color-mix(in srgb, var(--tt-branco) 72%, transparent); }
 /* textinho pequeno em cima do titulo */
-.hero-kicker { color: var(--gold-light); text-transform: uppercase; font-size: .72rem; font-weight: 850; letter-spacing: .13em; }
+.hero-kicker { color: var(--tt-branco); text-transform: uppercase; font-size: .72rem; font-weight: 850; letter-spacing: .13em; }
 
 /* card branco de cada etapa do formulario (cabecalho, corpo e rodape) */
 .content-wrap { width: min(900px, calc(100% - 36px)); margin: 0 auto 80px; }
 .form-card {
-  background: color-mix(in srgb, var(--tt-branco) 94%, transparent);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: var(--shadow);
+  background: var(--tt-branco);
+  color: var(--tt-azul-marinho);
+  border: 1.5px solid var(--tt-azul-marinho);
+  
+  box-shadow: 8px 8px 0 var(--tt-roxo-vivo);
   overflow: hidden;
   position: relative;
 }
 /* faixinha colorida no topo do card */
-.card-accent { height: 5px; background: var(--tt-gradiente-principal); }
-.form-card-header { padding: 30px 34px 22px; border-bottom: 1px solid var(--line); }
+.card-accent { height: 6px; background: var(--tt-azul-marinho); border-bottom: 1.5px solid var(--tt-azul-marinho); }
+.form-card-header { padding: 30px 34px 22px; border-bottom: 1.5px solid var(--tt-azul-marinho); }
 /* "Etapa X de 4" */
 .eyebrow { color: var(--gold-dark); text-transform: uppercase; font-size: .7rem; font-weight: 850; letter-spacing: .12em; }
 .form-card-header h1 { margin: 5px 0 8px; color: var(--midnight); font-size: clamp(1.55rem, 3vw, 2rem); letter-spacing: -.04em; }
 .form-card-header p { margin: 0; color: var(--muted); line-height: 1.55; font-size: .94rem; }
 .form-card-body { padding: 30px 34px; }
-.form-card-footer { padding: 20px 34px 28px; border-top: 1px solid var(--line); background: var(--tt-cinza-claro); }
+.form-card-footer { padding: 20px 34px 28px; border-top: 1.5px solid var(--tt-azul-marinho); background: var(--tt-cinza-claro); }
 /* grade dos campos, com opcao de 2 colunas */
 .form-grid { display: grid; gap: 20px; }
 .form-grid.two-cols { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -69,12 +75,12 @@
 .field-error { color: var(--tt-rosa-principal); font-size: .72rem; font-weight: 700; }
 /* visual padrao de todos os inputs, no foco a borda fica dourada */
 .control, .money-input {
-  width: 100%; border: 1px solid color-mix(in srgb, var(--tt-azul-marinho) 20%, transparent); background: var(--tt-branco); border-radius: 10px; min-height: 44px;
+  width: 100%; border: 1.5px solid var(--tt-azul-marinho); background: var(--tt-branco); min-height: 44px;
   color: var(--ink); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 .control { padding: 10px 12px; outline: none; }
 .control::placeholder, .money-input input::placeholder { color: color-mix(in srgb, var(--tt-grafite) 45%, transparent); }
-.control:focus, .money-input:focus-within { border-color: var(--gold); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tt-laranja-principal) 12%, transparent); outline: none; }
+.control:focus, .money-input:focus-within { border-color: var(--tt-roxo-vivo); box-shadow: 3px 3px 0 var(--tt-roxo-vivo); outline: none; }
 .textarea { min-height: 110px; resize: vertical; }
 /* campo de dinheiro com o "R$" grudado na esquerda */
 .money-input { display: flex; align-items: center; overflow: hidden; }
@@ -83,20 +89,20 @@
 /* linha dos botoes de voltar e avancar */
 .action-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 /* botoes: base, principal dourado, secundario branco, escuro, pequeno e de icone */
-.btn { border: 0; border-radius: 10px; min-height: 42px; padding: 10px 16px; font-weight: 800; font-size: .78rem; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
-.btn:hover { transform: translateY(-1px); }
-.btn-primary { color: var(--midnight); background: var(--gold); box-shadow: 0 8px 20px color-mix(in srgb, var(--tt-laranja-principal) 26%, transparent); display: inline-flex; align-items: center; gap: 9px; }
-.btn-primary:hover { background: var(--tt-laranja-vivo); box-shadow: 0 10px 24px color-mix(in srgb, var(--tt-laranja-principal) 34%, transparent); }
-.btn-secondary { color: var(--midnight); background: var(--tt-branco); border: 1px solid color-mix(in srgb, var(--tt-azul-marinho) 20%, transparent); }
-.btn-secondary:hover { border-color: var(--purple); }
+.btn { border: 1.5px solid var(--tt-azul-marinho); min-height: 42px; padding: 10px 16px; font-weight: 800; font-size: .78rem; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 3px 3px 0 var(--tt-azul-marinho); }
+.btn-primary { color: var(--midnight); background: var(--gold); display: inline-flex; align-items: center; gap: 9px; }
+.btn-primary:hover { background: var(--tt-laranja-vivo); }
+.btn-secondary { color: var(--tt-branco); background: var(--tt-azul-marinho); }
+.btn-secondary:hover { background: var(--tt-roxo-vivo); }
 /* botao do x de remover, fica avermelhado no hover */
 /* caixa de aviso amarelinha com o "i" */
-.info-banner { display: flex; gap: 12px; padding: 14px 16px; background: var(--tt-laranja-claro); border: 1px solid color-mix(in srgb, var(--tt-ambar) 40%, transparent); border-radius: 12px; margin-top: 22px; color: color-mix(in srgb, var(--tt-grafite) 85%, transparent); }
+.info-banner { display: flex; gap: 12px; padding: 14px 16px; background: var(--tt-laranja-claro); border: 1.5px solid var(--tt-azul-marinho); margin-top: 22px; color: color-mix(in srgb, var(--tt-grafite) 85%, transparent); }
 .info-banner p { margin: 0; font-size: .78rem; line-height: 1.5; }
 .info-icon { flex: 0 0 auto; width: 23px; height: 23px; display: grid; place-items: center; border-radius: 50%; color: var(--midnight); background: var(--gold); font-weight: 900; font-family: Georgia, serif; }
 
 /* mensagem verde de evento criado */
-.success-banner { margin-bottom: 18px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--tt-verde-sucesso) 32%, transparent); background: var(--tt-verde-claro); padding: 13px 15px; display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; color: var(--tt-verde-sucesso); font-size: .77rem; }
+.success-banner { margin-bottom: 18px;  border: 1.5px solid var(--tt-azul-marinho); background: var(--tt-verde-claro); padding: 13px 15px; display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; color: var(--tt-verde-sucesso); font-size: .77rem; }
 
 /* tablet e celular (ate 760px) */
 @media (max-width: 760px) {
@@ -111,7 +117,7 @@
 @media (max-width: 460px) {
   .hero-strip { padding-inline: 18px; }
   .content-wrap { width: min(100% - 20px, 900px); }
-  .form-card { border-radius: 16px; }
+  .form-card {  }
   .form-card-header { padding-top: 24px; }
   /* botoes um embaixo do outro, com o de avancar em cima, ocupando a largura toda */
   .action-row { flex-direction: column-reverse; }

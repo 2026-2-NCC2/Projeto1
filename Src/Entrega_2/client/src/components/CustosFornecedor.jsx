@@ -97,7 +97,7 @@ export default function CustosFornecedor({ evento }) {
 
     if (sucesso) {
       return (
-        <div role="status" className="mt-5 rounded-xl bg-tt-verde-claro p-5">
+        <div role="status" className="mt-5 bg-tt-verde-claro p-5">
           <strong>Proposta enviada ao organizador!</strong>
           <p className="mt-2">
             <Link className="font-bold underline" to="/propostas">Acompanhar propostas enviadas →</Link>
@@ -107,7 +107,7 @@ export default function CustosFornecedor({ evento }) {
     }
 
     if (!itens.length) {
-      return <p className="mt-4 rounded-xl bg-tt-cinza-claro p-5">Este evento não tem itens disponíveis para cotação.</p>
+      return <p className="mt-4 bg-tt-cinza-claro p-5">Este evento não tem itens disponíveis para cotação.</p>
     }
 
     return (
@@ -115,7 +115,7 @@ export default function CustosFornecedor({ evento }) {
         {itens.map((i) => {
           const p = selecionados[i.id_item_custo] // undefined = item nao marcado
           return (
-            <div key={i.id_item_custo} className="rounded-xl border border-tt-azul-marinho/15 p-4">
+            <div key={i.id_item_custo} className=" border-[1.5px] border-tt-azul-marinho p-4">
               <label className="flex cursor-pointer items-start gap-3">
                 <input
                   type="checkbox"
@@ -168,7 +168,7 @@ export default function CustosFornecedor({ evento }) {
           />
         </label>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-tt-cinza-claro p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-tt-cinza-claro p-4">
           <strong>Total: {brl(total)}</strong>
           <button disabled={sending || !produtos.length} className={botao}>
             {sending ? 'Enviando…' : 'Enviar proposta'}
@@ -183,7 +183,7 @@ export default function CustosFornecedor({ evento }) {
       <p className="text-xs font-bold uppercase text-tt-azul-principal">Área do fornecedor</p>
       <h2 className="mt-1 text-2xl font-bold">Itens de custos do evento</h2>
       <p className="mt-2 text-sm text-tt-grafite/70">Selecione os itens que deseja fornecer e informe seus produtos e preços.</p>
-      {erro && <p role="alert" className="my-4 rounded-xl bg-tt-rosa-claro p-4 text-tt-rosa-principal">{erro}</p>}
+      {erro && <p role="alert" className="my-4 bg-tt-rosa-claro p-4 text-tt-rosa-principal">{erro}</p>}
       {conteudo()}
     </section>
   )

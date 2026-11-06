@@ -91,10 +91,10 @@ export default function AprovarCadastros() {
 
   return (
     // fundo da pagina toda (overflow-x-clip evita barra de rolagem lateral por causa dos adesivos)
-    <div className="min-h-screen overflow-x-clip bg-tt-cinza-claro">
+    <div className="tt-canvas min-h-screen overflow-x-clip">
 
       {/* Hero escuro como o do site, mas baixo e com so um adesivo (o do dashboard e bem maior) */}
-      <header className="relative overflow-hidden border-b-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho px-4 pb-14 pt-8 sm:px-6 md:px-10 md:pb-16">
+      <header className="relative overflow-hidden border-b-[1.5px] border-tt-branco/25 px-4 pb-14 pt-8 sm:px-6 md:px-10 md:pb-16">
         <span className="tt-blob tt-blob--violeta -right-16 -top-24 size-[300px] opacity-60" aria-hidden="true" />
         <div className="relative z-[1] mx-auto max-w-[1100px]">
           {/* link pra voltar pro painel */}
@@ -148,14 +148,14 @@ export default function AprovarCadastros() {
               <IconSearch />
             </span>
             <input
-              className="w-full rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco py-2 pl-10 pr-4 text-sm text-tt-azul-marinho outline-none transition-colors placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)]"
+              className="w-full border-[1.5px] border-tt-azul-marinho bg-tt-branco py-2 pl-10 pr-4 text-sm text-tt-azul-marinho outline-none transition-colors placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)]"
               placeholder="Buscar por nome, empresa ou e-mail..."
               value={busca}
               onChange={e => setBusca(e.target.value)}
             />
           </div>
           {/* quantos cadastros tao aparecendo do total */}
-          <span className="text-xs font-bold uppercase tracking-[0.1em] text-tt-grafite/60">{lista.length} de {cadastros.length} cadastros</span>
+          <span className="text-xs font-bold uppercase tracking-[0.1em] text-tt-branco/75">{lista.length} de {cadastros.length} cadastros</span>
         </div>
 
         <section>
@@ -220,12 +220,12 @@ export default function AprovarCadastros() {
                             <div className="flex items-center gap-2">
                               {/* rejeitar: contorno preto, vira rosa no hover */}
                               <button type="button" onClick={() => handleAcao(c.id, 'rejeitar')}
-                                className="cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco px-3.5 py-1.5 text-[13px] font-bold text-tt-azul-marinho transition-colors hover:border-tt-rosa-principal hover:bg-tt-rosa-principal hover:text-tt-branco">
+                                className="cursor-pointer border-[1.5px] border-tt-azul-marinho bg-tt-branco px-3.5 py-1.5 text-[13px] font-bold text-tt-azul-marinho transition-colors hover:border-tt-rosa-principal hover:bg-tt-rosa-principal hover:text-tt-branco">
                                 Rejeitar
                               </button>
                               {/* aprovar: botao principal do site (magenta com borda preta) */}
                               <button type="button" onClick={() => handleAcao(c.id, 'aprovar')}
-                                className="cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal px-3.5 py-1.5 text-[13px] font-bold text-tt-azul-marinho transition duration-150 hover:-translate-y-0.5 hover:bg-tt-laranja-vivo hover:shadow-[3px_3px_0_var(--tt-azul-marinho)]">
+                                className="cursor-pointer border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal px-3.5 py-1.5 text-[13px] font-bold text-tt-azul-marinho transition duration-150 hover:-translate-y-0.5 hover:bg-tt-laranja-vivo hover:shadow-[3px_3px_0_var(--tt-azul-marinho)]">
                                 Aprovar
                               </button>
                             </div>

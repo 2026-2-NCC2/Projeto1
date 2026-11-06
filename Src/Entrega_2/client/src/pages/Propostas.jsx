@@ -74,12 +74,12 @@ export default function Propostas() {
   const visiveis = dados.filter((p) => filtro === 'todas' || p.status === filtro)
 
   return (
-    <main className="min-h-screen bg-tt-cinza-claro text-tt-azul-marinho">
-      <section className="bg-tt-azul-marinho px-5 py-10 text-tt-branco">
+    <main className="tt-canvas min-h-screen">
+      <section className="relative overflow-hidden border-b-[1.5px] border-tt-branco/25 px-5 py-12 text-tt-branco">
         <div className="mx-auto max-w-5xl">
-          <p className="text-sm font-bold text-tt-laranja-principal">NEGÓCIOS NO TROCATICKET</p>
-          <h1 className="mt-2 text-3xl font-extrabold">{fornecedor ? 'Propostas enviadas' : 'Propostas recebidas'}</h1>
-          <p className="mt-3 text-tt-branco/70">
+          <p className="tt-eyebrow text-xs font-extrabold uppercase tracking-[0.1em] text-tt-branco before:bg-tt-branco">Negócios no TrocaTicket</p>
+          <h1 className="tt-display mt-3 text-[clamp(32px,5vw,56px)]">{fornecedor ? 'Propostas enviadas' : 'Propostas recebidas'}</h1>
+          <p className="mt-3 text-tt-branco/75">
             {fornecedor
               ? 'Acompanhe suas ofertas e as respostas dos organizadores.'
               : 'Confira os produtos, compare os custos e responda aos fornecedores.'}
@@ -88,7 +88,7 @@ export default function Propostas() {
       </section>
 
       <div className="mx-auto max-w-5xl space-y-5 px-5 py-8">
-        <Link className="text-sm font-bold text-tt-azul-principal" to="/PainelDeEventos">← Painel de eventos</Link>
+        <Link className="inline-block text-sm font-bold text-tt-branco underline underline-offset-4 hover:text-tt-roxo-suave" to="/PainelDeEventos">← Painel de eventos</Link>
 
         <label className="block max-w-xs text-sm font-bold">
           Status
@@ -100,14 +100,14 @@ export default function Propostas() {
           </select>
         </label>
 
-        {erro && <p role="alert" className="rounded-xl bg-tt-rosa-claro p-4 text-tt-rosa-principal">{erro}</p>}
-        {aviso && <p role="status" className="rounded-xl bg-tt-verde-claro p-4">{aviso}</p>}
+        {erro && <p role="alert" className="border-[1.5px] border-tt-rosa-principal bg-tt-rosa-claro p-4 text-tt-rosa-principal">{erro}</p>}
+        {aviso && <p role="status" className="border-[1.5px] border-tt-azul-marinho bg-tt-verde-claro p-4 text-tt-azul-marinho">{aviso}</p>}
 
         {carregando ? (
-          <p role="status">Carregando propostas…</p>
+          <p role="status" className="text-tt-branco/80">Carregando propostas…</p>
         ) : !visiveis.length ? (
-          <div className="rounded-2xl bg-tt-branco p-10 text-center">
-            <h2 className="text-xl font-bold">Nenhuma proposta por aqui</h2>
+          <div className="tt-card p-10 text-center">
+            <h2 className="tt-display text-2xl">Nenhuma proposta por aqui</h2>
             <p className="mt-2 text-tt-grafite/70">
               {fornecedor
                 ? 'Acesse os custos de um evento para enviar sua primeira proposta.'
@@ -116,14 +116,14 @@ export default function Propostas() {
           </div>
         ) : (
           visiveis.map((p) => (
-            <article key={p.id} className="rounded-2xl border border-tt-azul-marinho/10 bg-tt-branco p-5 shadow-sm sm:p-7">
+            <article key={p.id} className="tt-card p-5 sm:p-7">
               <div className="flex flex-wrap justify-between gap-3">
                 <div>
                   <p className="text-xs text-tt-grafite/70">Proposta #{p.id} · {new Date(p.criada_em).toLocaleDateString('pt-BR')}</p>
-                  <h2 className="mt-1 text-xl font-bold">{p.titulo_evento}</h2>
+                  <h2 className="mt-1 font-display text-xl font-black">{p.titulo_evento}</h2>
                   <p className="mt-1 text-sm">{fornecedor ? `Para: ${p.organizador}` : `De: ${p.fornecedor}`}</p>
                 </div>
-                <span className={`h-fit rounded-full px-3 py-1 text-xs font-bold ${STATUS[p.status].classe}`}>
+                <span className={`tt-tag h-fit ${STATUS[p.status].classe}`}>
                   {STATUS[p.status].rotulo}
                 </span>
               </div>
@@ -141,11 +141,11 @@ export default function Propostas() {
                 ))}
               </ul>
 
-              <div className="flex justify-between rounded-xl bg-tt-cinza-claro p-4 font-bold">
+              <div className="flex justify-between border-[1.5px] border-tt-azul-marinho bg-tt-cinza-claro p-4 font-bold">
                 <span>Total da proposta</span>
                 <span>{brl(totalDaProposta(p.produtos))}</span>
               </div>
-              <p className="mt-4 whitespace-pre-wrap break-words rounded-xl border border-tt-azul-marinho/10 p-4 text-sm">{p.mensagem}</p>
+              <p className="mt-4 whitespace-pre-wrap break-words border-[1.5px] border-tt-azul-marinho p-4 text-sm">{p.mensagem}</p>
 
               {/* so o organizador responde, e so se a proposta ainda ta aguardando */}
               {perfil === 'organizador' && p.status === 'enviada' && (
@@ -153,7 +153,7 @@ export default function Propostas() {
                   <button
                     disabled={ocupado === p.id}
                     onClick={() => responder(p.id, 'recusada')}
-                    className="rounded-xl border border-tt-rosa-principal px-4 py-2 text-sm font-bold text-tt-rosa-principal disabled:opacity-50"
+                    className="border-[1.5px] border-tt-rosa-principal px-4 py-2 text-sm font-bold text-tt-rosa-principal transition-colors hover:bg-tt-rosa-claro disabled:opacity-50"
                   >
                     Recusar proposta
                   </button>

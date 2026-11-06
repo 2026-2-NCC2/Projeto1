@@ -59,7 +59,7 @@ function LandingPage() {
               Descubra eventos, conheça novas experiências e tenha tudo o que precisa
               para aproveitar cada momento.
             </p>
-            <div className="flex max-w-[560px] items-center gap-3 rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco py-[7px] pl-[17px] pr-2 max-[480px]:gap-2 max-[480px]:pl-3" aria-label="Busca ilustrativa">
+            <div className="flex max-w-[560px] items-center gap-3 border-[1.5px] border-tt-azul-marinho bg-tt-branco py-[7px] pl-[17px] pr-2 max-[480px]:gap-2 max-[480px]:pl-3" aria-label="Busca ilustrativa">
               <span className="text-2xl leading-none text-tt-grafite/60" aria-hidden="true">⌕</span>
               <input
                 type="search"
@@ -68,7 +68,7 @@ function LandingPage() {
                 placeholder="Busque eventos, artistas ou lugares"
                 readOnly
               />
-              <Link to="/PainelDeEventos" className="shrink-0 rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-roxo-vivo max-[480px]:px-[14px] max-[480px]:py-[11px] max-[480px]:text-xs">Explorar</Link>
+              <Link to="/PainelDeEventos" className="shrink-0 bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-roxo-vivo max-[480px]:px-[14px] max-[480px]:py-[11px] max-[480px]:text-xs">Explorar</Link>
             </div>
             <div className="mt-[18px] flex flex-wrap items-center gap-[14px] text-xs max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-1.5">
               <a className="font-bold text-tt-azul-marinho underline decoration-tt-roxo-vivo decoration-2 underline-offset-4" href="#categorias">Descobrir categorias</a>
@@ -82,11 +82,11 @@ function LandingPage() {
   {/* wrapper novo: só cuida do tamanho e da animação */}
   <div className="relative w-[min(330px,86%)] max-[760px]:w-[min(300px,78%)]">
     {/* ingresso: mantém a inclinação e ocupa 100% do wrapper */}
-    <div className="relative w-full rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
+    <div className="relative w-full rotate-[4deg] overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
       <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
       <span className="absolute -right-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
       <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
-        <span className="grid size-[34px] place-items-center rounded-full bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
+        <span className="grid size-[34px] place-items-center bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
         <span>SEU PRÓXIMO EVENTO</span>
       </div>
       <div className="relative flex min-h-[174px] items-end border-b border-dashed border-tt-branco/35 py-6 max-[760px]:min-h-[150px]">
@@ -104,7 +104,7 @@ function LandingPage() {
   <Sticker nome="cd" tamanho={104} rotate={12} className="-top-3 right-0 max-[760px]:right-1 max-[760px]:top-0 max-[760px]:w-[76px]" />
   <Sticker nome="estrela" tamanho={86} rotate={-14} delay={1.2} className="bottom-6 left-0 max-[760px]:left-1 max-[760px]:w-[64px]" />
 
-  <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
+  <span className="absolute bottom-[14px] right-0 rotate-[-4deg] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
       </div>
         </div>
       </section>
@@ -135,12 +135,12 @@ function LandingPage() {
         <div className="grid grid-cols-3 gap-[18px] max-[760px]:grid-cols-1">
           {CATEGORIAS.map((categoria) => (
             <Link
-              className="group relative flex min-h-[205px] flex-col items-start overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[23px] no-underline transition duration-150 hover:-translate-y-[3px] hover:shadow-[6px_6px_0_var(--tt-azul-marinho)] max-[760px]:min-h-[175px]"
+              className="group relative flex min-h-[205px] flex-col items-start overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[23px] no-underline transition duration-150 hover:-translate-y-[3px] hover:shadow-[6px_6px_0_var(--tt-azul-marinho)] max-[760px]:min-h-[175px]"
               key={categoria.titulo}
               to="/PainelDeEventos"
             >
               <span className={`absolute -bottom-16 -right-10 size-[170px] rounded-full opacity-30 blur-[28px] transition-opacity duration-150 group-hover:opacity-70 ${categoria.brilho}`} aria-hidden="true" />
-              <span className={`mb-[22px] grid size-[42px] place-items-center rounded-full text-[22px] ${categoria.fundo} ${categoria.cor}`} aria-hidden="true">{categoria.icone}</span>
+              <span className={`mb-[22px] grid size-[42px] place-items-center text-[22px] ${categoria.fundo} ${categoria.cor}`} aria-hidden="true">{categoria.icone}</span>
               <span className="absolute right-6 top-[25px] text-lg text-tt-azul-marinho" aria-hidden="true">↗</span>
               <h3 className="z-[1] mb-1.5 text-lg font-extrabold text-tt-azul-marinho">{categoria.titulo}</h3>
               <p className="z-[1] m-0 max-w-[28ch] text-[13px] leading-[1.55] text-tt-grafite/75">{categoria.texto}</p>
@@ -174,7 +174,7 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="relative mx-auto my-[84px] flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[48px_44px] max-[760px]:my-[42px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:items-start max-[760px]:flex-col max-[760px]:p-[26px]">
+      <section className="relative mx-auto my-[84px] flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[48px_44px] max-[760px]:my-[42px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:items-start max-[760px]:flex-col max-[760px]:p-[26px]">
         <span className="tt-blob -right-20 -top-24 size-[420px] opacity-70" aria-hidden="true" />
         <span className="tt-blob tt-blob--violeta right-[22%] -bottom-40 size-[360px] opacity-60" aria-hidden="true" />
         <div className="relative z-[1]">
@@ -182,7 +182,7 @@ function LandingPage() {
           <h2 className="tt-display mb-0 mt-3 text-[clamp(26px,4vw,52px)] text-tt-azul-marinho">Pronto para descobrir algo novo?</h2>
           <p className="mb-0 mt-[14px] max-w-[58ch] text-sm font-medium text-tt-azul-marinho">Explore a página de eventos e encontre a próxima experiência para guardar na memória.</p>
         </div>
-        <Link to="/PainelDeEventos" className="relative z-[1] inline-flex shrink-0 items-center gap-3 rounded-full bg-tt-azul-marinho px-6 py-4 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-roxo-vivo">Explorar eventos <span aria-hidden="true">→</span></Link>
+        <Link to="/PainelDeEventos" className="relative z-[1] inline-flex shrink-0 items-center gap-3 bg-tt-azul-marinho px-6 py-4 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-roxo-vivo">Explorar eventos <span aria-hidden="true">→</span></Link>
       </section>
 
       <Footer />

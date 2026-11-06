@@ -9,7 +9,7 @@ import { brl } from '../styles/propostas';
 
 // cor da etiqueta de cada status
 const BADGE_CLASS = {
-  Publicado: 'bg-tt-verde-claro text-tt-azul-principal',
+  Publicado: 'bg-tt-verde-claro text-tt-azul-marinho',
   Rascunho: 'bg-tt-laranja-claro text-tt-azul-marinho',
   Encerrado: 'bg-tt-cinza-claro text-tt-grafite/85',
   Cancelado: 'bg-tt-rosa-claro text-tt-rosa-principal',
@@ -198,9 +198,9 @@ export default function PainelDeEventos() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-tt-cinza-claro text-tt-azul-marinho">
+    <div className="tt-canvas min-h-screen">
       {erroApi && (
-        <p role="alert" className="p-5 text-tt-rosa-principal">
+        <p role="alert" className="p-5 text-tt-rosa-suave">
           {erroApi}
         </p>
       )}
@@ -215,18 +215,18 @@ export default function PainelDeEventos() {
         <>
           {/* Hero sub-header */}
           {/* titulo muda conforme a aba, e embaixo mostra o total e quantos estao publicados */}
-          <div className="bg-tt-azul-marinho pt-7 pb-9">
+          <div className="relative overflow-hidden border-b-[1.5px] border-tt-branco/25 pt-10 pb-12">
             <div className="max-w-[1200px] mx-auto px-8 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="text-tt-laranja-principal text-[12px] font-semibold tracking-[1px] uppercase mb-1">
+                <p className="tt-eyebrow text-xs font-extrabold uppercase tracking-[0.1em] text-tt-branco before:bg-tt-branco mb-3">
                   {activeTab === 'meus' ? 'Seus Eventos' : 'Geral'}
                 </p>
-                <h1 className="text-tt-branco text-[26px] font-extrabold tracking-[-0.5px]">
+                <h1 className="tt-display text-tt-branco text-[clamp(32px,5vw,56px)]">
                   {activeTab === 'meus'
                     ? 'Meus Eventos Criados'
                     : 'Painel de Eventos'}
                 </h1>
-                <p className="text-tt-branco/45 text-[13px] mt-1.5">
+                <p className="text-tt-branco/75 text-sm mt-3">
                   {eventos.length} eventos cadastrados ·{' '}
                   {
                     eventos.filter((e) => e.status_publicacao === 'Publicado')
@@ -239,7 +239,7 @@ export default function PainelDeEventos() {
               {perfil === 'organizador' && (
                 <Link
                   to="/criar-evento/evento"
-                  className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]"
+                  className="flex items-center gap-2 border-[1.5px] border-tt-branco bg-tt-laranja-principal text-tt-azul-marinho px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer transition hover:bg-tt-laranja-vivo hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--tt-branco)]"
                 >
                   <IconPlus /> Criar Evento
                 </Link>
@@ -251,11 +251,11 @@ export default function PainelDeEventos() {
           <div className="max-w-[1200px] mx-auto px-8 pt-6 flex flex-wrap items-center gap-3">
             {/* campo de busca com a lupa dentro */}
             <div className="relative flex-[1_1_240px] max-w-[340px]">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tt-grafite/50 flex">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tt-azul-marinho/60 flex">
                 <IconSearch />
               </span>
               <input
-                className="w-full py-[9px] pr-3 pl-[38px] rounded-[10px] border border-tt-azul-marinho/12 bg-tt-branco text-[13px] text-tt-azul-marinho outline-none transition focus:border-tt-azul-claro focus:ring-[3px] focus:ring-tt-azul-vivo/[0.12]"
+                className="w-full py-[9px] pr-3 pl-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco text-[13px] text-tt-azul-marinho outline-none transition focus:border-tt-laranja-principal"
                 type="text"
                 placeholder="Buscar evento..."
                 value={busca}
@@ -270,10 +270,10 @@ export default function PainelDeEventos() {
                   <button
                     key={s}
                     onClick={() => setFiltroStatus(s)}
-                    className={`rounded-[20px] border px-4 py-1.5 text-xs cursor-pointer transition ${
+                    className={`border-[1.5px] px-4 py-1.5 text-xs font-bold cursor-pointer transition ${
                       filtroStatus === s
-                        ? 'bg-tt-azul-marinho text-tt-laranja-principal border-tt-azul-marinho font-semibold'
-                        : 'bg-tt-branco text-tt-grafite/70 border-tt-azul-marinho/12 font-normal hover:border-tt-azul-marinho/20 hover:text-tt-azul-marinho'
+                        ? 'bg-tt-laranja-principal text-tt-azul-marinho border-tt-branco'
+                        : 'bg-transparent text-tt-branco/80 border-tt-branco/40 hover:border-tt-branco hover:text-tt-branco'
                     }`}
                   >
                     {s}
@@ -282,7 +282,7 @@ export default function PainelDeEventos() {
               )}
             </div>
             {/* quantidade de resultados, coloca o "s" so se for mais de um */}
-            <span className="ml-auto text-xs text-tt-grafite/50 whitespace-nowrap">
+            <span className="ml-auto text-xs text-tt-branco/70 whitespace-nowrap">
               {eventosFiltrados.length} resultado
               {eventosFiltrados.length !== 1 ? 's' : ''}
             </span>
@@ -293,9 +293,8 @@ export default function PainelDeEventos() {
           <main className="max-w-[1200px] mx-auto px-8 pt-6 pb-12 grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))]">
             {/* se nenhum evento passar nos filtros mostra a mensagem, senao mostra os cards */}
             {eventosFiltrados.length === 0 ? (
-              <div className="col-span-full text-center py-20 text-tt-grafite/50">
-                <div className="text-5xl mb-4">🎟️</div>
-                <p className="text-base font-semibold text-tt-grafite/85 mb-1.5">
+              <div className="col-span-full text-center py-20 text-tt-branco/70">
+                <p className="tt-display text-2xl text-tt-branco mb-2">
                   Nenhum evento encontrado
                 </p>
                 <p className="text-[13px]">
@@ -311,17 +310,17 @@ export default function PainelDeEventos() {
                 return (
                   <article
                     key={ev.id}
-                    className={`bg-tt-branco rounded-2xl overflow-hidden flex flex-col cursor-pointer shadow-[0_4px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_13%,transparent)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_32px_color-mix(in_srgb,var(--tt-azul-marinho)_20%,transparent)] ${enc ? 'opacity-[0.72]' : ''}`}
+                    className={`tt-card overflow-hidden flex flex-col cursor-pointer transition duration-150 hover:-translate-y-1 hover:shadow-[10px_10px_0_var(--tt-laranja-principal)] ${enc ? 'opacity-[0.8]' : ''}`}
                   >
                     {/* banner do card com degrade na cor do evento */}
                     {/* o before e o after desenham os circulos decorativos no canto */}
                     <div
-                      className="relative overflow-hidden h-[110px] flex items-end px-4 py-3 before:content-[''] before:absolute before:top-3.5 before:right-4 before:size-12 before:rounded-full before:border-2 before:border-tt-laranja-principal/25 after:content-[''] after:absolute after:top-[24px] after:right-[26px] after:size-7 after:rounded-full after:bg-tt-laranja-principal/12"
+                      className="relative overflow-hidden h-[110px] flex items-end px-4 py-3 border-b-[1.5px] border-tt-azul-marinho"
                       style={{ background: ev.banner_color }}
                     >
                       {/* etiqueta de status */}
                       <span
-                        className={`relative z-1 text-[11px] font-semibold px-2.5 py-[3px] rounded-[20px] tracking-[0.2px] ${BADGE_CLASS[ev.status_publicacao] || 'bg-tt-cinza-claro'}`}
+                        className={`tt-tag relative z-1 ${BADGE_CLASS[ev.status_publicacao] || 'bg-tt-cinza-claro'}`}
                       >
                         {ev.status_publicacao}
                       </span>
@@ -357,7 +356,7 @@ export default function PainelDeEventos() {
                           <span className="truncate">{ev.endereco}</span>
                         </div>
                       </div>
-                      <hr className="border-0 border-t border-tt-azul-marinho/12 my-1" />
+                      <hr className="border-0 border-t-[1.5px] border-tt-azul-marinho my-1" />
                       {/* ticket estimado e pendencias lado a lado */}
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col gap-0.5">
@@ -391,7 +390,7 @@ export default function PainelDeEventos() {
                           setEventoSel(ev);
                           setTelaAtual('detalhes');
                         }}
-                        className="mt-2 w-full py-[9px] rounded-lg text-[13px] font-semibold tracking-[0.2px] bg-tt-azul-marinho text-tt-laranja-principal hover:bg-tt-azul-vivo transition-colors"
+                        className="mt-2 w-full py-[10px] text-[13px] font-bold border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal text-tt-azul-marinho hover:bg-tt-laranja-vivo transition-colors"
                       >
                         {perfil === 'fornecedor'
                           ? 'Ver custos e enviar proposta →'
@@ -416,19 +415,19 @@ export default function PainelDeEventos() {
               setTelaAtual('painel');
               setEventoSel(null);
             }}
-            className="flex items-center gap-2 text-sm text-tt-grafite/70 hover:text-tt-azul-marinho mb-6 transition-colors font-medium"
+            className="flex items-center gap-2 text-sm text-tt-branco/80 hover:text-tt-branco mb-6 transition-colors font-bold"
           >
             <IconArrowLeft /> Voltar para a lista
           </button>
 
-          <div className="bg-tt-branco rounded-2xl overflow-hidden shadow-xl border border-tt-azul-marinho/8">
+          <div className="tt-card overflow-hidden shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
             {/* banner maior com a cor do evento e o status */}
             <div
-              className="h-[160px] flex items-end p-6"
+              className="h-[160px] flex items-end p-6 border-b-[1.5px] border-tt-azul-marinho"
               style={{ background: eventoSelecionado.banner_color }}
             >
               <span
-                className={`text-xs font-bold px-3 py-1 rounded-full ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}
+                className={`tt-tag ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}
               >
                 {eventoSelecionado.status_publicacao}
               </span>
@@ -446,9 +445,9 @@ export default function PainelDeEventos() {
               </p>
 
               {/* caixa com data, local, ticket e pendencias (1 coluna no celular e 2 em tela maior) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6 p-4 bg-tt-cinza-claro rounded-xl border border-tt-azul-marinho/8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6 p-4 bg-tt-cinza-claro border-[1.5px] border-tt-azul-marinho">
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
+                  <span className="p-2 bg-tt-branco border-[1.5px] border-tt-azul-marinho text-tt-azul-marinho">
                     <IconCalendar />
                   </span>
                   <div>
@@ -464,7 +463,7 @@ export default function PainelDeEventos() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
+                  <span className="p-2 bg-tt-branco border-[1.5px] border-tt-azul-marinho text-tt-azul-marinho">
                     <IconPin />
                   </span>
                   <div>
@@ -477,7 +476,7 @@ export default function PainelDeEventos() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-principal">
+                  <span className="p-2 bg-tt-branco border-[1.5px] border-tt-azul-marinho text-tt-azul-marinho">
                     <IconTicket />
                   </span>
                   <div>
@@ -496,7 +495,7 @@ export default function PainelDeEventos() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
+                  <span className="p-2 bg-tt-branco border-[1.5px] border-tt-azul-marinho text-tt-azul-marinho">
                     <IconPending />
                   </span>
                   <div>
@@ -529,16 +528,16 @@ export default function PainelDeEventos() {
               {/* botoes de excluir e editar */}
               {perfil === 'organizador' &&
                 eventoSelecionado.organizador_id === idUsuarioLogado && (
-                  <div className="flex gap-3 justify-end pt-4 border-t border-tt-azul-marinho/8">
+                  <div className="flex gap-3 justify-end pt-4 border-t-[1.5px] border-tt-azul-marinho">
                     <button
                       onClick={() => excluirEvento(eventoSelecionado.id)}
-                      className="px-5 py-2.5 rounded-xl border border-tt-rosa-suave text-tt-rosa-principal font-semibold text-sm hover:bg-tt-rosa-claro transition"
+                      className="px-5 py-2.5 border-[1.5px] border-tt-rosa-principal text-tt-rosa-principal font-bold text-sm hover:bg-tt-rosa-claro transition"
                     >
                       Excluir Evento
                     </button>
                     <button
                       onClick={() => abrirModalEditar(eventoSelecionado)}
-                      className="px-5 py-2.5 rounded-xl bg-tt-azul-marinho text-tt-laranja-principal font-semibold text-sm hover:bg-tt-azul-vivo transition"
+                      className="px-5 py-2.5 border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal text-tt-azul-marinho font-bold text-sm hover:bg-tt-laranja-vivo transition"
                     >
                       Editar Evento
                     </button>
@@ -552,9 +551,9 @@ export default function PainelDeEventos() {
       {/* ── MODAL EDITAR ── */}
       {/* fundo escuro por cima da tela toda com o formulario no meio */}
       {form && (
-        <div className="fixed inset-0 z-[200] bg-tt-azul-marinho/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-tt-branco rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-tt-azul-marinho/8">
-            <h2 className="text-xl font-bold text-tt-azul-marinho mb-4">
+        <div className="fixed inset-0 z-[200] bg-tt-azul-marinho/80 flex items-center justify-center p-4">
+          <div className="tt-card max-w-lg w-full p-6 shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
+            <h2 className="tt-display text-2xl text-tt-azul-marinho mb-4">
               Editar Dados do Evento
             </h2>
             {/* ao enviar chama o salvarFormulario */}
@@ -569,7 +568,7 @@ export default function PainelDeEventos() {
                   required
                   value={form.titulo}
                   onChange={alterarForm('titulo')}
-                  className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  className="w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none focus:border-tt-roxo-vivo"
                   placeholder="Ex: Lollapalooza 2026"
                 />
               </div>
@@ -584,7 +583,7 @@ export default function PainelDeEventos() {
                     required
                     value={form.inicio}
                     onChange={alterarForm('inicio')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                    className="w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none focus:border-tt-roxo-vivo"
                   />
                 </div>
                 <div>
@@ -595,7 +594,7 @@ export default function PainelDeEventos() {
                     type="date"
                     value={form.fim}
                     onChange={alterarForm('fim')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                    className="w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none focus:border-tt-roxo-vivo"
                   />
                 </div>
               </div>
@@ -609,7 +608,7 @@ export default function PainelDeEventos() {
                   required
                   value={form.endereco}
                   onChange={alterarForm('endereco')}
-                  className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  className="w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none focus:border-tt-roxo-vivo"
                   placeholder="Ex: Allianz Parque, São Paulo"
                 />
               </div>
@@ -622,7 +621,7 @@ export default function PainelDeEventos() {
                   <select
                     value={form.status}
                     onChange={alterarForm('status')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-laranja-principal"
+                    className="w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-roxo-vivo"
                   >
                     <option value="Publicado">Publicado</option>
                     <option value="Rascunho">Rascunho</option>
@@ -642,7 +641,7 @@ export default function PainelDeEventos() {
                     step="0.01"
                     value={form.ticket}
                     onChange={alterarForm('ticket')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                    className="w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none focus:border-tt-roxo-vivo"
                     placeholder="890"
                   />
                 </div>
@@ -656,22 +655,22 @@ export default function PainelDeEventos() {
                   step="0.01"
                   value={form.segundoLote}
                   onChange={alterarForm('segundoLote')}
-                  className="mt-1 w-full rounded-xl border border-tt-azul-marinho/12 p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
+                  className="mt-1 w-full border-[1.5px] border-tt-azul-marinho p-2.5 text-sm outline-none focus:border-tt-roxo-vivo"
                   placeholder="Deixe vazio se não houver segundo lote"
                 />
               </label>
               {/* cancelar fecha sem salvar / salvar envia o form */}
-              <div className="flex gap-2 justify-end pt-4 border-t border-tt-azul-marinho/8">
+              <div className="flex gap-2 justify-end pt-4 border-t-[1.5px] border-tt-azul-marinho">
                 <button
                   type="button"
                   onClick={() => setForm(null)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-tt-grafite/70 hover:bg-tt-cinza-claro"
+                  className="px-4 py-2 text-sm font-bold border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho text-tt-branco hover:bg-tt-roxo-vivo"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-tt-laranja-principal text-tt-azul-marinho font-bold rounded-xl text-sm hover:opacity-90"
+                  className="px-5 py-2 border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal text-tt-azul-marinho font-bold text-sm hover:bg-tt-laranja-vivo"
                 >
                   Salvar Mudanças
                 </button>

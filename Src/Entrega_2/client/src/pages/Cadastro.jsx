@@ -45,13 +45,13 @@ const SERVICES = [
 ];
 
 // classes que se repetem nos botoes e campos do cadastro (mesmo visual do Login: cantos retos, linha preta fina e sombra dura)
-const BTN_BASE = 'w-full sm:w-auto cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho px-7 py-3 text-[15px] font-bold transition duration-150 disabled:cursor-not-allowed disabled:border-tt-azul-marinho/20 disabled:bg-tt-azul-marinho/10 disabled:text-tt-grafite/45 disabled:shadow-none disabled:translate-y-0'
+const BTN_BASE = 'w-full sm:w-auto cursor-pointer border-[1.5px] border-tt-azul-marinho px-7 py-3 text-[15px] font-bold transition duration-150 disabled:cursor-not-allowed disabled:border-tt-azul-marinho/20 disabled:bg-tt-azul-marinho/10 disabled:text-tt-grafite/45 disabled:shadow-none disabled:translate-y-0'
 // botao principal (magenta) e botao de voltar (escuro)
 const BTN_PRIMARIO = `${BTN_BASE} bg-tt-laranja-principal text-tt-azul-marinho hover:-translate-y-px hover:bg-tt-laranja-vivo hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]`
 const BTN_VOLTAR = `${BTN_BASE} bg-tt-branco text-tt-azul-marinho hover:-translate-y-px hover:bg-tt-lilas-claro hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]`
 // input de texto, a borda fica rosa se tiver erro e ganha sombra roxa no foco
 const inputCls = (erro) =>
-  `w-full rounded-none border-[1.5px] px-3.5 py-3 text-[15px] text-tt-azul-marinho outline-none transition duration-150 placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)] ${
+  `w-full border-[1.5px] px-3.5 py-3 text-[15px] text-tt-azul-marinho outline-none transition duration-150 placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)] ${
     erro ? 'border-tt-rosa-principal bg-tt-rosa-claro/40' : 'border-tt-azul-marinho bg-tt-branco'
   }`
 // legenda de campo
@@ -122,7 +122,7 @@ function Titulo({ etapa, total, titulo, destaque, sub, children }) {
 
 // etiqueta com o tipo de conta escolhido (aparece nas etapas da empresa)
 function Etiqueta({ children, fundo }) {
-  return <span className={`mb-4 inline-block rounded-full border-[1.5px] border-tt-azul-marinho px-3 py-1 text-xs font-bold text-tt-azul-marinho ${fundo}`}>{children}</span>
+  return <span className={`mb-4 inline-block border-[1.5px] border-tt-azul-marinho px-3 py-1 text-xs font-bold text-tt-azul-marinho ${fundo}`}>{children}</span>
 }
 
 // indicador de progresso do cadastro (1 --- 2 --- 3), agora com quadrados e linha preta
@@ -364,7 +364,7 @@ export default function Cadastro() {
         <Card className="flex flex-col items-center text-center">
 
           {/* circulo preto com o check, no lugar da bolinha verde */}
-          <div className="mb-6 grid size-16 place-items-center rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-verde-claro shadow-[4px_4px_0_var(--tt-azul-marinho)]">
+          <div className="mb-6 grid size-16 place-items-center border-[1.5px] border-tt-azul-marinho bg-tt-verde-claro shadow-[4px_4px_0_var(--tt-azul-marinho)]">
             <svg viewBox="0 0 24 24" className="size-8 fill-none stroke-tt-verde-sucesso stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]"><polyline points="20 6 9 17 4 12" /></svg>
           </div>
 
@@ -461,7 +461,7 @@ export default function Cadastro() {
                 // o selecionado ganha fundo lilas e sombra roxa dura
                 <button key={r.id} type="button" aria-pressed={role === r.id} className={`flex w-full cursor-pointer items-center gap-4 border-[1.5px] border-tt-azul-marinho p-4 text-left transition duration-150 hover:-translate-y-px ${role === r.id ? 'bg-tt-lilas-claro shadow-[5px_5px_0_var(--tt-roxo-vivo)]' : 'bg-tt-branco hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]'}`} onClick={() => setRole(r.id)}>
                   {/* emoji do tipo de conta */}
-                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-tt-azul-marinho text-2xl">{r.emoji}</span>
+                  <span className="grid size-12 shrink-0 place-items-center bg-tt-azul-marinho text-2xl">{r.emoji}</span>
                   {/* titulo e descricao */}
                   <div className="flex flex-1 flex-col gap-0.5">
                     <strong className="font-display text-base font-extrabold text-tt-azul-marinho">{r.titulo}</strong>
@@ -508,7 +508,7 @@ export default function Cadastro() {
                 <div key={i} className="flex gap-2">
                   <input type="text" placeholder="Ex: Shows" value={a} onChange={e => updateArea(i, e.target.value)} className={inputCls(false)} />
                   {/* botao de remover, so aparece se tiver mais de uma area */}
-                  {areas.length > 1 && <button type="button" className="w-11 shrink-0 cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco text-lg font-bold text-tt-azul-marinho transition-colors hover:bg-tt-rosa-claro hover:text-tt-rosa-principal" aria-label="Remover área" onClick={() => removeArea(i)}>×</button>}
+                  {areas.length > 1 && <button type="button" className="w-11 shrink-0 cursor-pointer border-[1.5px] border-tt-azul-marinho bg-tt-branco text-lg font-bold text-tt-azul-marinho transition-colors hover:bg-tt-rosa-claro hover:text-tt-rosa-principal" aria-label="Remover área" onClick={() => removeArea(i)}>×</button>}
                 </div>
               ))}
             </div>
@@ -517,7 +517,7 @@ export default function Cadastro() {
             {errors.area && <span className="mb-2 mt-1 block text-xs font-bold text-tt-rosa-principal">{errors.area}</span>}
 
             {/* adiciona mais um campo de area */}
-            <button type="button" className="mt-2 w-full cursor-pointer rounded-none border-[1.5px] border-dashed border-tt-azul-marinho bg-transparent p-2.5 text-sm font-bold text-tt-azul-marinho transition-colors hover:bg-tt-lilas-claro" onClick={addArea}>+ Outra área</button>
+            <button type="button" className="mt-2 w-full cursor-pointer border-[1.5px] border-dashed border-tt-azul-marinho bg-transparent p-2.5 text-sm font-bold text-tt-azul-marinho transition-colors hover:bg-tt-lilas-claro" onClick={addArea}>+ Outra área</button>
 
             {/* erro geral da API */}
             {apiError && <p className="mt-4 text-sm font-bold text-tt-rosa-principal">{apiError}</p>}

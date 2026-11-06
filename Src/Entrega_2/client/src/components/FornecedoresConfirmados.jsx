@@ -37,7 +37,7 @@ export default function FornecedoresConfirmados({ eventoId }) {
     return (
       <div className="mt-4 space-y-3">
         {empresas.map((empresa) => (
-          <article key={empresa.nome + empresa.itens[0].id} className="rounded-xl bg-tt-verde-claro p-4">
+          <article key={empresa.nome + empresa.itens[0].id} className=" bg-tt-verde-claro p-4">
             <h3 className="font-bold">{empresa.nome}</h3>
             <ul className="mt-2 space-y-1 text-sm">
               {empresa.itens.map((item) => (

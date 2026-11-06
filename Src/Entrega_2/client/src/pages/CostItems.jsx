@@ -158,7 +158,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
       {erro && (
         <p
           role="alert"
-          className="mb-3 rounded-xl bg-tt-rosa-claro p-3 text-sm text-tt-rosa-principal"
+          className="mb-3 bg-tt-rosa-claro p-3 text-sm text-tt-rosa-principal"
         >
           {erro}
         </p>
@@ -183,7 +183,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
       {/* resumo dos totais: 1 coluna no celular e 3 a partir de 761px */}
       <div className="mb-6 grid grid-cols-1 gap-3 min-[761px]:grid-cols-3">
         {/* total das categorias */}
-        <div className="grid gap-1 rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro px-4 py-[15px]">
+        <div className="grid gap-1 border-[1.5px] border-tt-azul-marinho bg-tt-cinza-claro px-4 py-[15px]">
           <span className="text-[.68rem] font-bold text-tt-grafite/70">
             Custos categorizados
           </span>
@@ -192,7 +192,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
           </strong>
         </div>
         {/* total dos custos avulsos */}
-        <div className="grid gap-1 rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro px-4 py-[15px]">
+        <div className="grid gap-1 border-[1.5px] border-tt-azul-marinho bg-tt-cinza-claro px-4 py-[15px]">
           <span className="text-[.68rem] font-bold text-tt-grafite/70">
             Custos independentes fixos
           </span>
@@ -201,7 +201,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
           </strong>
         </div>
         {/* total geral, com fundo escuro pra destacar */}
-        <div className="grid gap-1 rounded-xl border border-tt-azul-marinho bg-tt-azul-marinho px-4 py-[15px]">
+        <div className="grid gap-1 border border-tt-azul-marinho bg-tt-azul-marinho px-4 py-[15px]">
           <span className="text-[.68rem] font-bold text-tt-branco/65">
             Total fixo estimado
           </span>
@@ -212,7 +212,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
       </div>
 
       {/* lista de categorias em formato sanfona (abre uma por vez) */}
-      <div className="overflow-hidden rounded-[14px] border border-tt-azul-marinho/12">
+      <div className="overflow-hidden border-[1.5px] border-tt-azul-marinho">
         {groups.map((group) => {
           const isOpen = open === group.name; // ve se essa categoria e a que ta aberta
           // rascunho da categoria, com valores padrao caso ainda nao tenha nada digitado
@@ -251,7 +251,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                   <b className="text-[.77rem] text-tt-azul-marinho">
                     {formatBRL(groupTotal(group))}
                   </b>
-                  <i className="grid size-6 place-items-center rounded-full bg-tt-cinza-claro not-italic font-black text-tt-azul-vivo">
+                  <i className="grid size-6 place-items-center bg-tt-cinza-claro not-italic font-black text-tt-azul-vivo">
                     {isOpen ? '−' : '+'}
                   </i>
                 </span>
@@ -262,7 +262,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                 <div className="bg-tt-cinza-claro px-4 pb-4">
                   {/* tabela de itens, so aparece se a categoria ja tiver algum item */}
                   {group.items.length > 0 && (
-                    <div className="mb-2.5 grid overflow-hidden rounded-[10px] border border-tt-azul-marinho/12">
+                    <div className="mb-2.5 grid overflow-hidden border-[1.5px] border-tt-azul-marinho">
                       {/* cabecalho da tabela, some no celular (max-[760px]:hidden) */}
                       <div className="grid grid-cols-[minmax(150px,2fr)_.45fr_.85fr_.85fr_34px] items-center gap-2.5 bg-tt-cinza-claro px-2.5 py-[9px] text-[.61rem] font-extrabold uppercase tracking-[.03em] text-tt-grafite/70 max-[760px]:hidden">
                         <span>Descrição</span>
@@ -289,7 +289,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                           {/* botao de remover o item: no celular fica na direita ocupando as duas linhas */}
                           <span className="col-start-2 row-[1/span_2] min-[761px]:col-auto min-[761px]:row-auto">
                             <button
-                              className="size-[30px] cursor-pointer rounded-lg border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
+                              className="size-[30px] cursor-pointer border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
                               onClick={() => removeItem(group.name, item.id)}
                               aria-label="Remover item"
                             >
@@ -306,7 +306,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                   <div className="grid grid-cols-[1fr_80px] gap-2 min-[761px]:grid-cols-[minmax(160px,2fr)_82px_150px_auto]">
                     {/* descricao, o placeholder muda conforme a categoria */}
                     <input
-                      className="min-h-[38px] rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
+                      className="min-h-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
                       placeholder={`Adicionar item de ${group.name.toLowerCase()}`}
                       value={draft.description}
                       onChange={(e) =>
@@ -315,7 +315,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                     />
                     {/* quantidade */}
                     <input
-                      className="min-h-[38px] rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
+                      className="min-h-[38px] border-[1.5px] border-tt-azul-marinho bg-tt-branco px-2.5 py-2 text-[.72rem] text-tt-azul-marinho outline-0 placeholder:text-tt-grafite/45 focus:border-tt-laranja-principal focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)]"
                       type="number"
                       min="1"
                       placeholder="Qtd."
@@ -326,7 +326,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                     />
                     {/* valor unitario com o "R$" grudado na esquerda */}
                     {/* focus-within deixa a borda laranja quando o input de dentro ta em foco */}
-                    <div className="col-start-1 flex min-h-[38px] overflow-hidden rounded-[10px] border border-tt-azul-marinho/20 bg-tt-branco focus-within:border-tt-laranja-principal focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)] min-[761px]:col-auto">
+                    <div className="col-start-1 flex min-h-[38px] overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-branco focus-within:border-tt-laranja-principal focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--tt-laranja-principal)_12%,transparent)] min-[761px]:col-auto">
                       <span className="grid self-stretch place-items-center border-r border-tt-azul-marinho/12 bg-tt-cinza-claro px-[9px] text-[.68rem] font-extrabold text-tt-grafite/70">
                         R$
                       </span>
@@ -344,7 +344,7 @@ export function CostItems({ independentCosts, onBack, onFinish, groups, setGroup
                     {/* botao de adicionar o item na categoria */}
                     <button
                       type="button"
-                      className="col-start-2 min-h-[38px] cursor-pointer rounded-[10px] border-0 bg-tt-laranja-principal px-[13px] py-2.5 text-[.78rem] font-extrabold text-tt-azul-marinho transition-transform duration-150 hover:-translate-y-px min-[761px]:col-auto"
+                      className="col-start-2 min-h-[38px] cursor-pointer border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal px-[13px] py-2.5 text-[.78rem] font-extrabold text-tt-azul-marinho transition-transform duration-150 hover:-translate-y-px min-[761px]:col-auto"
                       onClick={() => addItem(group.name)}
                     >
                       Adicionar

@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="relative z-[1] mx-auto flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 py-[44px] pb-8 max-[640px]:w-[calc(100%_-_36px)] max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-4">
         <div>
           <Link to="/" aria-label="TrocaTicket, início" className="inline-flex items-center gap-[9px] font-display text-base font-black text-tt-branco no-underline">
-            <img src={logo} alt="" className="size-8 rounded-full bg-tt-branco object-contain" />
+            <img src={logo} alt="" className="size-8 bg-tt-branco object-contain" />
             <span>TrocaTicket</span>
           </Link>
           <p className="mt-2 text-xs text-tt-branco/75">Descubra eventos e encontre experiências para viver e compartilhar.</p>

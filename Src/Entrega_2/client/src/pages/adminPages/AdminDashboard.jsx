@@ -69,7 +69,7 @@ function QuickCard({ to, icon, titulo, desc, badge, numero }) {
       <span className="absolute -bottom-16 -right-10 size-[170px] rounded-full bg-tt-rosa-vivo opacity-20 blur-[28px] transition-opacity duration-150 group-hover:opacity-60" aria-hidden="true" />
       <div className="relative z-[1] flex items-start justify-between">
         {/* icone, vira roxo no hover */}
-        <span className="grid size-11 place-items-center rounded-full bg-tt-azul-marinho text-tt-branco transition-colors duration-150 group-hover:bg-tt-roxo-vivo">
+        <span className="grid size-11 place-items-center border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho text-tt-branco transition-colors duration-150 group-hover:bg-tt-roxo-vivo">
           {icon}
         </span>
         {/* numero no contorno, igual as etapas da home */}
@@ -80,7 +80,7 @@ function QuickCard({ to, icon, titulo, desc, badge, numero }) {
           {titulo}
           {/* bolinha com a quantidade, so aparece se tiver algo pendente */}
           {badge > 0 && (
-            <span className="rounded-full bg-tt-rosa-vivo px-2 py-0.5 text-[10px] font-bold text-tt-branco">{badge}</span>
+            <span className="border-[1.5px] border-tt-azul-marinho bg-tt-rosa-vivo px-2 py-0.5 text-[10px] font-bold text-tt-branco">{badge}</span>
           )}
         </p>
         <p className="mt-1 pr-8 text-[13px] leading-[1.5] text-tt-grafite/75">{desc}</p>
@@ -96,10 +96,10 @@ function QuickCard({ to, icon, titulo, desc, badge, numero }) {
 // titulo de secao: linha preta em cima, quadradinho + legenda e titulo grande (mesmo padrao da home)
 function TituloSecao({ legenda, titulo, children }) {
   return (
-    <div className="mb-6 flex items-end justify-between gap-4 border-t border-tt-azul-marinho pt-5">
+    <div className="mb-6 flex items-end justify-between gap-4 border-t border-tt-branco/40 pt-5">
       <div>
-        <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">{legenda}</span>
-        <h2 className="tt-display mt-2 text-[clamp(24px,3.4vw,38px)] text-tt-azul-marinho">{titulo}</h2>
+        <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-branco before:bg-tt-branco">{legenda}</span>
+        <h2 className="tt-display mt-2 text-[clamp(24px,3.4vw,38px)] text-tt-branco">{titulo}</h2>
       </div>
       {children}
     </div>
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
 
   return (
     // fundo da pagina toda (overflow-x-clip evita barra de rolagem lateral por causa dos adesivos)
-    <div className="min-h-screen overflow-x-clip bg-tt-cinza-claro">
+    <div className="tt-canvas min-h-screen overflow-x-clip">
 
       {/* Hero - faixa escura do topo com o titulo da pagina, manchas de luz e adesivos */}
       <section className="relative overflow-hidden border-b-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho px-4 pb-20 pt-10 sm:px-6 md:px-10 md:pb-24 md:pt-14">
@@ -214,13 +214,13 @@ export default function AdminDashboard() {
           <TituloSecao legenda="Últimos pedidos" titulo="Cadastros recentes">
             {/* leva pra pagina com a lista completa */}
             <Link to="/AprovarCadastros"
-              className="shrink-0 border-b-2 border-tt-azul-marinho pb-0.5 text-[13px] font-bold text-tt-azul-marinho no-underline transition-colors hover:border-tt-roxo-vivo hover:text-tt-roxo-vivo">
+              className="shrink-0 border-b-2 border-tt-branco pb-0.5 text-[13px] font-bold text-tt-branco no-underline transition-colors hover:border-tt-roxo-suave hover:text-tt-roxo-suave">
               Ver todos <span aria-hidden="true">→</span>
             </Link>
           </TituloSecao>
 
           {/* caixa branca em volta da tabela */}
-          <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-tt-branco shadow-[var(--shadow-sm)]">
+          <div className="tt-card overflow-hidden">
             {loading && (
               <p className="px-5 py-10 text-center text-sm text-[var(--color-text-muted)]">
                 Carregando cadastros...

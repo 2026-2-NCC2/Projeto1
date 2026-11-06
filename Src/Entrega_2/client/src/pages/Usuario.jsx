@@ -188,18 +188,18 @@ export default function Usuario() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-tt-cinza-claro text-tt-azul-marinho">
+    <main className="tt-canvas min-h-[calc(100vh-72px)]">
       <div className="mx-auto grid w-[calc(100%_-_48px)] max-w-[1180px] gap-x-8 gap-y-6 py-8 max-[540px]:w-[calc(100%_-_28px)] md:grid-cols-[200px_1fr]">
         {/* avatar + @user (placeholder: ainda nao ha upload de foto) */}
         <aside className="flex flex-col items-center gap-3 md:pt-2">
           <div
-            className="flex size-32 items-center justify-center rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-lilas-claro font-display text-4xl font-black text-tt-roxo-vivo md:size-[170px] md:text-5xl"
+            className="flex size-32 items-center justify-center border-[1.5px] border-tt-azul-marinho bg-tt-lilas-claro font-display text-4xl font-black text-tt-roxo-vivo shadow-[6px_6px_0_var(--tt-roxo-vivo)] md:size-[170px] md:text-5xl"
             role="img"
             aria-label={`Foto de perfil de ${dadosPerfil.nome}`}
           >
             {iniciais}
           </div>
-          <p className="m-0 break-all text-center text-lg font-bold">@{username}</p>
+          <p className="m-0 break-all text-center text-lg font-bold text-tt-branco">@{username}</p>
           <Badge label={perfil} variant={perfil} />
         </aside>
 

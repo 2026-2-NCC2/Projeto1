@@ -95,7 +95,7 @@ export default function MapaEvento({ endereco }) {
 
   return (
     // no celular o mapa fica embaixo do texto, em tela maior fica do lado
-    <section className="grid items-center gap-5 rounded-2xl border border-tt-azul-marinho/12 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+    <section className="grid items-center gap-5 border-[1.5px] border-tt-azul-marinho p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
       {/* lado do texto */}
       <div className="min-w-0">
         {/* etiqueta, titulo e o endereco */}
@@ -120,7 +120,7 @@ export default function MapaEvento({ endereco }) {
       </div>
 
       {/* mapa pequeno com proporcao 1.91:1 (ate 420x220), em tela menor diminui mantendo a proporcao */}
-      <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro">
+      <div className="relative aspect-[1200/630] w-full overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-cinza-claro">
         {/* achou: mostra o mapa dentro de um iframe (uma "janelinha" de outro site) */}
         {status === "ok" ? (
           <iframe

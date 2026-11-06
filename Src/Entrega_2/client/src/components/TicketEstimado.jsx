@@ -55,7 +55,7 @@ export default function TicketEstimado({ eventoId }) {
     <section className="mt-6 border-t border-tt-azul-marinho/10 pt-5">
       <h2 className="text-xl font-bold">Ticket estimado</h2>
       {erro && (
-        <p role="alert" className="mt-3 rounded-xl bg-tt-rosa-claro p-4 text-sm text-tt-rosa-principal">
+        <p role="alert" className="mt-3 bg-tt-rosa-claro p-4 text-sm text-tt-rosa-principal">
           {erro}
         </p>
       )}
@@ -67,7 +67,7 @@ export default function TicketEstimado({ eventoId }) {
             {['minimo', 'maximo'].map((chave) => {
               const cen = dados.cenarios[chave]
               return (
-                <div key={chave} className="rounded-xl bg-tt-cinza-claro p-4">
+                <div key={chave} className=" bg-tt-cinza-claro p-4">
                   <p className="text-xs font-bold uppercase text-tt-grafite/60">
                     Público {chave === 'minimo' ? 'mínimo' : 'máximo'}
                     {cen.disponivel && ` · ${cen.publico.toLocaleString('pt-BR')} pessoas`}

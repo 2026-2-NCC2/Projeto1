@@ -178,7 +178,7 @@ export default function EventRegistration() {
                   {number < 4 && (
                     <span
                       aria-hidden="true"
-                      className={`pointer-events-none absolute left-1/2 top-[18px] h-1 w-full sm:top-5 ${number < etapaMaisAvancada ? line : 'bg-tt-azul-marinho/15'}`}
+                      className={`pointer-events-none absolute left-1/2 top-[18px] h-1 w-full sm:top-5 ${number < etapaMaisAvancada ? line : 'bg-tt-branco/25'}`}
                     />
                   )}
                   <button
@@ -186,10 +186,10 @@ export default function EventRegistration() {
                     disabled={bloqueada}
                     aria-current={ativa ? 'step' : undefined}
                     onClick={() => goTo(number)}
-                    className="relative z-10 flex w-full flex-col items-center gap-3 rounded-lg px-1 text-center text-[10px] font-semibold text-tt-azul-marinho outline-none focus-visible:ring-2 focus-visible:ring-tt-azul-principal disabled:cursor-default sm:text-xs"
+                    className="relative z-10 flex w-full flex-col items-center gap-3 px-1 text-center text-[10px] font-semibold text-tt-branco outline-none focus-visible:ring-2 focus-visible:ring-tt-laranja-vivo disabled:cursor-default sm:text-xs"
                   >
                     <span
-                      className={`grid size-10 shrink-0 place-items-center rounded-full border-2 text-sm font-bold ring-4 ring-tt-branco transition duration-200 sm:size-11 ${visitada ? `${circle} text-tt-branco` : 'border-tt-azul-marinho/20 bg-tt-cinza-claro text-tt-grafite/50'} ${ativa ? 'scale-110 shadow-md' : ''}`}
+                      className={`grid size-10 shrink-0 place-items-center border-[1.5px] border-tt-branco text-sm font-bold ring-4 ring-tt-azul-marinho transition duration-200 sm:size-11 ${visitada ? `${circle} text-tt-branco` : 'border-tt-branco/30 bg-tt-azul-marinho text-tt-branco/60'} ${ativa ? 'scale-110 shadow-[4px_4px_0_var(--tt-roxo-vivo)]' : ''}`}
                     >
                       {number}
                     </span>
@@ -216,7 +216,7 @@ export default function EventRegistration() {
           {erro && (
             <p
               role="alert"
-              className="mb-4 rounded-xl bg-tt-rosa-claro p-4 text-tt-rosa-principal"
+              className="mb-4 border-[1.5px] border-tt-rosa-principal bg-tt-rosa-claro p-4 text-tt-rosa-principal"
             >
               {erro}
             </p>
@@ -225,7 +225,7 @@ export default function EventRegistration() {
           {finished && resumo && (
             <div
               role="status"
-              className="mb-4 grid gap-3 rounded-xl bg-tt-azul-marinho p-5 text-tt-branco sm:grid-cols-3"
+              className="mb-4 grid gap-3 border-[1.5px] border-tt-branco bg-tt-azul-marinho p-5 text-tt-branco sm:grid-cols-3"
             >
               <div>
                 <p className="text-xs text-tt-branco/70">Lote inicial</p>
@@ -310,7 +310,7 @@ export default function EventRegistration() {
               event.preventDefault();
               if (!envioEmAndamento.current) setRevisao(null);
             }}
-            className="m-auto max-h-[90vh] w-[calc(100%_-_32px)] max-w-[650px] overflow-y-auto rounded-2xl border-0 bg-tt-branco p-6 text-tt-azul-marinho shadow-2xl backdrop:bg-tt-azul-marinho/60"
+            className="m-auto max-h-[90vh] w-[calc(100%_-_32px)] max-w-[650px] overflow-y-auto border-0 bg-tt-branco p-6 text-tt-azul-marinho shadow-2xl backdrop:bg-tt-azul-marinho/60"
           >
             {revisao && (
               <>
@@ -361,7 +361,7 @@ export default function EventRegistration() {
                   )}
                 </ul>
                 {revisao.groups.every((group) => group.items.length === 0) && (
-                  <p className="rounded-xl bg-tt-laranja-claro p-3 text-sm">
+                  <p className=" bg-tt-laranja-claro p-3 text-sm">
                     Nenhum item de fornecimento foi adicionado. Volte para
                     preencher os itens se deseja receber propostas.
                   </p>
@@ -380,7 +380,7 @@ export default function EventRegistration() {
                     autoFocus
                     disabled={salvando}
                     onClick={() => setRevisao(null)}
-                    className="rounded-xl border border-tt-azul-marinho/20 px-4 py-3 text-sm font-bold"
+                    className=" border-[1.5px] border-tt-azul-marinho px-4 py-3 text-sm font-bold"
                   >
                     Voltar e continuar preenchendo
                   </button>
@@ -388,7 +388,7 @@ export default function EventRegistration() {
                     type="button"
                     disabled={salvando}
                     onClick={confirmarSalvar}
-                    className="rounded-xl bg-tt-azul-marinho px-4 py-3 text-sm font-bold text-tt-branco disabled:opacity-50"
+                    className=" bg-tt-azul-marinho px-4 py-3 text-sm font-bold text-tt-branco disabled:opacity-50"
                   >
                     {salvando ? 'Salvando…' : 'Confirmar e salvar'}
                   </button>
