@@ -62,7 +62,7 @@ const LABEL_CLS = 'mb-2 block text-sm font-bold text-tt-azul-marinho'
 // children = o conteudo do card / adesivos mudam um pouco entre o formulario e a tela final (done)
 function Cena({ children, done = false }) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-tt-azul-marinho bg-[radial-gradient(ellipse_60%_50%_at_85%_8%,color-mix(in_srgb,var(--tt-roxo-vivo)_55%,transparent),transparent),radial-gradient(ellipse_50%_45%_at_10%_95%,color-mix(in_srgb,var(--tt-rosa-vivo)_40%,transparent),transparent)]">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-tt-azul-marinho bg-[radial-gradient(ellipse_60%_50%_at_85%_8%,color-mix(in_srgb,var(--tt-fundo-violeta)_55%,transparent),transparent),radial-gradient(ellipse_50%_45%_at_10%_95%,color-mix(in_srgb,var(--tt-fundo-rosa)_40%,transparent),transparent),radial-gradient(circle_at_0_32%,var(--tt-destaque)_0_30px,transparent_31px),radial-gradient(circle_at_100%_74%,var(--tt-roxo-vivo)_0_24px,transparent_25px)]">
       <div className="relative z-[1] flex flex-1 items-center justify-center px-4 py-14 sm:py-16">
         {/* o relative aqui e o que prende os adesivos no card */}
         <div className="relative w-full max-w-[540px]">
@@ -135,7 +135,7 @@ function StepDots({ current, total }) {
     const isDone = i < current     // etapas que ja passaram
     // atual = preto com sombra roxa / feitas = roxo com ✓ no lugar do numero / proximas = branco
     items.push(
-      <div key={`d${i}`} className={`flex size-9 shrink-0 items-center justify-center border-[1.5px] border-tt-azul-marinho text-sm font-extrabold transition duration-150 ${isActive ? 'bg-tt-azul-marinho text-tt-branco shadow-[3px_3px_0_var(--tt-roxo-vivo)]' : isDone ? 'bg-tt-roxo-vivo text-tt-branco' : 'bg-tt-branco text-tt-grafite/65'}`}>{isDone ? '✓' : i + 1}</div>
+      <div key={`d${i}`} className={`flex size-9 shrink-0 items-center justify-center border-[1.5px] border-tt-azul-marinho text-sm font-extrabold transition duration-150 ${isActive ? 'bg-tt-azul-marinho text-tt-branco shadow-[3px_3px_0_var(--tt-destaque)]' : isDone ? 'bg-tt-roxo-vivo text-tt-branco' : 'bg-tt-branco text-tt-grafite/65'}`}>{isDone ? '✓' : i + 1}</div>
     )
     // linha entre os quadrados (menos depois do ultimo), fica preta quando a etapa ja foi feita
     if (i < total - 1) {

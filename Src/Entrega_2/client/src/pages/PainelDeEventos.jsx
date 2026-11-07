@@ -198,7 +198,7 @@ export default function PainelDeEventos() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="tt-canvas min-h-screen">
+    <div className="tt-canvas tt-canvas--semis min-h-screen">
       {erroApi && (
         <p role="alert" className="p-5 text-tt-rosa-suave">
           {erroApi}

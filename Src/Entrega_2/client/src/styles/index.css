@@ -6,29 +6,38 @@
    Todas as cores do site saem daqui. Nao use hex, rgb() ou cores nomeadas fora deste bloco:
    pra suavizar uma cor use opacidade (ex: text-tt-grafite/70 ou color-mix sobre o token). */
 :root {
-  /* azuis */
-  --tt-azul-principal: #6D28D9;   /* links e destaques (violeta) */
-  --tt-azul-vivo: #8B5CF6;        /* destaques e acoes */
-  --tt-azul-claro: #C084FC;       /* icones, detalhes */
-  --tt-azul-suave: #F3E8FF;       /* fundos e cards */
+  /* Paleta "roxos quentes" vivos: ameixa #5A2A66, roxo #9B24B3, magenta #B03A9E, orquidea #C65AB8, lilas #F3E4F6, ambar #FFB020 (destaque, so em poucos pontos).
+     Os nomes antigos (azul, laranja...) foram mantidos pra nao quebrar as classes ja usadas nas telas. */
+
+  /* azuis (agora roxos quentes) */
+  --tt-azul-principal: #8B2F94;   /* links e destaques */
+  --tt-azul-vivo: #B03A9E;        /* destaques e acoes */
+  --tt-azul-claro: #C58BC0;       /* icones, detalhes */
+  --tt-azul-suave: #F3E4F6;       /* fundos e cards */
 
   /* roxos */
-  --tt-roxo-principal: #6D3FD1;   /* destaques secundarios */
-  --tt-roxo-vivo: #7C3AED;        /* gradientes e elementos ativos */
-  --tt-roxo-suave: #A78BFA;       /* hover e elementos secundarios */
-  --tt-lilas-claro: #EDE9FE;      /* backgrounds */
+  --tt-roxo-principal: #5A2A66;   /* destaques secundarios */
+  --tt-roxo-vivo: #9B24B3;        /* gradientes e elementos ativos */
+  --tt-roxo-suave: #B58AC8;       /* hover e elementos secundarios */
+  --tt-lilas-claro: #F3E4F6;      /* backgrounds */
 
   /* rosas */
-  --tt-rosa-principal: #E91E8C;   /* destaques, notificacoes, erros */
-  --tt-rosa-vivo: #F72585;        /* CTA e elementos chamativos */
-  --tt-rosa-suave: #F9A8D4;       /* elementos decorativos */
-  --tt-rosa-claro: #FCE7F3;       /* backgrounds */
+  --tt-rosa-principal: #E91E8C;   /* erros e notificacoes (mantido rosa pra erro continuar se destacando) */
+  --tt-rosa-vivo: #B03A9E;        /* CTA e elementos chamativos */
+  --tt-rosa-suave: #D9A9D2;       /* elementos decorativos */
+  --tt-rosa-claro: #FCE7F3;       /* fundo das mensagens de erro */
 
-  /* laranjas e dourado */
-  --tt-laranja-principal: #D946EF; /* CTA (magenta) */
-  --tt-laranja-vivo: #E879F9;      /* hover e destaque */
-  --tt-ambar: #F59E0B;             /* alertas e informacoes */
-  --tt-laranja-claro: #FAE8FF;     /* backgrounds */
+  /* laranjas e dourado (agora roxos quentes) */
+  --tt-laranja-principal: #C65AB8; /* CTA (botoes principais) */
+  --tt-laranja-vivo: #DD82D0;      /* hover e destaque */
+  --tt-ambar: #FFB020;             /* alertas e informacoes */
+  --tt-destaque: #FF6A3D;          /* laranja avermelhado: so em detalhes visuais discretos (marcadores, linhas ativas, foco) */
+  --tt-laranja-claro: #F5EDF5;     /* backgrounds */
+
+  /* fundos: cores originais das manchas de luz dos fundos escuros (nao seguem a paleta de roxos quentes de proposito) */
+  --tt-fundo-violeta: #7C3AED;
+  --tt-fundo-rosa: #F72585;
+  --tt-fundo-rosa-suave: #F9A8D4;
 
   /* neutros */
   --tt-azul-marinho: #0A0A0F;     /* preto: titulos, linhas e fundos escuros */
@@ -41,9 +50,10 @@
   --tt-verde-claro: #DCFCE7;
 
   /* gradientes permitidos (nao crie outros) */
+  /* principal: so usado como mancha de fundo na landing, por isso mantem as cores originais */
   --tt-gradiente-principal: linear-gradient(135deg, #6D3FD1, #A855F7, #E91E8C, #F9A8D4);
-  --tt-gradiente-azul-roxo: linear-gradient(135deg, #7C3AED, #C084FC);
-  --tt-gradiente-rosa-laranja: linear-gradient(135deg, #E91E8C, #F9A8D4);
+  --tt-gradiente-azul-roxo: linear-gradient(135deg, #5A2A66, #B03A9E);
+  --tt-gradiente-rosa-laranja: linear-gradient(135deg, #8B2F94, #D9A9D2);
 }
 
 /* fonte e cores viram classes do tailwind (ex: bg-tt-azul-principal, text-tt-grafite/70) */
@@ -66,6 +76,7 @@
   --color-tt-laranja-principal: var(--tt-laranja-principal);
   --color-tt-laranja-vivo: var(--tt-laranja-vivo);
   --color-tt-ambar: var(--tt-ambar);
+  --color-tt-destaque: var(--tt-destaque);
   --color-tt-laranja-claro: var(--tt-laranja-claro);
   --color-tt-azul-marinho: var(--tt-azul-marinho);
   --color-tt-grafite: var(--tt-grafite);
@@ -107,10 +118,14 @@
   button, a { -webkit-tap-highlight-color: transparent; }
 
   /* foco visivel pra quem navega pelo teclado (mouse nao mostra) */
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--tt-laranja-vivo); outline-offset: 2px; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--tt-laranja-principal); outline-offset: 2px; }
 
   /* tudo quadrado: a linguagem do site e brutalista, so circulos decorativos (adesivos, manchas) ficam redondos */
   button, input, select, textarea { border-radius: 0; }
+
+  /* detalhes em laranja avermelhado: cursor de digitacao e caixinhas/radios marcados */
+  input, textarea { caret-color: var(--tt-destaque); }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--tt-destaque); }
 
   /* ── Tokens de compatibilidade ──
      As telas Admin (AdminDashboard e AprovarCadastros) usam var(--color-*) com os nomes abaixo.
@@ -150,10 +165,28 @@
   .tt-canvas {
     background-color: var(--tt-azul-marinho);
     background-image:
-      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-roxo-vivo) 45%, transparent), transparent),
-      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-rosa-vivo) 30%, transparent), transparent);
+      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-fundo-violeta) 45%, transparent), transparent),
+      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-fundo-rosa) 30%, transparent), transparent);
     background-attachment: fixed;
     color: var(--tt-branco);
+  }
+  /* variacao com dois semicirculos pequenos nas bordas: so pras telas sem adesivos (Painel, Propostas, Perfil, 404) */
+  .tt-canvas--semis {
+    background-attachment: scroll, scroll, fixed, fixed;
+    background-image:
+      radial-gradient(circle at 0 420px, var(--tt-destaque) 0 28px, transparent 29px),
+      radial-gradient(circle at 100% 700px, var(--tt-roxo-vivo) 0 22px, transparent 23px),
+      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-fundo-violeta) 45%, transparent), transparent),
+      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-fundo-rosa) 30%, transparent), transparent);
+  }
+  /* variacao so com semicirculos na esquerda: pra telas com adesivos do lado direito (Admin) */
+  .tt-canvas--esq {
+    background-attachment: scroll, scroll, fixed, fixed;
+    background-image:
+      radial-gradient(circle at 0 420px, var(--tt-destaque) 0 28px, transparent 29px),
+      radial-gradient(circle at 0 960px, var(--tt-roxo-vivo) 0 20px, transparent 21px),
+      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-fundo-violeta) 45%, transparent), transparent),
+      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-fundo-rosa) 30%, transparent), transparent);
   }
   /* card brutalista: fundo branco, borda preta fina e sombra roxa chapada */
   .tt-card {
@@ -161,6 +194,7 @@
     color: var(--tt-azul-marinho);
     border: 1.5px solid var(--tt-azul-marinho);
     box-shadow: 6px 6px 0 var(--tt-roxo-vivo);
+    border-top: 5px solid var(--tt-destaque);
   }
   /* etiqueta quadrada de status */
   .tt-tag {
@@ -187,7 +221,7 @@
   }
   /* legenda pequena com quadradinho preto na frente */
   .tt-eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--tt-azul-marinho); }
-  .tt-eyebrow::before { content: ''; width: 9px; height: 9px; background: var(--tt-azul-marinho); flex: none; }
+  .tt-eyebrow::before { content: ''; width: 9px; height: 9px; background: var(--tt-destaque); flex: none; }
   /* mancha de luz difusa, sempre atras do conteudo */
   .tt-blob {
     position: absolute;
@@ -195,10 +229,10 @@
     filter: blur(56px);
     pointer-events: none;
     z-index: 0;
-    background: radial-gradient(closest-side, var(--tt-rosa-vivo), transparent 72%);
+    background: radial-gradient(closest-side, var(--tt-fundo-rosa), transparent 72%);
   }
-  .tt-blob--violeta { background: radial-gradient(closest-side, var(--tt-roxo-vivo), transparent 72%); }
-  .tt-blob--rosa { background: radial-gradient(closest-side, var(--tt-rosa-suave), transparent 72%); }
+  .tt-blob--violeta { background: radial-gradient(closest-side, var(--tt-fundo-violeta), transparent 72%); }
+  .tt-blob--rosa { background: radial-gradient(closest-side, var(--tt-fundo-rosa-suave), transparent 72%); }
   /* circulo preto com linhas internas (globo) */
   .tt-globe {
     position: relative;

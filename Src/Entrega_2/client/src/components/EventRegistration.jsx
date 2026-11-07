@@ -189,7 +189,7 @@ export default function EventRegistration() {
                     className="relative z-10 flex w-full flex-col items-center gap-3 px-1 text-center text-[10px] font-semibold text-tt-branco outline-none focus-visible:ring-2 focus-visible:ring-tt-laranja-vivo disabled:cursor-default sm:text-xs"
                   >
                     <span
-                      className={`grid size-10 shrink-0 place-items-center border-[1.5px] border-tt-branco text-sm font-bold ring-4 ring-tt-azul-marinho transition duration-200 sm:size-11 ${visitada ? `${circle} text-tt-branco` : 'border-tt-branco/30 bg-tt-azul-marinho text-tt-branco/60'} ${ativa ? 'scale-110 shadow-[4px_4px_0_var(--tt-roxo-vivo)]' : ''}`}
+                      className={`grid size-10 shrink-0 place-items-center border-[1.5px] border-tt-branco text-sm font-bold ring-4 ring-tt-azul-marinho transition duration-200 sm:size-11 ${visitada ? `${circle} text-tt-branco` : 'border-tt-branco/30 bg-tt-azul-marinho text-tt-branco/60'} ${ativa ? 'scale-110 shadow-[4px_4px_0_var(--tt-destaque)]' : ''}`}
                     >
                       {number}
                     </span>

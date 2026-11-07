@@ -74,7 +74,7 @@ export default function Propostas() {
   const visiveis = dados.filter((p) => filtro === 'todas' || p.status === filtro)
 
   return (
-    <main className="tt-canvas min-h-screen">
+    <main className="tt-canvas tt-canvas--semis min-h-screen">
       <section className="relative overflow-hidden border-b-[1.5px] border-tt-branco/25 px-5 py-12 text-tt-branco">
         <div className="mx-auto max-w-5xl">
           <p className="tt-eyebrow text-xs font-extrabold uppercase tracking-[0.1em] text-tt-branco before:bg-tt-branco">Negócios no TrocaTicket</p>

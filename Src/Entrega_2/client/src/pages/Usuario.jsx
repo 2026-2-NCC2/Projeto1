@@ -188,7 +188,7 @@ export default function Usuario() {
   }
 
   return (
-    <main className="tt-canvas min-h-[calc(100vh-72px)]">
+    <main className="tt-canvas tt-canvas--semis min-h-[calc(100vh-72px)]">
       <div className="mx-auto grid w-[calc(100%_-_48px)] max-w-[1180px] gap-x-8 gap-y-6 py-8 max-[540px]:w-[calc(100%_-_28px)] md:grid-cols-[200px_1fr]">
         {/* avatar + @user (placeholder: ainda nao ha upload de foto) */}
         <aside className="flex flex-col items-center gap-3 md:pt-2">
@@ -206,7 +206,7 @@ export default function Usuario() {
         <div className="flex min-w-0 flex-col gap-6">
           {/* banner (placeholder com o gradiente da marca) */}
           <div
-            className="flex h-[120px] items-end border-[1.5px] border-tt-azul-marinho p-4 md:h-[145px]"
+            className="flex h-[120px] items-end border-[1.5px] border-b-[5px] border-tt-azul-marinho border-b-tt-destaque p-4 md:h-[145px]"
             style={{ background: 'var(--tt-gradiente-azul-roxo)' }}
           >
             <h1 className="m-0 font-display text-2xl font-black text-tt-branco md:text-3xl">{dadosPerfil.nome}</h1>

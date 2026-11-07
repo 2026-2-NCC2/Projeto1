@@ -91,7 +91,7 @@ export default function AprovarCadastros() {
 
   return (
     // fundo da pagina toda (overflow-x-clip evita barra de rolagem lateral por causa dos adesivos)
-    <div className="tt-canvas min-h-screen overflow-x-clip">
+    <div className="tt-canvas tt-canvas--semis min-h-screen overflow-x-clip">
 
       {/* Hero escuro como o do site, mas baixo e com so um adesivo (o do dashboard e bem maior) */}
       <header className="relative overflow-hidden border-b-[1.5px] border-tt-branco/25 px-4 pb-14 pt-8 sm:px-6 md:px-10 md:pb-16">

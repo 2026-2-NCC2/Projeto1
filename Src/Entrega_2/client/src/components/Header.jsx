@@ -15,7 +15,7 @@ const EVENTOS_ORGANIZADOR = [
 const LINK_BASE =
   'inline-flex min-h-9 shrink-0 items-center whitespace-nowrap border-b-2 text-[13px] font-semibold no-underline transition-colors hover:text-tt-branco max-[540px]:text-xs'
 const LINK_IDLE = 'border-transparent text-tt-branco/70'
-const LINK_ACTIVE = 'border-tt-laranja-principal text-tt-branco'
+const LINK_ACTIVE = 'border-tt-destaque text-tt-branco'
 
 // link do menu: o estado "ativo" (pagina atual) e sempre o mesmo visual e marca aria-current
 function NavItem({ to, active = false, className = '', children }) {

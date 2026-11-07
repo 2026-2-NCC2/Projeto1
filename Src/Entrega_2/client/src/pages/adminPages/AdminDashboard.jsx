@@ -141,7 +141,7 @@ export default function AdminDashboard() {
 
   return (
     // fundo da pagina toda (overflow-x-clip evita barra de rolagem lateral por causa dos adesivos)
-    <div className="tt-canvas min-h-screen overflow-x-clip">
+    <div className="tt-canvas tt-canvas--esq min-h-screen overflow-x-clip">
 
       {/* Hero - faixa escura do topo com o titulo da pagina, manchas de luz e adesivos */}
       <section className="relative overflow-hidden border-b-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho px-4 pb-20 pt-10 sm:px-6 md:px-10 md:pb-24 md:pt-14">

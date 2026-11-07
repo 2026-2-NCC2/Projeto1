@@ -3,7 +3,7 @@ import logo from '../assets/branding/logos/logo_navbar_web_128.png' // versao 12
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-tt-branco/25 bg-tt-azul-marinho text-tt-branco">
+    <footer className="relative overflow-hidden border-t-[2px] border-tt-destaque bg-tt-azul-marinho text-tt-branco">
       <span className="tt-blob tt-blob--violeta -right-20 -top-28 size-[360px] opacity-40" aria-hidden="true" />
       <div className="relative z-[1] mx-auto flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 py-[44px] pb-8 max-[640px]:w-[calc(100%_-_36px)] max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-4">
         <div>

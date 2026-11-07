@@ -2,11 +2,11 @@
 // assim as paginas ficam com o mesmo visual e se precisar mudar e so mexer aqui
 export const ui = {
   // fundo azul da pagina toda
-  page: 'min-h-screen bg-tt-azul-marinho flex flex-col bg-[radial-gradient(ellipse_60%_50%_at_85%_8%,color-mix(in_srgb,var(--tt-roxo-vivo)_55%,transparent),transparent),radial-gradient(ellipse_50%_45%_at_10%_95%,color-mix(in_srgb,var(--tt-rosa-vivo)_40%,transparent),transparent)]',
+  page: 'min-h-screen bg-tt-azul-marinho flex flex-col bg-[radial-gradient(ellipse_60%_50%_at_85%_8%,color-mix(in_srgb,var(--tt-fundo-violeta)_55%,transparent),transparent),radial-gradient(ellipse_50%_45%_at_10%_95%,color-mix(in_srgb,var(--tt-fundo-rosa)_40%,transparent),transparent),radial-gradient(circle_at_0_32%,var(--tt-destaque)_0_30px,transparent_31px),radial-gradient(circle_at_100%_74%,var(--tt-roxo-vivo)_0_24px,transparent_25px)]',
   // centraliza o card no meio da tela
   container: 'flex-1 flex items-center justify-center px-4 py-12',
   // card branco onde fica o formulario
-  card: 'bg-tt-branco border-[1.5px] border-tt-azul-marinho w-full max-w-[440px] p-5 sm:p-10 shadow-[10px_10px_0_var(--tt-roxo-vivo)]',
+  card: 'bg-tt-branco border-[1.5px] border-t-[5px] border-tt-azul-marinho border-t-tt-destaque w-full max-w-[440px] p-5 sm:p-10 shadow-[10px_10px_0_var(--tt-roxo-vivo)]',
   // titulo e subtitulo do card
   title: 'text-3xl font-black text-tt-azul-marinho mt-0 mb-2',
   subtitle: 'text-sm text-tt-grafite/70 mb-6',

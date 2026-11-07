@@ -51,7 +51,7 @@ function LandingPage() {
         <span className="tt-blob -right-10 top-24 size-[380px] opacity-40 max-[760px]:top-[40%]" aria-hidden="true" />
         <span className="tt-blob -bottom-32 left-[18%] size-[420px] opacity-50" aria-hidden="true" />
         <span className="tt-globe absolute right-[4%] top-6 z-[1] size-[76px] !bg-tt-roxo-vivo max-[760px]:hidden" aria-hidden="true" />
-        <span className="tt-semi-l absolute -left-0 bottom-10 z-[1] h-[72px] w-6 !bg-tt-laranja-principal max-[760px]:hidden" aria-hidden="true" />
+        <span className="tt-semi-l absolute -left-0 bottom-10 z-[1] h-[72px] w-6 !bg-tt-destaque max-[760px]:hidden" aria-hidden="true" />
         <div className="relative z-[1] mx-auto grid min-h-[560px] w-[calc(100%_-_48px)] max-w-[1180px] grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] items-center gap-12 py-[68px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:grid-cols-1 max-[760px]:gap-3 max-[760px]:py-[54px] max-[760px]:pb-10">
           <div className="max-w-[620px]">
             <span className="tt-eyebrow select-none text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-branco before:bg-tt-branco">Eventos e ingressos em um só lugar</span>
@@ -187,6 +187,8 @@ function LandingPage() {
       </section>
 
       <section className="relative mx-auto my-[84px] flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 overflow-hidden border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[48px_44px] shadow-[10px_10px_0_var(--tt-roxo-vivo)] max-[760px]:my-[42px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:items-start max-[760px]:flex-col max-[760px]:p-[26px]">
+        <span className="tt-semi-r absolute right-0 bottom-16 h-[90px] w-6 !bg-tt-destaque max-[760px]:hidden" aria-hidden="true" />
+        <span className="tt-semi-l absolute left-0 top-14 h-[80px] w-6 !bg-tt-laranja-principal max-[760px]:hidden" aria-hidden="true" />
         <span className="tt-blob -right-20 -top-24 size-[420px] opacity-70" aria-hidden="true" />
         <span className="tt-blob tt-blob--violeta right-[22%] -bottom-40 size-[360px] opacity-60" aria-hidden="true" />
         <div className="relative z-[1]">
