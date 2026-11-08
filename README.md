@@ -15,7 +15,7 @@
 ## Descrição
 
 <p align="center">
-<img src="https://github.com/2026-2-NCC2/Projeto1/blob/main/Imagens/Capa%20Troca%20Ticket%20Projeto.png?raw=true" width="700" alt="Troca Ticket" border="0">
+<img src="TrocaTicket_ Seu Próximo Grande Momento.png" width="700" alt="Troca Ticket" border="0">
 </p>
 
 
