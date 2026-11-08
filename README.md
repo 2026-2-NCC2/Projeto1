@@ -148,8 +148,6 @@ Após rodar o `seed.sql`, use as contas de exemplo abaixo (senha `123456`):
   
 ## 💻 Configuração para Desenvolvimento
 
-## Configuração para Desenvolvimento
-
 ### Variáveis de ambiente
 
 As variáveis ficam em arquivos `.env`, que não são versionados. Nunca envie senhas, chaves ou strings de conexão para o repositório.
