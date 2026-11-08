@@ -15,7 +15,7 @@
 ## Descrição
 
 <p align="center">
-<img src="TrocaTicket_ Seu Próximo Grande Momento.png" width="700" alt="Troca Ticket" border="0">
+<img src="" width="700" alt="Troca Ticket" border="0">
 </p>
 
 
