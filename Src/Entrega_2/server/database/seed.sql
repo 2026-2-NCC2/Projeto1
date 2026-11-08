@@ -84,11 +84,12 @@ OVERRIDING SYSTEM VALUE VALUES
 -- 1: LF Iluminação (aprovada) ACEITOU fornecer 3 sonorizacoes por 750,00 (entra no custo)
 -- 2: LF Iluminação RECUSADA pelo organizador para o palco a 5.000,00 (NAO entra no custo)
 -- 3: LF Iluminação ainda sem resposta para 1 sonorizacao a 700,00 (NAO entra no custo)
-INSERT INTO solicitacao_fornecimento (id, id_evento_fk, id_fornecedor_fk, mensagem, status, respondida_em)
+-- data_validade e observacoes (RF10) sao opcionais; a proposta 3 (sem resposta) vale 15 dias a partir de hoje.
+INSERT INTO solicitacao_fornecimento (id, id_evento_fk, id_fornecedor_fk, mensagem, data_validade, observacoes, status, respondida_em)
 OVERRIDING SYSTEM VALUE VALUES
-(1, 1, 7, 'Fornecimento de 3 conjuntos de sonorização para o festival.', 'aceita',   CURRENT_TIMESTAMP),
-(2, 1, 7, 'Montagem do palco principal.',                               'recusada', CURRENT_TIMESTAMP),
-(3, 1, 7, 'Um conjunto extra de sonorização para a área de alimentação.', 'enviada',  NULL);
+(1, 1, 7, 'Fornecimento de 3 conjuntos de sonorização para o festival.', CURRENT_DATE + 30, 'Pagamento em até 30 dias após a entrega. Inclui montagem e operação técnica.', 'aceita',   CURRENT_TIMESTAMP),
+(2, 1, 7, 'Montagem do palco principal.',                               CURRENT_DATE + 10, 'Valor sujeito a reajuste se a montagem passar de 2 dias.',                   'recusada', CURRENT_TIMESTAMP),
+(3, 1, 7, 'Um conjunto extra de sonorização para a área de alimentação.', CURRENT_DATE + 15, 'Entrega condicionada à confirmação até 7 dias antes do evento.',            'enviada',  NULL);
 
 INSERT INTO produto_solicitacao (id, id_solicitacao_fk, id_item_custo_fk, produto, quantidade, valor_unitario)
 OVERRIDING SYSTEM VALUE VALUES

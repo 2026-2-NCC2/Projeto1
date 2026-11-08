@@ -15,7 +15,8 @@ router.get('/', async (req, res, next) => {
             : sql`e.id_organizador_fk = ${req.usuario.id_usuario}`
 
         const rows = await sql`
-            SELECT s.*, e.titulo_evento, f.nome_organizacao AS fornecedor, o.nome_organizacao AS organizador
+            SELECT s.*, TO_CHAR(s.data_validade, 'YYYY-MM-DD') AS data_validade,
+                (s.data_validade < CURRENT_DATE) AS vencida, e.titulo_evento, f.nome_organizacao AS fornecedor, o.nome_organizacao AS organizador
             FROM solicitacao_fornecimento s
             JOIN evento e ON e.id_evento = s.id_evento_fk
             JOIN fornecedor f ON f.id_fornecedor = s.id_fornecedor_fk
@@ -52,8 +53,31 @@ function produtoValido(p) {
     )
 }
 
+// Validade opcional: vazio = sem prazo; senão precisa ser uma data real, de hoje em diante.
+// Retorna null (sem prazo), 'YYYY-MM-DD' (válida) ou undefined (inválida).
+function lerValidade(valor) {
+    if (valor === undefined || valor === null || valor === '') return null
+    if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) return undefined
+
+    const data = new Date(`${valor}T00:00:00Z`)
+    if (!Number.isFinite(data.getTime()) || data.toISOString().slice(0, 10) !== valor) return undefined
+
+    const agora = new Date()
+    const hoje = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`
+    return valor >= hoje ? valor : undefined
+}
+
 router.post('/', permitir('fornecedor'), async (req, res, next) => {
-    const { eventoId, mensagem, produtos } = req.body
+    const { eventoId, mensagem, produtos, validade, observacoes } = req.body
+
+    const dataValidade = lerValidade(validade)
+    if (dataValidade === undefined) {
+        return res.status(400).json({ erro: 'Informe uma data de validade válida, de hoje em diante.' })
+    }
+    if (observacoes !== undefined && observacoes !== null && (typeof observacoes !== 'string' || observacoes.length > 1000)) {
+        return res.status(400).json({ erro: 'As observações devem ter até 1.000 caracteres.' })
+    }
+    const textoObservacoes = typeof observacoes === 'string' && observacoes.trim() !== '' ? observacoes.trim() : null
 
     const mensagemValida = typeof mensagem === 'string' && mensagem.trim() !== '' && mensagem.length <= 1000
     const listaValida = Array.isArray(produtos) && produtos.length > 0 && produtos.length <= 100
@@ -92,8 +116,8 @@ router.post('/', permitir('fornecedor'), async (req, res, next) => {
             }
 
             const [{ id: idSolicitacao }] = await sql`
-                INSERT INTO solicitacao_fornecimento (id_evento_fk, id_fornecedor_fk, mensagem)
-                VALUES (${eventoId}, ${req.usuario.id_usuario}, ${mensagem.trim()})
+                INSERT INTO solicitacao_fornecimento (id_evento_fk, id_fornecedor_fk, mensagem, data_validade, observacoes)
+                VALUES (${eventoId}, ${req.usuario.id_usuario}, ${mensagem.trim()}, ${dataValidade}, ${textoObservacoes})
                 RETURNING id
             `
 
@@ -134,10 +158,18 @@ router.patch('/:id', permitir('organizador'), async (req, res, next) => {
             }
 
             const [proposta] = await sql`
-                SELECT * FROM solicitacao_fornecimento WHERE id = ${req.params.id} FOR UPDATE
+                SELECT *, (data_validade < CURRENT_DATE) AS vencida
+                FROM solicitacao_fornecimento WHERE id = ${req.params.id} FOR UPDATE
             `
             if (proposta.status !== 'enviada') {
                 const erro = new Error('Proposta já respondida.')
+                erro.status = 409
+                throw erro
+            }
+
+            // Proposta vencida pode ser recusada, mas não aceita.
+            if (req.body.status === 'aceita' && proposta.vencida) {
+                const erro = new Error('Esta proposta está vencida e não pode ser aceita.')
                 erro.status = 409
                 throw erro
             }
