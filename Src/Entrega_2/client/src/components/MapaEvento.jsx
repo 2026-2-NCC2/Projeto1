@@ -95,32 +95,31 @@ export default function MapaEvento({ endereco }) {
 
   return (
     // no celular o mapa fica embaixo do texto, em tela maior fica do lado
-    <section className="grid items-center gap-5 rounded-2xl border border-tt-azul-marinho/12 p-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+    <section className="grid items-center gap-5 rounded-none border border-tinta/12 bg-papel p-4 text-tinta sm:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
       {/* lado do texto */}
       <div className="min-w-0">
         {/* etiqueta, titulo e o endereco */}
-        <span className="inline-block text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em] text-tt-roxo-principal">Como chegar</span>
-        <h2 className="mb-0 mt-1.5 text-base font-bold text-tt-azul-marinho">Localização no mapa</h2>
-        <p className="mt-1 text-[13px] leading-[1.6] text-tt-grafite/75">{endereco}</p>
+        <h2 className="text-lg font-extrabold">Localização no mapa</h2>
+        <p className="mt-1 text-sm leading-relaxed text-tinta/70">{endereco}</p>
         {/* link pra abrir o mapa grande no site do OpenStreetMap (so quando achou o endereco) */}
         {status === "ok" && (
           <a
             href={`https://www.openstreetmap.org/?mlat=${coords.lat}&mlon=${coords.lon}#map=16/${coords.lat}/${coords.lon}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-block text-[13px] font-bold text-tt-azul-principal no-underline hover:text-tt-azul-marinho"
+            className="mt-3 inline-block text-sm font-semibold text-tinta underline decoration-gel-indigo-forte decoration-2 underline-offset-4 hover:text-gel-indigo-forte"
           >
             Abrir no OpenStreetMap <span aria-hidden="true">↗</span>
           </a>
         )}
         {/* credito obrigatorio do OpenStreetMap (a licenca pede) */}
-        <p className="mt-3 text-[11px] text-tt-grafite/60">
+        <p className="mt-3 text-[11px] text-tinta/55">
           Dados do mapa © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" className="underline">OpenStreetMap</a>
         </p>
       </div>
 
       {/* mapa pequeno com proporcao 1.91:1 (ate 420x220), em tela menor diminui mantendo a proporcao */}
-      <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-xl border border-tt-azul-marinho/12 bg-tt-cinza-claro">
+      <div className="relative aspect-[1200/630] w-full overflow-hidden rounded-none border border-tinta/12 bg-tinta/5">
         {/* achou: mostra o mapa dentro de um iframe (uma "janelinha" de outro site) */}
         {status === "ok" ? (
           <iframe
@@ -131,7 +130,7 @@ export default function MapaEvento({ endereco }) {
           />
         ) : (
           // nao achou ainda / nao achou / deu erro: mostra a mensagem certa
-          <div className="absolute inset-0 flex items-center justify-center p-4 text-center text-xs text-tt-grafite/75">
+          <div className="absolute inset-0 flex items-center justify-center p-4 text-center text-xs text-tinta/65">
             {status === "carregando" && "Carregando mapa..."}
             {status === "nao-encontrado" && "Endereço não encontrado no mapa."}
             {status === "erro" && "Não foi possível carregar o mapa agora."}

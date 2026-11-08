@@ -1,31 +1,41 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Footer from '../components/Footer'
-import Sticker from '../components/Sticker'
-import { cadastrarUsuario } from '../services/api'
+import CenaConta from '../components/ui/CenaConta'
+import Etapas from '../components/ui/Etapas'
+import Folha from '../components/ui/Folha'
+import Aviso from '../components/ui/Aviso'
+import {
+  IconCamera, IconCheck, IconEscudo, IconMais, IconOnibus, IconPalco, IconPessoa, IconPincel, IconPrato, IconPredio, IconSom, IconX,
+} from '../components/ui/Icones'
+import { GELS, btn, campoCls, erroCls, linkClaroCls, rotuloCls } from '../components/ui/estilos'
+import { cadastrarUsuario, loginUsuario } from '../services/api'
+import { useAuth } from '../services/AuthContext'
 import {
   LIMITES, erroCnpj, erroConfirmacaoSenha, erroEmail, erroIdade, erroSenha, erroTexto,
   formatarCnpj, normalizarCnpj,
 } from '../utils/validacao'
 
 // tipos de conta que a pessoa pode escolher no cadastro
-// id = valor que vai pro back-end (bate com o ENUM da tabela usuario.perfil) / emoji, titulo e desc = o que aparece no card
+// id = valor que vai pro back-end (bate com o ENUM da tabela usuario.perfil) / gel e icone = como aparece na tela
 const ROLES = [
   {
     id: "cliente",
-    emoji: "👤",
+    gel: "magenta",
+    Icone: IconPessoa,
     titulo: "Usuário",
     desc: "Compre e troque ingressos de eventos.",
   },
   {
     id: "organizador",
-    emoji: "🎪",
+    gel: "indigo",
+    Icone: IconPalco,
     titulo: "Organizador",
     desc: "Crie e gerencie seus eventos.",
   },
   {
     id: "fornecedor",
-    emoji: "🏢",
+    gel: "ceu",
+    Icone: IconPredio,
     titulo: "Fornecedor",
     desc: "Ofereça serviços para organizadores.",
   },
@@ -34,128 +44,78 @@ const ROLES = [
 // servicos que o fornecedor pode marcar (so aparece se escolher fornecedor)
 // pra adicionar um servico novo e so colocar mais um item aqui
 const SERVICES = [
-  { id: "som_luz", emoji: "🔊", label: "Som e Luz" },
-  { id: "seguranca", emoji: "🛡️", label: "Segurança" },
-  { id: "catering", emoji: "🍽️", label: "Catering / Buffet" },
-  { id: "decoracao", emoji: "🎨", label: "Decoração" },
-  { id: "foto_video", emoji: "📸", label: "Foto e Vídeo" },
-  { id: "transporte", emoji: "🚌", label: "Transporte" },
-  { id: "estrutura", emoji: "🏗️", label: "Estrutura / Palco" },
-  { id: "outro", emoji: "➕", label: "Outro" },
+  { id: "som_luz", Icone: IconSom, label: "Som e Luz" },
+  { id: "seguranca", Icone: IconEscudo, label: "Segurança" },
+  { id: "catering", Icone: IconPrato, label: "Catering / Buffet" },
+  { id: "decoracao", Icone: IconPincel, label: "Decoração" },
+  { id: "foto_video", Icone: IconCamera, label: "Foto e Vídeo" },
+  { id: "transporte", Icone: IconOnibus, label: "Transporte" },
+  { id: "estrutura", Icone: IconPalco, label: "Estrutura / Palco" },
+  { id: "outro", Icone: IconMais, label: "Outro" },
 ];
 
-// classes que se repetem nos botoes e campos do cadastro (mesmo visual do Login: cantos retos, linha preta fina e sombra dura)
-const BTN_BASE = 'w-full sm:w-auto cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho px-7 py-3 text-[15px] font-bold transition duration-150 disabled:cursor-not-allowed disabled:border-tt-azul-marinho/20 disabled:bg-tt-azul-marinho/10 disabled:text-tt-grafite/45 disabled:shadow-none disabled:translate-y-0'
-// botao principal (magenta) e botao de voltar (escuro)
-const BTN_PRIMARIO = `${BTN_BASE} bg-tt-laranja-principal text-tt-azul-marinho hover:-translate-y-px hover:bg-tt-laranja-vivo hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]`
-const BTN_VOLTAR = `${BTN_BASE} bg-tt-branco text-tt-azul-marinho hover:-translate-y-px hover:bg-tt-lilas-claro hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]`
-// input de texto, a borda fica rosa se tiver erro e ganha sombra roxa no foco
-const inputCls = (erro) =>
-  `w-full rounded-none border-[1.5px] px-3.5 py-3 text-[15px] text-tt-azul-marinho outline-none transition duration-150 placeholder:text-tt-grafite/45 focus:border-tt-roxo-vivo focus:shadow-[3px_3px_0_var(--tt-roxo-vivo)] ${
-    erro ? 'border-tt-rosa-principal bg-tt-rosa-claro/40' : 'border-tt-azul-marinho bg-tt-branco'
-  }`
-// legenda de campo
-const LABEL_CLS = 'mb-2 block text-sm font-bold text-tt-azul-marinho'
+// adesivos em volta da folha (so em tela larga); mudam um pouco na tela final
+const ADESIVOS_FORM = [
+  { nome: 'tv', tamanho: 150, rotate: 7, delay: 0.8, className: '-right-[128px] top-[4%] z-[3] hidden lg:block' },
+  { nome: 'fita', tamanho: 150, rotate: 8, delay: 1.4, className: '-left-[130px] bottom-[10%] z-[3] hidden lg:block' },
+]
+const ADESIVOS_FIM = [
+  { nome: 'estrela', tamanho: 120, rotate: -14, delay: 0.3, className: '-left-[96px] -top-8 z-[3] hidden lg:block' },
+  { nome: 'cd', tamanho: 130, rotate: 10, delay: 1, className: '-right-[108px] bottom-[10%] z-[3] hidden lg:block' },
+]
 
-// moldura da pagina de cadastro: fundo escuro com manchas de luz, o card no meio e os adesivos em volta
-// children = o conteudo do card / adesivos mudam um pouco entre o formulario e a tela final (done)
-function Cena({ children, done = false }) {
+// cabecalho de cada etapa: titulo grande e subtitulo (a linha de etapas fica embaixo)
+function Titulo({ titulo, sub, children }) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-tt-azul-marinho bg-[radial-gradient(ellipse_60%_50%_at_85%_8%,color-mix(in_srgb,var(--tt-roxo-vivo)_55%,transparent),transparent),radial-gradient(ellipse_50%_45%_at_10%_95%,color-mix(in_srgb,var(--tt-rosa-vivo)_40%,transparent),transparent)]">
-      <div className="relative z-[1] flex flex-1 items-center justify-center px-4 py-14 sm:py-16">
-        {/* o relative aqui e o que prende os adesivos no card */}
-        <div className="relative w-full max-w-[540px]">
-          {children}
-
-          {/* adesivo pequeno na quina do card, vale pra celular e tablet */}
-          <Sticker nome={done ? 'estrela' : 'cd'} tamanho={done ? 78 : 70} rotate={done ? -14 : 14} className="-right-2 -top-9 z-[3] lg:hidden" />
-          {/* adesivos grandes nas laterais, so aparecem quando ha espaco (tela larga) */}
-          {/* ficam por cima do card (z-[3]) e entram so uns 26px nele, na parte do padding, entao nao cobrem nenhum campo */}
-          {done ? (
-            <>
-              <Sticker nome="estrela" tamanho={128} rotate={-14} delay={0.3} className="-left-[102px] -top-8 z-[3] hidden lg:block" />
-              <Sticker nome="cd" tamanho={140} rotate={10} delay={1} className="-right-[114px] top-[8%] z-[3] hidden lg:block" />
-              <Sticker nome="vinil" tamanho={150} rotate={-8} delay={1.8} className="-left-[124px] bottom-[6%] z-[3] hidden lg:block" />
-              <Sticker nome="tv" tamanho={150} rotate={6} delay={0.6} className="-right-[124px] bottom-[10%] z-[3] hidden lg:block" />
-            </>
-          ) : (
-            <>
-              <Sticker nome="vinil" tamanho={150} rotate={-12} delay={0.3} className="-left-[124px] top-[6%] z-[3] hidden lg:block" />
-              <Sticker nome="fita" tamanho={160} rotate={8} delay={1.4} className="-left-[134px] bottom-[8%] z-[3] hidden lg:block" />
-              <Sticker nome="tv" tamanho={160} rotate={7} delay={0.8} className="-right-[134px] top-[3%] z-[3] hidden lg:block" />
-              <Sticker nome="estrela" tamanho={104} rotate={-14} delay={2} className="-right-[78px] top-[40%] z-[3] hidden lg:block" />
-              <Sticker nome="globo" tamanho={110} rotate={10} delay={1} className="-right-[84px] bottom-[6%] z-[3] hidden lg:block" />
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* rodape do site */}
-      <Footer />
-    </div>
-  )
-}
-
-// card branco onde fica o formulario: canto reto, linha preta e sombra roxa dura
-function Card({ children, className = '' }) {
-  return (
-    <div className={`relative z-[2] border-[1.5px] border-tt-azul-marinho bg-tt-branco p-6 text-tt-grafite shadow-[10px_10px_0_var(--tt-roxo-vivo)] sm:p-10 ${className}`}>
+    <header className="mb-8">
       {children}
-    </div>
-  )
-}
-
-// cabecalho de cada etapa: legenda "Etapa x de y", titulo grande e subtitulo
-// destaque = palavra do titulo que fica so com contorno (opcional)
-function Titulo({ etapa, total, titulo, destaque, sub, children }) {
-  return (
-    <header className="mb-7">
-      {children}
-      <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Etapa {etapa + 1} de {total}</span>
-      <h1 className="tt-display mb-3 mt-3 text-[clamp(30px,6vw,42px)] text-tt-azul-marinho">
-        {titulo}{destaque && <> <span className="tt-outline">{destaque}</span></>}
-      </h1>
-      <p className="m-0 text-[15px] leading-[1.55] text-tt-grafite/75">{sub}</p>
+      <h1 className="text-[clamp(2rem,6vw,2.75rem)] font-black leading-none tracking-[-0.025em]">{titulo}</h1>
+      <p className="mt-3 text-[15px] leading-relaxed text-tinta/65">{sub}</p>
     </header>
   )
 }
 
 // etiqueta com o tipo de conta escolhido (aparece nas etapas da empresa)
-function Etiqueta({ children, fundo }) {
-  return <span className={`mb-4 inline-block rounded-full border-[1.5px] border-tt-azul-marinho px-3 py-1 text-xs font-bold text-tt-azul-marinho ${fundo}`}>{children}</span>
+function Etiqueta({ role }) {
+  const r = ROLES.find((x) => x.id === role)
+  return (
+    <span className="mb-5 inline-flex items-center gap-2 rounded-none border border-tinta/15 bg-papel py-1 pl-1 pr-3 text-xs font-semibold">
+      <span className={`grid size-6 place-items-center rounded-none ${GELS[r.gel].bg} ${GELS[r.gel].sobre}`}><r.Icone tamanho={13} /></span>
+      {r.titulo}
+    </span>
+  )
 }
 
-// indicador de progresso do cadastro (1 --- 2 --- 3), agora com quadrados e linha preta
-// current = etapa atual (comeca do 0) / total = quantas etapas tem
-function StepDots({ current, total }) {
-  const items = [];
-  for (let i = 0; i < total; i++) {
-    const isActive = i === current // etapa que ta agora
-    const isDone = i < current     // etapas que ja passaram
-    // atual = preto com sombra roxa / feitas = roxo com ✓ no lugar do numero / proximas = branco
-    items.push(
-      <div key={`d${i}`} className={`flex size-9 shrink-0 items-center justify-center border-[1.5px] border-tt-azul-marinho text-sm font-extrabold transition duration-150 ${isActive ? 'bg-tt-azul-marinho text-tt-branco shadow-[3px_3px_0_var(--tt-roxo-vivo)]' : isDone ? 'bg-tt-roxo-vivo text-tt-branco' : 'bg-tt-branco text-tt-grafite/60'}`}>{isDone ? '✓' : i + 1}</div>
-    )
-    // linha entre os quadrados (menos depois do ultimo), fica preta quando a etapa ja foi feita
-    if (i < total - 1) {
-      items.push(<div key={`l${i}`} className={`mx-2 h-[1.5px] flex-1 transition duration-150 ${isDone ? 'bg-tt-azul-marinho' : 'bg-tt-azul-marinho/20'}`} />)
-    }
-  }
-  return <div className="mb-9 flex items-center justify-between">{items}</div>
+// progresso do cadastro: a mesma linha de etapas do resto do site
+// a gelatina de cada trecho segue o tipo de conta escolhido
+function Progresso({ current, total, role }) {
+  const corConta = ROLES.find((r) => r.id === role)?.gel || 'indigo'
+  const nomes = ['Dados', 'Tipo de conta', 'Empresa', 'Serviços'].slice(0, total)
+  const itens = nomes.map((label, i) => ({ label, gel: i === 0 ? 'indigo' : corConta }))
+  return (
+    <div className="mb-8">
+      <Etapas itens={itens} atual={current} rotulo="Etapas do cadastro" />
+    </div>
+  )
 }
 
 // campo de texto reutilizavel do cadastro (label + input + erro)
 // onChange ja devolve so o valor digitado, sem o evento
-function Campo({ id, label, type, placeholder, value, onChange, error }) {
+function Campo({ id, label, type, placeholder, value, onChange, error, autoComplete }) {
   return (
-    <div className="mb-5 flex flex-col">
+    <div className="mb-5 flex flex-col gap-2">
       {/* htmlFor liga o label ao input, clicando no texto ja foca no campo */}
-      <label htmlFor={id} className={LABEL_CLS}>{label}</label>
-      <input id={id} type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)} className={inputCls(error)} />
+      <label htmlFor={id} className={rotuloCls}>{label}</label>
+      <input id={id} type={type} placeholder={placeholder} value={value} autoComplete={autoComplete} onChange={e => onChange(e.target.value)} className={campoCls(error)} aria-invalid={Boolean(error)} />
       {/* mensagem de erro embaixo, so aparece se tiver */}
-      {error && <span className="mt-1.5 text-xs font-bold text-tt-rosa-principal">{error}</span>}
+      {error && <span className={erroCls} role="alert">{error}</span>}
     </div>
   );
+}
+
+// linha de botoes voltar / avancar (no celular o avancar fica em cima)
+function Botoes({ children }) {
+  return <div className="mt-8 flex flex-col-reverse justify-between gap-3 sm:flex-row">{children}</div>
 }
 
 // etapa do formulario onde cada campo e preenchido (pra voltar nela quando o servidor recusa o campo)
@@ -167,6 +127,7 @@ const ETAPA_DO_CAMPO = {
 // pagina de cadastro, dividida em etapas
 export default function Cadastro() {
   const navigate = useNavigate(); // pra mudar de pagina pelo codigo
+  const { login, logado } = useAuth();
 
   // controle das etapas
   const [step, setStep] = useState(0); // etapa atual
@@ -284,6 +245,15 @@ export default function Cadastro() {
       }
 
       await cadastrarUsuario(payload);
+
+      // cliente nao precisa de aprovacao: ja entra logado (organizador/fornecedor esperam o admin)
+      if (role === "cliente") {
+        try {
+          login(await loginUsuario({ email, senha }));
+        } catch {
+          // conta criada; se o login automatico falhar, a pessoa entra pela tela de login
+        }
+      }
       setDone(true);
     } catch (err) {
       // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem
@@ -358,217 +328,217 @@ export default function Cadastro() {
   // tela final, aparece depois que termina o cadastro
   if (done) {
     const isUser = role === "cliente"; // cliente ja entra direto, os outros precisam de aprovacao
+    // linha do tempo da aprovacao: so a primeira etapa ja aconteceu
+    const linhaDoTempo = [
+      { label: 'Cadastro enviado', gel: 'verde' },
+      { label: 'Em análise', gel: 'ambar' },
+      { label: 'Conta aprovada', gel: 'verde' },
+    ]
 
     return (
-      <Cena done>
-        <Card className="flex flex-col items-center text-center">
-
-          {/* circulo preto com o check, no lugar da bolinha verde */}
-          <div className="mb-6 grid size-16 place-items-center rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-verde-claro shadow-[4px_4px_0_var(--tt-azul-marinho)]">
-            <svg viewBox="0 0 24 24" className="size-8 fill-none stroke-tt-verde-sucesso stroke-[2.5] [stroke-linecap:round] [stroke-linejoin:round]"><polyline points="20 6 9 17 4 12" /></svg>
-          </div>
-
-          <h2 className="tt-display mb-3 text-[clamp(28px,6vw,40px)] text-tt-azul-marinho">Cadastro <span className="tt-outline">Realizado!</span></h2>
-
-          {/* mensagem muda: cliente ja ta pronto, organizador/fornecedor ficou pendente */}
-          <p className="mb-6 text-[15px] text-tt-grafite/75">
-            {isUser ? 'Bem-vindo ao TrocaTicket! Sua conta está pronta.' : <><strong>{role === 'organizador' ? 'Organizador' : 'Fornecedor'}</strong>: sua solicitação foi enviada.</>}
-          </p>
-
-          {/* codigo do cadastro, so pra quem precisa de aprovacao */}
-          {!isUser && <span className="mb-8 border-[1.5px] border-dashed border-tt-azul-marinho bg-tt-lilas-claro px-5 py-2 font-mono text-xl font-bold tracking-[2px] text-tt-azul-marinho">{code}</span>}
-
-          {/* linha do tempo da aprovacao: enviado -> em analise -> aprovado */}
-          {!isUser && (
-            <div className="mb-10 w-full">
-              {/* quadrados e linhas, so o primeiro ta preenchido porque o cadastro acabou de ser enviado */}
-              <div className="flex items-center justify-between px-[10%]">
-                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho bg-tt-verde-sucesso text-xs font-semibold text-tt-branco"><svg viewBox="0 0 24 24" className="size-4 fill-none stroke-tt-branco stroke-[2.5]"><polyline points="20 6 9 17 4 12" /></svg></div>
-                <div className="h-[1.5px] flex-1 bg-tt-azul-marinho/25" />
-                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho/40 bg-tt-branco text-xs font-bold text-tt-grafite/60">2</div>
-                <div className="h-[1.5px] flex-1 bg-tt-azul-marinho/25" />
-                <div className="flex size-8 items-center justify-center border-[1.5px] border-tt-azul-marinho/40 bg-tt-branco text-xs font-bold text-tt-grafite/60">3</div>
-              </div>
-
-              {/* nomes embaixo de cada quadrado */}
-              <div className="mt-2 flex justify-between">
-                <span className="w-[70px] text-[11px] font-bold leading-tight text-tt-verde-sucesso">Cadastro<br />Enviado</span>
-                <div className="flex-1" />
-                <span className="w-[70px] text-[11px] font-semibold leading-tight text-tt-grafite/60">Em<br />Análise</span>
-                <div className="flex-1" />
-                <span className="w-[70px] text-[11px] font-semibold leading-tight text-tt-grafite/60">Conta<br />Aprovada</span>
-              </div>
+      <CenaConta largura="max-w-[540px]" adesivos={ADESIVOS_FIM}>
+        <Folha gel="verde" faixa="h-2.5" className="z-[2]">
+          <div className="flex flex-col items-center px-6 py-10 text-center sm:px-10">
+            <div className="mb-6 grid size-16 place-items-center rounded-none bg-gel-verde text-tinta">
+              <IconCheck tamanho={30} strokeWidth="2.4" />
             </div>
-          )}
-          {/* texto explicando o proximo passo, muda conforme o tipo de conta */}
-          <p className="mb-8 max-w-[400px] text-sm leading-relaxed text-tt-grafite/75">
-            {isUser ? 'Você já pode comprar e trocar ingressos na plataforma.' : 'Um administrador irá revisar sua conta. Logo ela deverá ser aprovada ou rejeitada.'}
-          </p>
 
-          {/* botao que volta pra home, so o texto muda */}
-          <button className={`${BTN_PRIMARIO} sm:w-full`} onClick={() => navigate('/')}>
-            {isUser ? 'Ir para a plataforma' : 'Voltar ao início'}
-          </button>
+            <h2 className="text-[clamp(2rem,6vw,2.75rem)] font-black leading-none tracking-[-0.025em]">Cadastro Realizado!</h2>
 
-        </Card>
-      </Cena>
+            {/* mensagem muda: cliente ja ta pronto, organizador/fornecedor ficou pendente */}
+            <p className="mt-4 text-[15px] text-tinta/70">
+              {isUser ? 'Bem-vindo ao TrocaTicket! Sua conta está pronta.' : <><strong className="text-tinta">{role === 'organizador' ? 'Organizador' : 'Fornecedor'}</strong>: sua solicitação foi enviada.</>}
+            </p>
+
+            {/* codigo do cadastro, so pra quem precisa de aprovacao */}
+            {!isUser && <span className="mt-6 rounded-none border border-dashed border-tinta/30 bg-papel px-5 py-2 font-mono text-xl font-semibold tracking-[0.12em]">{code}</span>}
+
+            {/* linha do tempo da aprovacao: enviado -> em analise -> aprovado */}
+            {!isUser && (
+              <div className="mt-8 w-full text-left">
+                <Etapas itens={linhaDoTempo} atual={0} maisAvancada={0} rotulo="Andamento da aprovação" />
+              </div>
+            )}
+
+            {/* texto explicando o proximo passo, muda conforme o tipo de conta */}
+            <p className="mt-8 max-w-[400px] text-sm leading-relaxed text-tinta/65">
+              {isUser ? 'Você já pode comprar e trocar ingressos na plataforma.' : 'Um administrador irá revisar sua conta. Logo ela deverá ser aprovada ou rejeitada.'}
+            </p>
+
+            {/* botao que volta pra home, so o texto muda */}
+            <button className={`${btn('primario', 'lg')} mt-8 w-full`} onClick={() => navigate(isUser && logado ? '/PainelDeEventos' : isUser ? '/Login' : '/')}>
+              {isUser ? 'Ir para a plataforma' : 'Voltar ao início'}
+            </button>
+          </div>
+        </Folha>
+      </CenaConta>
     )
   }
   // fim da tela final
 
   // formulario normal (enquanto o cadastro nao terminou)
+  const corDaConta = ROLES.find((r) => r.id === role)?.gel || 'indigo'
+
   return (
-    <Cena>
-      <Card>
+    <CenaConta largura="max-w-[560px]" adesivos={ADESIVOS_FORM}>
+      <Folha gel={step === 0 ? 'indigo' : corDaConta} faixa="h-2.5" className="z-[2]">
+        <div className="px-6 pb-8 pt-8 sm:px-10 sm:pb-10">
 
         {/* ETAPA 0: dados basicos */}
         {step === 0 && (
           <>
-            <Titulo etapa={step} total={totalSteps} titulo="Criar" destaque="conta" sub="Preencha seus dados para acessar o TrocaTicket." />
-
-            {/* progresso */}
-            <StepDots current={step} total={totalSteps} />
+            <Titulo titulo="Criar conta" sub="Preencha seus dados para acessar o TrocaTicket." />
+            <Progresso current={step} total={totalSteps} role={role} />
 
             {/* campos, cada um mostra o proprio erro se tiver */}
-            <Campo id="nome" label="Nome completo" type="text" placeholder="Seu nome completo" value={nome} onChange={setNome} error={errors.nome} />
-            <Campo id="username" label="Username" type="text" placeholder="Seu nome para a plataforma" value={username} onChange={setUsername} error={errors.username} />
-            <Campo id="email" label="E-mail" type="email" placeholder="seuemail@exemplo.com" value={email} onChange={setEmail} error={errors.email} />
+            <Campo id="nome" label="Nome completo" type="text" placeholder="Seu nome completo" autoComplete="name" value={nome} onChange={setNome} error={errors.nome} />
+            <Campo id="username" label="Username" type="text" placeholder="Seu nome para a plataforma" autoComplete="username" value={username} onChange={setUsername} error={errors.username} />
+            <Campo id="email" label="E-mail" type="email" placeholder="seuemail@exemplo.com" autoComplete="email" value={email} onChange={setEmail} error={errors.email} />
             <Campo id="idade" label="Idade" type="number" placeholder="20" value={idade} onChange={setIdade} error={errors.idade} />
-            <Campo id="senha" label="Senha" type="password" placeholder="••••••••" value={senha} onChange={setSenha} error={errors.senha} />
-            <Campo id="csenha" label="Confirmar senha" type="password" placeholder="••••••••" value={confirmSenha} onChange={setConfirmSenha} error={errors.confirmarSenha} />
+            <div className="grid gap-x-4 sm:grid-cols-2">
+              <Campo id="senha" label="Senha" type="password" placeholder="••••••••" autoComplete="new-password" value={senha} onChange={setSenha} error={errors.senha} />
+              <Campo id="csenha" label="Confirmar senha" type="password" placeholder="••••••••" autoComplete="new-password" value={confirmSenha} onChange={setConfirmSenha} error={errors.confirmarSenha} />
+            </div>
 
             {/* botao de avancar, passa pela validacao antes */}
-            <div className="mt-8 flex justify-end gap-4">
-              <button className={BTN_PRIMARIO} onClick={handleNext}>Próximo</button>
+            <div className="mt-6 flex justify-end">
+              <button className={`${btn('primario', 'lg')} max-sm:w-full`} onClick={handleNext}>Próximo</button>
             </div>
 
             {/* link pra quem ja tem conta */}
-            <p className="mt-6 text-center text-sm text-tt-grafite/75">
-              Já tem conta? <Link to="/login" className="font-bold text-tt-azul-marinho underline decoration-tt-roxo-vivo decoration-2 underline-offset-4">Entrar</Link>
+            <p className="mt-7 border-t border-tinta/10 pt-6 text-center text-sm text-tinta/65">
+              Já tem conta? <Link to="/login" className={linkClaroCls}>Entrar</Link>
             </p>
           </>
         )}
+
         {/* ETAPA 1: escolher o tipo de conta */}
         {step === 1 && (
           <>
-            <Titulo etapa={step} total={totalSteps} titulo="Tipo de" destaque="conta" sub="Como você quer participar do TrocaTicket?" />
+            <Titulo titulo="Tipo de conta" sub="Como você quer participar do TrocaTicket?" />
+            <Progresso current={step} total={totalSteps} role={role} />
 
-            <StepDots current={step} total={totalSteps} />
-
-            {/* um card pra cada opcao do ROLES */}
-            <div className="mb-8 flex flex-col gap-3.5">
-              {ROLES.map(r => (
-                // o selecionado ganha fundo lilas e sombra roxa dura
-                <button key={r.id} type="button" aria-pressed={role === r.id} className={`flex w-full cursor-pointer items-center gap-4 border-[1.5px] border-tt-azul-marinho p-4 text-left transition duration-150 hover:-translate-y-px ${role === r.id ? 'bg-tt-lilas-claro shadow-[5px_5px_0_var(--tt-roxo-vivo)]' : 'bg-tt-branco hover:shadow-[4px_4px_0_var(--tt-azul-marinho)]'}`} onClick={() => setRole(r.id)}>
-                  {/* emoji do tipo de conta */}
-                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-tt-azul-marinho text-2xl">{r.emoji}</span>
-                  {/* titulo e descricao */}
-                  <div className="flex flex-1 flex-col gap-0.5">
-                    <strong className="font-display text-base font-extrabold text-tt-azul-marinho">{r.titulo}</strong>
-                    <span className="text-[13px] leading-[1.45] text-tt-grafite/75">{r.desc}</span>
-                  </div>
-                  {/* quadradinho que marca qual esta escolhido */}
-                  <span className={`grid size-5 shrink-0 place-items-center border-[1.5px] border-tt-azul-marinho text-[11px] font-black text-tt-branco ${role === r.id ? 'bg-tt-azul-marinho' : 'bg-tt-branco'}`} aria-hidden="true">{role === r.id ? '✓' : ''}</span>
-                </button>
-              ))}
+            {/* uma opcao pra cada tipo de conta; a escolhida acende na cor da sua gelatina */}
+            <div className="flex flex-col gap-3" role="group" aria-label="Tipo de conta">
+              {ROLES.map(r => {
+                const escolhido = role === r.id
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    aria-pressed={escolhido}
+                    onClick={() => setRole(r.id)}
+                    className={`group relative flex w-full items-center gap-4 overflow-hidden rounded-none border p-4 text-left transition duration-150 ${escolhido ? `${GELS[r.gel].borda} bg-papel shadow-gel` : 'border-tinta/15 bg-papel/60 hover:border-tinta/35 hover:bg-papel'}`}
+                  >
+                    {/* amostra da gelatina com o icone do tipo de conta */}
+                    <span className={`grid size-12 shrink-0 place-items-center rounded-none transition-opacity ${GELS[r.gel].bg} ${GELS[r.gel].sobre} ${escolhido ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
+                      <r.Icone tamanho={22} />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <strong className="text-base font-extrabold">{r.titulo}</strong>
+                      <span className="text-[13px] leading-snug text-tinta/65">{r.desc}</span>
+                    </span>
+                    {/* bolinha que marca a escolhida */}
+                    <span className={`grid size-6 shrink-0 place-items-center rounded-none border transition-colors ${escolhido ? 'border-tinta bg-tinta text-white' : 'border-tinta/25'}`} aria-hidden="true">
+                      {escolhido && <IconCheck tamanho={14} strokeWidth="2.6" />}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
 
             {/* erro geral da API (ex: backend fora do ar) */}
-            {apiError && <p className="mb-4 text-sm font-bold text-tt-rosa-principal">{apiError}</p>}
+            {apiError && <Aviso tipo="erro" className="mt-5">{apiError}</Aviso>}
 
-            {/* botoes de voltar e avancar, no celular o avancar fica em cima */}
-            <div className="mt-8 flex flex-col-reverse justify-between gap-4 sm:flex-row">
-              <button className={BTN_VOLTAR} onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+            <Botoes>
+              <button className={btn('claro', 'lg')} onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
               {/* fica desativado ate escolher um tipo ou enquanto envia, e pro cliente ja vira "Concluir" */}
-              <button className={BTN_PRIMARIO} onClick={handleNext} disabled={!role || apiLoading}>
+              <button className={btn('primario', 'lg')} onClick={handleNext} disabled={!role || apiLoading}>
                 {apiLoading ? 'Enviando...' : (role === 'cliente' ? 'Concluir' : 'Próximo')}
               </button>
-            </div>
+            </Botoes>
           </>
         )}
 
         {/* ETAPA 2 (organizador): dados da empresa */}
         {step === 2 && role === 'organizador' && (
           <>
-            <Titulo etapa={step} total={totalSteps} titulo="Dados da" destaque="Empresa" sub="Informações para sua conta de organizador.">
-              {/* etiqueta mostrando qual tipo de conta foi escolhido */}
-              <Etiqueta fundo="bg-tt-laranja-claro">🎪 Organizador</Etiqueta>
+            <Titulo titulo="Dados da empresa" sub="Informações para sua conta de organizador.">
+              <Etiqueta role="organizador" />
             </Titulo>
+            <Progresso current={step} total={totalSteps} role={role} />
 
-            <StepDots current={step} total={totalSteps} />
-
-            <Campo id="empresa" label="Nome da empresa" type="text" placeholder="Razão social" value={empresa} onChange={setEmpresa} error={errors.empresa} />
+            <Campo id="empresa" label="Nome da empresa" type="text" placeholder="Razão social" autoComplete="organization" value={empresa} onChange={setEmpresa} error={errors.empresa} />
             <Campo id="cnpj" label="CNPJ" type="text" placeholder="XX.XXX.XXX/XXXX-XX" value={cnpj} onChange={(v) => setCnpj(formatarCnpj(v))} error={errors.cnpj} />
 
             {/* areas de atuacao: da pra adicionar mais de uma */}
-            <label className={LABEL_CLS}>Área de atuação <span className="font-normal text-tt-grafite/70">— tipo de evento</span></label>
-            <div className="mb-2 flex flex-col gap-2">
-              {/* um input pra cada area da lista */}
+            <p className={`${rotuloCls} mb-2`}>Área de atuação <span className="font-normal text-tinta/60">— tipo de evento</span></p>
+            <div className="flex flex-col gap-2">
               {areas.map((a, i) => (
                 <div key={i} className="flex gap-2">
-                  <input type="text" placeholder="Ex: Shows" value={a} onChange={e => updateArea(i, e.target.value)} className={inputCls(false)} />
+                  <input type="text" placeholder="Ex: Shows" value={a} onChange={e => updateArea(i, e.target.value)} className={campoCls(false)} aria-label={`Área de atuação ${i + 1}`} />
                   {/* botao de remover, so aparece se tiver mais de uma area */}
-                  {areas.length > 1 && <button type="button" className="w-11 shrink-0 cursor-pointer rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco text-lg font-bold text-tt-azul-marinho transition-colors hover:bg-tt-rosa-claro hover:text-tt-rosa-principal" aria-label="Remover área" onClick={() => removeArea(i)}>×</button>}
+                  {areas.length > 1 && (
+                    <button type="button" className="grid w-11 shrink-0 place-items-center rounded-none border border-tinta/20 bg-papel text-tinta/70 transition-colors hover:border-gel-rubi hover:bg-gel-rubi hover:text-white" aria-label="Remover área" onClick={() => removeArea(i)}>
+                      <IconX />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
 
             {/* erro das areas fica embaixo da lista */}
-            {errors.area && <span className="mb-2 mt-1 block text-xs font-bold text-tt-rosa-principal">{errors.area}</span>}
+            {errors.area && <span className={`${erroCls} mt-2 block`} role="alert">{errors.area}</span>}
 
             {/* adiciona mais um campo de area */}
-            <button type="button" className="mt-2 w-full cursor-pointer rounded-none border-[1.5px] border-dashed border-tt-azul-marinho bg-transparent p-2.5 text-sm font-bold text-tt-azul-marinho transition-colors hover:bg-tt-lilas-claro" onClick={addArea}>+ Outra área</button>
+            <button type="button" className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-none border border-dashed border-tinta/30 p-2.5 text-sm font-semibold text-tinta transition-colors hover:border-tinta/60 hover:bg-papel" onClick={addArea}>
+              <IconMais /> Outra área
+            </button>
 
             {/* erro geral da API */}
-            {apiError && <p className="mt-4 text-sm font-bold text-tt-rosa-principal">{apiError}</p>}
+            {apiError && <Aviso tipo="erro" className="mt-5">{apiError}</Aviso>}
 
             {/* voltar e finalizar (organizador termina aqui) */}
-            <div className="mt-8 flex flex-col-reverse justify-between gap-4 sm:flex-row">
-              <button className={BTN_VOLTAR} onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
-              <button className={BTN_PRIMARIO} onClick={handleNext} disabled={apiLoading}>
+            <Botoes>
+              <button className={btn('claro', 'lg')} onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+              <button className={btn('primario', 'lg')} onClick={handleNext} disabled={apiLoading}>
                 {apiLoading ? 'Enviando...' : 'Criar solicitação'}
               </button>
-            </div>
+            </Botoes>
           </>
         )}
 
-        {/* ETAPA 2 (fornecedor): dados da empresa */}
-        {/* parecida com a do organizador, mas sem as areas de atuacao */}
+        {/* ETAPA 2 (fornecedor): dados da empresa (parecida com a do organizador, mas sem as areas) */}
         {step === 2 && role === 'fornecedor' && (
           <>
-            <Titulo etapa={step} total={totalSteps} titulo="Dados da" destaque="Empresa" sub="Identificação corporativa do seu negócio.">
-              {/* etiqueta do tipo de conta */}
-              <Etiqueta fundo="bg-tt-azul-suave">🏢 Fornecedor</Etiqueta>
+            <Titulo titulo="Dados da empresa" sub="Identificação corporativa do seu negócio.">
+              <Etiqueta role="fornecedor" />
             </Titulo>
+            <Progresso current={step} total={totalSteps} role={role} />
 
-            <StepDots current={step} total={totalSteps} />
-
-            <Campo id="empresa" label="Nome da empresa" type="text" placeholder="Razão social" value={empresa} onChange={setEmpresa} error={errors.empresa} />
+            <Campo id="empresa" label="Nome da empresa" type="text" placeholder="Razão social" autoComplete="organization" value={empresa} onChange={setEmpresa} error={errors.empresa} />
             <Campo id="cnpj" label="CNPJ" type="text" placeholder="XX.XXX.XXX/XXXX-XX" value={cnpj} onChange={(v) => setCnpj(formatarCnpj(v))} error={errors.cnpj} />
 
             {/* voltar e avancar (fornecedor ainda tem a etapa de servicos) */}
-            <div className="mt-8 flex flex-col-reverse justify-between gap-4 sm:flex-row">
-              <button className={BTN_VOLTAR} onClick={() => setStep(s => s - 1)}>Voltar</button>
-              <button className={BTN_PRIMARIO} onClick={handleNext}>Próximo</button>
-            </div>
+            <Botoes>
+              <button className={btn('claro', 'lg')} onClick={() => setStep(s => s - 1)}>Voltar</button>
+              <button className={btn('primario', 'lg')} onClick={handleNext}>Próximo</button>
+            </Botoes>
           </>
         )}
 
         {/* ETAPA 3 (fornecedor): escolher os servicos */}
         {step === 3 && role === 'fornecedor' && (
           <>
-            <Titulo etapa={step} total={totalSteps} titulo="Serviços" destaque="Oferecidos" sub="Selecione os serviços que você oferece para eventos.">
-              {/* etiqueta do tipo de conta */}
-              <Etiqueta fundo="bg-tt-azul-suave">🏢 Fornecedor</Etiqueta>
+            <Titulo titulo="Serviços oferecidos" sub="Selecione os serviços que você oferece para eventos.">
+              <Etiqueta role="fornecedor" />
             </Titulo>
+            <Progresso current={step} total={totalSteps} role={role} />
 
-            <StepDots current={step} total={totalSteps} />
-
-            <label className={LABEL_CLS}>Serviços <span className="font-normal text-tt-grafite/70">— selecione todos que se aplicam</span></label>
+            <p className={rotuloCls}>Serviços <span className="font-normal text-tinta/60">— selecione todos que se aplicam</span></p>
 
             {/* grade de servicos, 1 coluna no celular e 2 em tela maior */}
-            <div className="my-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {/* um botao pra cada servico do SERVICES */}
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2" role="group" aria-label="Serviços oferecidos">
               {SERVICES.map(sv => {
                 const marcado = services.includes(sv.id)
                 return (
@@ -576,51 +546,45 @@ export default function Cadastro() {
                     key={sv.id}
                     type="button"
                     aria-pressed={marcado}
-                    // borda preta fina, marcado ganha fundo lilas e sombra roxa
-                    className={`flex cursor-pointer items-center gap-3 border-[1.5px] border-tt-azul-marinho p-3 text-left text-sm font-semibold text-tt-azul-marinho transition duration-150 hover:-translate-y-px ${marcado ? 'bg-tt-lilas-claro shadow-[3px_3px_0_var(--tt-roxo-vivo)]' : 'bg-tt-branco hover:shadow-[3px_3px_0_var(--tt-azul-marinho)]'}`}
-                    // clicou marca, clicou de novo desmarca
                     onClick={() => toggleService(sv.id)}
+                    className={`flex items-center gap-3 rounded-none border p-3 text-left text-sm font-semibold transition duration-150 ${marcado ? 'border-gel-indigo-forte bg-gel-indigo/25' : 'border-tinta/15 bg-papel/60 hover:border-tinta/35 hover:bg-papel'}`}
                   >
-                    {/* quadradinho de checkbox feito na mao */}
-                    <span className={`grid size-[18px] shrink-0 place-items-center border-[1.5px] border-tt-azul-marinho text-[11px] font-black text-tt-branco ${marcado ? 'bg-tt-azul-marinho' : 'bg-tt-branco'}`} aria-hidden="true">{marcado ? '✓' : ''}</span>
-                    {/* emoji e nome do servico */}
-                    <span>{sv.emoji} {sv.label}</span>
+                    {/* caixinha de marcar */}
+                    <span className={`grid size-5 shrink-0 place-items-center rounded-none border transition-colors ${marcado ? 'border-gel-indigo-forte bg-gel-indigo text-tinta' : 'border-tinta/30 bg-papel'}`} aria-hidden="true">
+                      {marcado && <IconCheck tamanho={13} strokeWidth="2.8" />}
+                    </span>
+                    <span className="text-tinta/60"><sv.Icone /></span>
+                    <span>{sv.label}</span>
                   </button>
                 )
               })}
             </div>
 
             {/* erro se nao marcar nenhum servico */}
-            {errors.services && <span className="mt-2 block text-xs font-bold text-tt-rosa-principal">{errors.services}</span>}
+            {errors.services && <span className={`${erroCls} mt-3 block`} role="alert">{errors.services}</span>}
 
             {/* regiao onde o fornecedor atende, esse campo nao e obrigatorio */}
-            <div className="my-6">
-              <Campo
-                id="areaFor"
-                label="Área de atuação geográfica"
-                type="text"
-                placeholder="Ex: São Paulo e Grande SP"
-                value={areaFor}
-                onChange={setAreaFor}
-              />
+            <div className="mt-6">
+              <Campo id="areaFor" label="Área de atuação geográfica" type="text" placeholder="Ex: São Paulo e Grande SP" value={areaFor} onChange={setAreaFor} />
             </div>
 
             {/* erro geral da API */}
-            {apiError && <p className="mb-2 text-sm font-bold text-tt-rosa-principal">{apiError}</p>}
+            {apiError && <Aviso tipo="erro">{apiError}</Aviso>}
 
             {/* voltar e finalizar (fornecedor termina aqui) */}
-            <div className="mt-8 flex flex-col-reverse justify-between gap-4 sm:flex-row">
-              <button className={BTN_VOLTAR} onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
-              <button className={BTN_PRIMARIO} onClick={handleNext} disabled={apiLoading}>
+            <Botoes>
+              <button className={btn('claro', 'lg')} onClick={() => setStep(s => s - 1)} disabled={apiLoading}>Voltar</button>
+              <button className={btn('primario', 'lg')} onClick={handleNext} disabled={apiLoading}>
                 {apiLoading ? 'Enviando...' : 'Criar solicitação'}
               </button>
-            </div>
+            </Botoes>
           </>
         )}
         {/* fim das etapas */}
 
-      </Card>
-    </Cena>
+        </div>
+      </Folha>
+    </CenaConta>
   )
 }
 // fim do Cadastro

@@ -3,17 +3,17 @@ import { Link, useSearchParams } from 'react-router-dom';
 import FornecedoresConfirmados from '../components/FornecedoresConfirmados';
 import CustosFornecedor from '../components/CustosFornecedor';
 import TicketEstimado from '../components/TicketEstimado';
+import Aviso from '../components/ui/Aviso';
+import Badge from '../components/ui/Badge';
+import CabecalhoPagina from '../components/ui/CabecalhoPagina';
+import Spinner from '../components/ui/Spinner';
+import {
+  IconBusca, IconCalendario, IconIngresso, IconLapis, IconLista, IconLixeira, IconLocal, IconMais, IconSeta, IconVoltar,
+} from '../components/ui/Icones';
+import { GELS, btn, campoCls, campoEscuroCls, containerCls, dadoRotuloCls, gelDoId, rotuloCls } from '../components/ui/estilos';
 import { solicitar } from '../services/api';
 import { useAuth } from '../services/AuthContext';
-import { brl } from '../styles/propostas';
-
-// cor da etiqueta de cada status
-const BADGE_CLASS = {
-  Publicado: 'bg-tt-verde-claro text-tt-azul-principal',
-  Rascunho: 'bg-tt-laranja-claro text-tt-azul-marinho',
-  Encerrado: 'bg-tt-cinza-claro text-tt-grafite/85',
-  Cancelado: 'bg-tt-rosa-claro text-tt-rosa-principal',
-};
+import { brl } from '../utils/formato';
 
 // transforma a data do formato do banco (2026-03-28) pro brasileiro (28/03/2026)
 // se nao tiver data mostra um tracinho
@@ -29,60 +29,6 @@ function formatCurrency(val) {
   return brl(val);
 }
 
-// ─── Ícones SVG ───────────────────────────────────────────────────────────────
-// estilo padrao dos svgs, currentColor faz o icone pegar a cor do texto
-// icones: calendario, localizacao, ingresso, pendencias, mais (criar), lupa e seta de voltar
-const svgProps = {
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 2,
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-  viewBox: '0 0 24 24',
-};
-const IconCalendar = () => (
-  <svg width="14" height="14" {...svgProps}>
-    <rect x="3" y="4" width="18" height="18" rx="2" />
-    <line x1="16" y1="2" x2="16" y2="6" />
-    <line x1="8" y1="2" x2="8" y2="6" />
-    <line x1="3" y1="10" x2="21" y2="10" />
-  </svg>
-);
-const IconPin = () => (
-  <svg width="14" height="14" {...svgProps}>
-    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
-const IconTicket = () => (
-  <svg width="13" height="13" {...svgProps}>
-    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" />
-  </svg>
-);
-const IconPending = () => (
-  <svg width="13" height="13" {...svgProps}>
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-const IconPlus = () => (
-  <svg width="16" height="16" {...svgProps} strokeWidth={2.5}>
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-const IconSearch = () => (
-  <svg width="16" height="16" {...svgProps}>
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-const IconArrowLeft = () => (
-  <svg width="16" height="16" {...svgProps}>
-    <line x1="19" y1="12" x2="5" y2="12" />
-    <polyline points="12 19 5 12 12 5" />
-  </svg>
-);
 
 // pagina com a lista de eventos, os detalhes de um evento e o modal de editar
 export default function PainelDeEventos() {
@@ -99,7 +45,7 @@ export default function PainelDeEventos() {
   const [eventos, setEventos] = useState([]);
   const [eventoSelecionado, setEventoSel] = useState(null);
   const [filtroStatus, setFiltroStatus] = useState('Todos');
-  const [busca, setBusca] = useState('');
+  const [busca, setBusca] = useState(searchParams.get('q') || ''); // ?q= vem da busca da landing page
   // campos do modal de edicao num objeto so; null = modal fechado
   const [form, setForm] = useState(null);
 
@@ -201,205 +147,143 @@ export default function PainelDeEventos() {
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
+  const publicados = eventos.filter((e) => e.status_publicacao === 'Publicado').length;
+
   return (
-    <div className="min-h-screen bg-tt-cinza-claro text-tt-azul-marinho">
+    <div className="min-h-[calc(100svh-68px)] fundo-luz pb-24">
       {erroApi && (
-        <p role="alert" className="p-5 text-tt-rosa-principal">
-          {erroApi}
-        </p>
-      )}
-      {carregando && (
-        <p role="status" className="p-5">
-          Carregando eventos…
-        </p>
+        <div className={`${containerCls} pt-6`}>
+          <Aviso tipo="erro" escuro>{erroApi}</Aviso>
+        </div>
       )}
 
       {/* ── TELA: LISTAGEM ── */}
       {telaAtual === 'painel' && (
         <>
-          {/* Hero sub-header */}
           {/* titulo muda conforme a aba, e embaixo mostra o total e quantos estao publicados */}
-          <div className="bg-tt-azul-marinho pt-7 pb-9">
-            <div className="max-w-[1200px] mx-auto px-8 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-tt-laranja-principal text-[12px] font-semibold tracking-[1px] uppercase mb-1">
-                  {activeTab === 'meus' ? 'Seus Eventos' : 'Geral'}
-                </p>
-                <h1 className="text-tt-branco text-[26px] font-extrabold tracking-[-0.5px]">
-                  {activeTab === 'meus'
-                    ? 'Meus Eventos Criados'
-                    : 'Painel de Eventos'}
-                </h1>
-                <p className="text-tt-branco/45 text-[13px] mt-1.5">
-                  {eventos.length} eventos cadastrados ·{' '}
-                  {
-                    eventos.filter((e) => e.status_publicacao === 'Publicado')
-                      .length
-                  }{' '}
-                  publicados
-                </p>
-              </div>
-              {/* botao que leva pro formulario de criar evento */}
-              {perfil === 'organizador' && (
-                <Link
-                  to="/criar-evento/evento"
-                  className="flex items-center gap-2 bg-[#4ade80] text-[#0d1b2e] rounded-xl px-[22px] py-[11px] text-sm font-bold whitespace-nowrap cursor-pointer shadow-[0_4px_14px_rgba(74,222,128,0.35)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(74,222,128,0.45)]"
-                >
-                  <IconPlus /> Criar Evento
+          <CabecalhoPagina
+            titulo={activeTab === 'meus' ? 'Meus Eventos Criados' : 'Painel de Eventos'}
+            sub={`${eventos.length} eventos cadastrados · ${publicados} publicados`}
+            acoes={
+              perfil === 'organizador' && (
+                <Link to="/criar-evento/evento" className={btn('primario', 'lg')}>
+                  <IconMais tamanho={18} /> Criar Evento
                 </Link>
-              )}
-            </div>
-          </div>
+              )
+            }
+          />
 
           {/* Barra de filtros */}
-          <div className="max-w-[1200px] mx-auto px-8 pt-6 flex flex-wrap items-center gap-3">
+          <div className={`${containerCls} flex flex-wrap items-center gap-3 pt-8`}>
             {/* campo de busca com a lupa dentro */}
-            <div className="relative flex-[1_1_240px] max-w-[340px]">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tt-grafite/50 flex">
-                <IconSearch />
+            <div className="relative min-w-[220px] flex-[1_1_240px] sm:max-w-[340px]">
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-white/50">
+                <IconBusca />
               </span>
               <input
-                className="w-full py-[9px] pr-3 pl-[38px] rounded-[10px] border border-tt-azul-marinho/12 bg-tt-branco text-[13px] text-tt-azul-marinho outline-none transition focus:border-tt-azul-claro focus:ring-[3px] focus:ring-tt-azul-vivo/[0.12]"
-                type="text"
+                className={`${campoEscuroCls} pl-10`}
+                type="search"
+                aria-label="Buscar evento"
                 placeholder="Buscar evento..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
               />
             </div>
 
-            {/* botoes de filtro por status, o selecionado fica escuro */}
-            <div className="flex flex-wrap gap-1.5">
-              {['Todos', 'Publicado', 'Rascunho', 'Encerrado', 'Cancelado'].map(
-                (s) => (
-                  <button
-                    key={s}
-                    onClick={() => setFiltroStatus(s)}
-                    className={`rounded-[20px] border px-4 py-1.5 text-xs cursor-pointer transition ${
-                      filtroStatus === s
-                        ? 'bg-tt-azul-marinho text-tt-laranja-principal border-tt-azul-marinho font-semibold'
-                        : 'bg-tt-branco text-tt-grafite/70 border-tt-azul-marinho/12 font-normal hover:border-tt-azul-marinho/20 hover:text-tt-azul-marinho'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ),
-              )}
+            {/* filtro por status: controle segmentado, o selecionado fica claro */}
+            <div className="flex flex-wrap border-[1.5px] border-white/40 bg-palco-2" role="group" aria-label="Filtrar por status">
+              {['Todos', 'Publicado', 'Rascunho', 'Encerrado', 'Cancelado'].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setFiltroStatus(s)}
+                  aria-pressed={filtroStatus === s}
+                  className={`rounded-none border-r-[1.5px] border-white/20 px-3.5 py-2 text-xs font-bold uppercase tracking-[0.06em] transition-colors last:border-r-0 ${
+                    filtroStatus === s ? 'bg-folha text-tinta' : 'text-white/65 hover:bg-white/8 hover:text-white'
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
             </div>
             {/* quantidade de resultados, coloca o "s" so se for mais de um */}
-            <span className="ml-auto text-xs text-tt-grafite/50 whitespace-nowrap">
-              {eventosFiltrados.length} resultado
-              {eventosFiltrados.length !== 1 ? 's' : ''}
+            <span className="ml-auto whitespace-nowrap text-xs text-white/55">
+              {eventosFiltrados.length} resultado{eventosFiltrados.length !== 1 ? 's' : ''}
             </span>
           </div>
 
-          {/* Grid de cards */}
-          {/* cabe quantos cards de 320px der na largura da tela */}
-          <main className="max-w-[1200px] mx-auto px-8 pt-6 pb-12 grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))]">
-            {/* se nenhum evento passar nos filtros mostra a mensagem, senao mostra os cards */}
-            {eventosFiltrados.length === 0 ? (
-              <div className="col-span-full text-center py-20 text-tt-grafite/50">
-                <div className="text-5xl mb-4">🎟️</div>
-                <p className="text-base font-semibold text-tt-grafite/85 mb-1.5">
-                  Nenhum evento encontrado
-                </p>
-                <p className="text-[13px]">
-                  Ajuste seus filtros de busca ou crie um novo evento.
-                </p>
+          {/* Grade de folhas: cabe quantas de 320px der na largura da tela */}
+          <main className={`${containerCls} grid grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))] gap-6 pt-6`}>
+            {carregando ? (
+              <div className="col-span-full"><Spinner text="Carregando eventos…" escuro /></div>
+            ) : eventosFiltrados.length === 0 ? (
+              <div className="col-span-full rounded-none border border-dashed border-white/15 px-6 py-20 text-center">
+                <p className="text-2xl font-black tracking-[-0.015em] text-white">Nenhum evento encontrado</p>
+                <p className="mt-2 text-sm text-white/60">Ajuste seus filtros de busca ou crie um novo evento.</p>
               </div>
             ) : (
               eventosFiltrados.map((ev) => {
                 // eventos encerrados ou cancelados ficam mais apagados
-                const enc =
-                  ev.status_publicacao === 'Encerrado' ||
-                  ev.status_publicacao === 'Cancelado';
+                const enc = ev.status_publicacao === 'Encerrado' || ev.status_publicacao === 'Cancelado';
+                const gel = GELS[gelDoId(ev.id)];
                 return (
                   <article
                     key={ev.id}
-                    className={`bg-tt-branco rounded-2xl overflow-hidden flex flex-col cursor-pointer shadow-[0_4px_24px_color-mix(in_srgb,var(--tt-azul-marinho)_13%,transparent)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_10px_32px_color-mix(in_srgb,var(--tt-azul-marinho)_20%,transparent)] ${enc ? 'opacity-[0.72]' : ''}`}
+                    className={`group relative flex flex-col overflow-hidden rounded-none border-[1.5px] border-black bg-folha text-tinta shadow-folha transition duration-200 ease-saida hover:-translate-y-1 ${enc ? '[&>div:first-child]:saturate-[.3] [&_dd]:text-tinta/60' : ''}`}
                   >
-                    {/* banner do card com degrade na cor do evento */}
-                    {/* o before e o after desenham os circulos decorativos no canto */}
-                    <div
-                      className="relative overflow-hidden h-[110px] flex items-end px-4 py-3 before:content-[''] before:absolute before:top-3.5 before:right-4 before:size-12 before:rounded-full before:border-2 before:border-tt-laranja-principal/25 after:content-[''] after:absolute after:top-[24px] after:right-[26px] after:size-7 after:rounded-full after:bg-tt-laranja-principal/12"
-                      style={{ background: ev.banner_color }}
-                    >
-                      {/* etiqueta de status */}
-                      <span
-                        className={`relative z-1 text-[11px] font-semibold px-2.5 py-[3px] rounded-[20px] tracking-[0.2px] ${BADGE_CLASS[ev.status_publicacao] || 'bg-tt-cinza-claro'}`}
-                      >
-                        {ev.status_publicacao}
-                      </span>
+                    {/* faixa da gelatina do evento: o mesmo id sempre tem a mesma cor */}
+                    <div className={`relative flex h-24 items-end justify-between px-5 pb-3 ${gel.bg}`}>
+                      <span className="rebite left-5 top-4" aria-hidden="true" />
+                      <span className={`font-mono text-[11px] font-semibold tracking-[0.06em] opacity-85 ${gel.sobre}`}>{gel.codigo} · {gel.nome}</span>
+                      <Badge label={ev.status_publicacao} />
                     </div>
 
-                    {/* conteudo do card: titulo, organizador, data, local, ticket e pendencias */}
-                    <div className="flex-1 flex flex-col gap-2 px-[18px] pt-4 pb-[18px]">
-                      <h2 className="text-base font-bold text-tt-azul-marinho leading-tight line-clamp-1">
-                        {ev.titulo}
-                      </h2>
-                      <div className="text-[11.5px] text-tt-grafite/50 -mt-1">
-                        Por:{' '}
-                        <strong className="text-tt-grafite/70 font-semibold">
-                          {ev.organizador_nome}
-                        </strong>
-                      </div>
-                      <div className="flex flex-col gap-1.5 mt-1">
-                        <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex">
-                            <IconCalendar />
-                          </span>
+                    {/* conteudo: titulo, organizador, data, local, lote e itens de custo */}
+                    <div className="flex flex-1 flex-col px-5 pb-5 pt-4">
+                      <h2 className="line-clamp-2 text-lg font-extrabold leading-tight">{ev.titulo}</h2>
+                      <p className="mt-1 text-xs text-tinta/60">
+                        Por: <strong className="font-semibold text-tinta/80">{ev.organizador_nome}</strong>
+                      </p>
+
+                      <div className="mt-4 flex flex-col gap-1.5 text-[13px] text-tinta/70">
+                        <span className="flex items-center gap-2">
+                          <span className="text-tinta/45"><IconCalendario tamanho={15} /></span>
                           {/* se for um dia so mostra uma data, senao mostra inicio → fim */}
                           <span className="truncate">
                             {ev.data_inicio === ev.data_fim
                               ? formatDate(ev.data_inicio)
                               : `${formatDate(ev.data_inicio)} → ${formatDate(ev.data_fim)}`}
                           </span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-tt-grafite/70">
-                          <span className="text-tt-grafite/50 flex">
-                            <IconPin />
-                          </span>
+                        </span>
+                        <span className="flex items-center gap-2">
+                          <span className="text-tinta/45"><IconLocal tamanho={15} /></span>
                           <span className="truncate">{ev.endereco}</span>
-                        </div>
+                        </span>
                       </div>
-                      <hr className="border-0 border-t border-tt-azul-marinho/12 my-1" />
-                      {/* ticket estimado e pendencias lado a lado */}
-                      <div className="flex justify-between items-start">
-                        <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
-                            <span className="text-tt-laranja-principal flex">
-                              <IconTicket />
-                            </span>
-                            Lote inicial
-                          </span>
-                          <span className="text-sm font-bold text-tt-azul-principal">
-                            {formatCurrency(ev.primeiro_lote)}
-                          </span>
+
+                      {/* grade de dados: lote inicial e itens de custo */}
+                      <dl className="mt-5 grid grid-cols-[1fr_auto] gap-4 border-t border-tinta/10 pt-4">
+                        <div>
+                          <dt className={dadoRotuloCls}>Lote inicial</dt>
+                          <dd className="tabular mt-1 text-xl font-black tracking-[-0.015em]">{formatCurrency(ev.primeiro_lote)}</dd>
                           {ev.segundo_lote != null && (
-                            <span className="text-xs text-tt-grafite/70">
-                              2º lote: {formatCurrency(ev.segundo_lote)}
-                            </span>
+                            <dd className="tabular mt-0.5 text-xs text-tinta/60">2º lote: {formatCurrency(ev.segundo_lote)}</dd>
                           )}
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.5px] text-tt-grafite/50">
-                            Itens de custo
-                          </span>
-                          <span className="text-sm font-bold text-tt-azul-marinho">
-                            {ev.quantidade_itens}
-                          </span>
+                        <div className="text-right">
+                          <dt className={dadoRotuloCls}>Itens de custo</dt>
+                          <dd className="tabular mt-1 text-xl font-black">{ev.quantidade_itens}</dd>
                         </div>
-                      </div>
+                      </dl>
+
                       {/* abre a tela de detalhes desse evento */}
                       <button
                         onClick={() => {
                           setEventoSel(ev);
                           setTelaAtual('detalhes');
                         }}
-                        className="mt-2 w-full py-[9px] rounded-lg text-[13px] font-semibold tracking-[0.2px] bg-tt-azul-marinho text-tt-laranja-principal hover:bg-tt-azul-vivo transition-colors"
+                        className={`${btn('tinta')} mt-5 w-full group-hover:bg-gel-indigo group-hover:text-tinta`}
                       >
-                        {perfil === 'fornecedor'
-                          ? 'Ver custos e enviar proposta →'
-                          : 'Ver detalhes →'}
+                        {perfil === 'fornecedor' ? 'Ver custos e enviar proposta' : 'Ver detalhes'} <IconSeta />
                       </button>
                     </div>
                   </article>
@@ -412,308 +296,161 @@ export default function PainelDeEventos() {
 
       {/* ── TELA: DETALHES ── */}
       {/* so aparece se tiver um evento selecionado */}
-      {telaAtual === 'detalhes' && eventoSelecionado && (
-        <div className="max-w-[800px] mx-auto px-4 py-8">
-          {/* volta pra lista e limpa o evento selecionado */}
-          <button
-            onClick={() => {
-              setTelaAtual('painel');
-              setEventoSel(null);
-            }}
-            className="flex items-center gap-2 text-sm text-tt-grafite/70 hover:text-tt-azul-marinho mb-6 transition-colors font-medium"
-          >
-            <IconArrowLeft /> Voltar para a lista
-          </button>
-
-          <div className="bg-tt-branco rounded-2xl overflow-hidden shadow-xl border border-tt-azul-marinho/8">
-            {/* banner maior com a cor do evento e o status */}
-            <div
-              className="h-[160px] flex items-end p-6"
-              style={{ background: eventoSelecionado.banner_color }}
+      {telaAtual === 'detalhes' && eventoSelecionado && (() => {
+        const gel = GELS[gelDoId(eventoSelecionado.id)];
+        const ehDono = perfil === 'organizador' && eventoSelecionado.organizador_id === idUsuarioLogado;
+        return (
+          <div className="mx-auto max-w-[860px] px-4 pt-8 sm:px-6">
+            {/* volta pra lista e limpa o evento selecionado */}
+            <button
+              onClick={() => {
+                setTelaAtual('painel');
+                setEventoSel(null);
+              }}
+              className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/75 transition-colors hover:text-white"
             >
-              <span
-                className={`text-xs font-bold px-3 py-1 rounded-full ${BADGE_CLASS[eventoSelecionado.status_publicacao]}`}
-              >
-                {eventoSelecionado.status_publicacao}
-              </span>
-            </div>
+              <IconVoltar /> Voltar para a lista
+            </button>
 
-            <div className="p-8">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-tt-azul-marinho tracking-tight">
-                {eventoSelecionado.titulo}
-              </h1>
-              <p className="text-sm text-tt-grafite/70 mt-1">
-                Organizado por:{' '}
-                <span className="font-semibold text-tt-azul-marinho">
-                  {eventoSelecionado.organizador_nome}
-                </span>
-              </p>
-
-              {/* caixa com data, local, ticket e pendencias (1 coluna no celular e 2 em tela maior) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6 p-4 bg-tt-cinza-claro rounded-xl border border-tt-azul-marinho/8">
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
-                    <IconCalendar />
-                  </span>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
-                      Data do Evento
-                    </p>
-                    <p className="font-medium text-tt-azul-marinho">
-                      {eventoSelecionado.data_inicio ===
-                      eventoSelecionado.data_fim
-                        ? formatDate(eventoSelecionado.data_inicio)
-                        : `${formatDate(eventoSelecionado.data_inicio)} até ${formatDate(eventoSelecionado.data_fim)}`}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
-                    <IconPin />
-                  </span>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
-                      Localização
-                    </p>
-                    <p className="font-medium text-tt-azul-marinho truncate max-w-[260px]">
-                      {eventoSelecionado.endereco}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-principal">
-                    <IconTicket />
-                  </span>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
-                      Lote inicial
-                    </p>
-                    <p className="font-bold text-tt-azul-principal">
-                      {formatCurrency(eventoSelecionado.primeiro_lote)}
-                    </p>
-                    {eventoSelecionado.segundo_lote != null && (
-                      <p className="mt-1 text-sm text-tt-grafite/70">
-                        Segundo lote:{' '}
-                        {formatCurrency(eventoSelecionado.segundo_lote)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-tt-grafite/70">
-                  <span className="p-2 bg-tt-branco rounded-lg shadow-sm text-tt-azul-marinho">
-                    <IconPending />
-                  </span>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-tt-grafite/50 font-bold">
-                      Itens de custo
-                    </p>
-                    <p className="font-medium text-tt-azul-marinho">
-                      {eventoSelecionado.quantidade_itens}{' '}
-                      itens registrados
-                    </p>
-                  </div>
-                </div>
+            <article className="overflow-hidden rounded-none border-[1.5px] border-black bg-folha text-tinta shadow-folha">
+              {/* faixa grande com a gelatina do evento e o status */}
+              <div className={`relative flex h-36 items-end justify-between px-6 pb-4 sm:px-9 ${gel.bg}`}>
+                <span className="rebite left-6 top-5 sm:left-9" aria-hidden="true" />
+                <span className={`font-mono text-xs font-semibold tracking-[0.06em] opacity-85 ${gel.sobre}`}>{gel.codigo} · {gel.nome}</span>
+                <Badge label={eventoSelecionado.status_publicacao} />
               </div>
 
-              {['organizador', 'fornecedor'].includes(perfil) && <FornecedoresConfirmados key={`fornecedores-${eventoSelecionado.id}`} eventoId={eventoSelecionado.id} />}
-              {perfil === 'fornecedor' && (
-                <CustosFornecedor
-                  key={`custos-${eventoSelecionado.id}`}
-                  evento={eventoSelecionado}
-                />
-              )}
-              {/* ticket estimado (RF13): so o organizador dono do evento */}
-              {perfil === 'organizador' &&
-                eventoSelecionado.organizador_id === idUsuarioLogado && (
+              <div className="px-6 py-8 sm:px-9">
+                <h1 className="text-[clamp(1.75rem,4vw,2.5rem)] font-black leading-[1.02] tracking-[-0.025em]">
+                  {eventoSelecionado.titulo}
+                </h1>
+                <p className="mt-2 text-sm text-tinta/65">
+                  Organizado por: <span className="font-semibold text-tinta">{eventoSelecionado.organizador_nome}</span>
+                </p>
+
+                {/* grade de dados do evento (1 coluna no celular e 2 em tela maior) */}
+                <dl className="my-8 grid gap-px overflow-hidden rounded-none border border-tinta/10 bg-tinta/10 sm:grid-cols-2">
+                  {[
+                    {
+                      Icone: IconCalendario,
+                      rotulo: 'Data do Evento',
+                      valor: eventoSelecionado.data_inicio === eventoSelecionado.data_fim
+                        ? formatDate(eventoSelecionado.data_inicio)
+                        : `${formatDate(eventoSelecionado.data_inicio)} até ${formatDate(eventoSelecionado.data_fim)}`,
+                    },
+                    { Icone: IconLocal, rotulo: 'Localização', valor: eventoSelecionado.endereco },
+                    {
+                      Icone: IconIngresso,
+                      rotulo: 'Lote inicial',
+                      valor: formatCurrency(eventoSelecionado.primeiro_lote),
+                      extra: eventoSelecionado.segundo_lote != null && `Segundo lote: ${formatCurrency(eventoSelecionado.segundo_lote)}`,
+                    },
+                    { Icone: IconLista, rotulo: 'Itens de custo', valor: `${eventoSelecionado.quantidade_itens} itens registrados` },
+                  ].map(({ Icone, rotulo, valor, extra }) => (
+                    <div key={rotulo} className="flex gap-3 bg-papel px-5 py-4">
+                      <span className="mt-0.5 text-tinta/45"><Icone tamanho={18} /></span>
+                      <div className="min-w-0">
+                        <dt className={dadoRotuloCls}>{rotulo}</dt>
+                        <dd className="tabular mt-1 break-words font-semibold">{valor}</dd>
+                        {extra && <dd className="tabular mt-0.5 text-sm text-tinta/60">{extra}</dd>}
+                      </div>
+                    </div>
+                  ))}
+                </dl>
+
+                {['organizador', 'fornecedor'].includes(perfil) && <FornecedoresConfirmados key={`fornecedores-${eventoSelecionado.id}`} eventoId={eventoSelecionado.id} />}
+                {perfil === 'fornecedor' && (
+                  <CustosFornecedor
+                    key={`custos-${eventoSelecionado.id}`}
+                    evento={eventoSelecionado}
+                  />
+                )}
+                {/* ticket estimado (RF13): so o organizador dono do evento */}
+                {ehDono && (
                   <TicketEstimado
                     key={`ticket-${eventoSelecionado.id}`}
                     eventoId={eventoSelecionado.id}
                   />
                 )}
-              {/* botoes de excluir e editar */}
-              {perfil === 'organizador' &&
-                eventoSelecionado.organizador_id === idUsuarioLogado && (
-                  <div className="flex gap-3 justify-end pt-4 border-t border-tt-azul-marinho/8">
-                    <button
-                      onClick={() => excluirEvento(eventoSelecionado.id)}
-                      className="px-5 py-2.5 rounded-xl border border-tt-rosa-suave text-tt-rosa-principal font-semibold text-sm hover:bg-tt-rosa-claro transition"
-                    >
-                      Excluir Evento
+                {/* botoes de excluir e editar */}
+                {ehDono && (
+                  <div className="mt-8 flex flex-wrap justify-end gap-3 border-t border-tinta/10 pt-6">
+                    <button onClick={() => excluirEvento(eventoSelecionado.id)} className={btn('perigo')}>
+                      <IconLixeira /> Excluir Evento
                     </button>
-                    <button
-                      onClick={() => abrirModalEditar(eventoSelecionado)}
-                      className="px-5 py-2.5 rounded-xl bg-tt-azul-marinho text-tt-laranja-principal font-semibold text-sm hover:bg-tt-azul-vivo transition"
-                    >
-                      Editar Evento
+                    <button onClick={() => abrirModalEditar(eventoSelecionado)} className={btn('primario')}>
+                      <IconLapis /> Editar Evento
                     </button>
                   </div>
                 )}
-            </div>
+              </div>
+            </article>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── MODAL EDITAR ── */}
       {/* fundo escuro por cima da tela toda com o formulario no meio */}
       {form && (
-        <div className="fixed inset-0 z-[200] bg-tt-azul-marinho/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-tt-branco rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-tt-azul-marinho/8">
-            <h2 className="text-xl font-bold text-tt-azul-marinho mb-4">
-              Editar Dados do Evento
-            </h2>
-            {/* ao enviar chama o salvarFormulario */}
-            <form onSubmit={salvarFormulario} className="space-y-4">
-              {/* titulo */}
-              <div>
-                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                  Título do Evento *
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-palco/75 p-4 backdrop-blur-[3px]">
+          <div role="dialog" aria-modal="true" aria-labelledby="titulo-editar" className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-none bg-folha text-tinta shadow-folha">
+            <div className="h-2.5 bg-gel-indigo" aria-hidden="true" />
+            <div className="px-6 py-7">
+              <h2 id="titulo-editar" className="mb-6 text-2xl font-black tracking-[-0.015em]">
+                Editar Dados do Evento
+              </h2>
+              {/* ao enviar chama o salvarFormulario */}
+              <form onSubmit={salvarFormulario} className="space-y-4">
+                <label className="flex flex-col gap-2">
+                  <span className={rotuloCls}>Título do Evento *</span>
+                  <input type="text" required value={form.titulo} onChange={alterarForm('titulo')} className={campoCls()} placeholder="Ex: Lollapalooza 2026" />
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={form.titulo}
-                  onChange={alterarForm('titulo')}
-                  className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  placeholder="Ex: Lollapalooza 2026"
-                />
-              </div>
-              {/* datas lado a lado, so a de inicio e obrigatoria */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                    Data Início *
+                {/* datas lado a lado, so a de inicio e obrigatoria */}
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex flex-col gap-2">
+                    <span className={rotuloCls}>Data Início *</span>
+                    <input type="date" required value={form.inicio} onChange={alterarForm('inicio')} className={campoCls()} />
                   </label>
-                  <input
-                    type="date"
-                    required
-                    value={form.inicio}
-                    onChange={alterarForm('inicio')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                    Data Fim
+                  <label className="flex flex-col gap-2">
+                    <span className={rotuloCls}>Data Fim</span>
+                    <input type="date" value={form.fim} onChange={alterarForm('fim')} className={campoCls()} />
                   </label>
-                  <input
-                    type="date"
-                    value={form.fim}
-                    onChange={alterarForm('fim')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  />
                 </div>
-              </div>
-              {/* endereco */}
-              <div>
-                <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                  Endereço / Local *
+                <label className="flex flex-col gap-2">
+                  <span className={rotuloCls}>Endereço / Local *</span>
+                  <input type="text" required value={form.endereco} onChange={alterarForm('endereco')} className={campoCls()} placeholder="Ex: Allianz Parque, São Paulo" />
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={form.endereco}
-                  onChange={alterarForm('endereco')}
-                  className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  placeholder="Ex: Allianz Parque, São Paulo"
-                />
-              </div>
-              {/* público mínimo e máximo */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                    Público mínimo *
+                {/* status e ticket lado a lado */}
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex flex-col gap-2">
+                    <span className={rotuloCls}>Status de Publicação</span>
+                    <select value={form.status} onChange={alterarForm('status')} className={campoCls()}>
+                      <option value="Publicado">Publicado</option>
+                      <option value="Rascunho">Rascunho</option>
+                      <option value="Encerrado">Encerrado</option>
+                      <option value="Cancelado">Cancelado</option>
+                    </select>
                   </label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    max="1000000000"
-                    step="1"
-                    value={form.publicoMinimo}
-                    onChange={alterarForm('publicoMinimo')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                    Público máximo *
+                  <label className="flex flex-col gap-2">
+                    <span className={rotuloCls}>Preço do lote inicial (R$)</span>
+                    <input type="number" required min="0" max="99999999.99" step="0.01" value={form.ticket} onChange={alterarForm('ticket')} className={`${campoCls()} tabular`} placeholder="890" />
                   </label>
-                  <input
-                    type="number"
-                    required
-                    min="1"
-                    max="1000000000"
-                    step="1"
-                    value={form.publicoMaximo}
-                    onChange={alterarForm('publicoMaximo')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  />
                 </div>
-              </div>
-              {/* status e ticket lado a lado */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                    Status de Publicação
-                  </label>
-                  <select
-                    value={form.status}
-                    onChange={alterarForm('status')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none bg-tt-branco focus:border-tt-laranja-principal"
-                  >
-                    <option value="Publicado">Publicado</option>
-                    <option value="Rascunho">Rascunho</option>
-                    <option value="Encerrado">Encerrado</option>
-                    <option value="Cancelado">Cancelado</option>
-                  </select>
+                <label className="flex flex-col gap-2">
+                  <span className={rotuloCls}>Preço do segundo lote (R$) — opcional</span>
+                  <input type="number" min="0" max="99999999.99" step="0.01" value={form.segundoLote} onChange={alterarForm('segundoLote')} className={`${campoCls()} tabular`} placeholder="Deixe vazio se não houver segundo lote" />
+                </label>
+                {/* cancelar fecha sem salvar / salvar envia o form */}
+                <div className="flex justify-end gap-3 border-t border-tinta/10 pt-5">
+                  <button type="button" onClick={() => setForm(null)} className={btn('claro')}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className={btn('primario')}>
+                    Salvar Mudanças
+                  </button>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-tt-grafite/70 block mb-1">
-                    Preço do lote inicial (R$)
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    max="99999999.99"
-                    step="0.01"
-                    value={form.ticket}
-                    onChange={alterarForm('ticket')}
-                    className="w-full border border-tt-azul-marinho/12 rounded-xl p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                    placeholder="890"
-                  />
-                </div>
-              </div>
-              <label className="block text-xs font-bold text-tt-grafite/70">
-                Preço do segundo lote (R$) — opcional
-                <input
-                  type="number"
-                  min="0"
-                  max="99999999.99"
-                  step="0.01"
-                  value={form.segundoLote}
-                  onChange={alterarForm('segundoLote')}
-                  className="mt-1 w-full rounded-xl border border-tt-azul-marinho/12 p-2.5 text-sm outline-none focus:border-tt-laranja-principal"
-                  placeholder="Deixe vazio se não houver segundo lote"
-                />
-              </label>
-              {/* cancelar fecha sem salvar / salvar envia o form */}
-              <div className="flex gap-2 justify-end pt-4 border-t border-tt-azul-marinho/8">
-                <button
-                  type="button"
-                  onClick={() => setForm(null)}
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-tt-grafite/70 hover:bg-tt-cinza-claro"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-tt-laranja-principal text-tt-azul-marinho font-bold rounded-xl text-sm hover:opacity-90"
-                >
-                  Salvar Mudanças
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       )}
