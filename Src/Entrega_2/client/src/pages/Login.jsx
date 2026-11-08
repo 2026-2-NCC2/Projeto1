@@ -1,21 +1,26 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import Footer from '../components/Footer'
-import Sticker from '../components/Sticker'
-import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import CenaConta from '../components/ui/CenaConta'
+import Folha from '../components/ui/Folha'
+import { btn, campoCls, erroCls, linkClaroCls, rotuloCls } from '../components/ui/estilos'
 import { loginUsuario } from '../services/api'
 import { useAuth } from '../services/AuthContext'
 import { erroEmail } from '../utils/validacao'
 
+// adesivos em volta da folha, so em tela larga
+const ADESIVOS = [
+  { nome: 'fita', tamanho: 150, rotate: -9, delay: 0.5, className: '-left-[130px] top-[10%] z-[3] hidden lg:block' },
+  { nome: 'vinil', tamanho: 140, rotate: 8, delay: 0.2, className: '-right-[118px] bottom-[6%] z-[3] hidden lg:block' },
+]
+
 // pagina de login
-
-
 function Login() {
   const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erros, setErros] = useState({}) // mensagens de erro dos campos
   const navigate = useNavigate()         // pra mudar de pagina pelo codigo
+  const location = useLocation()
 
   const [apiLoading, setApiLoading] = useState(false)
 
@@ -46,8 +51,10 @@ function Login() {
     setApiLoading(true)
     try {
       const usuario = await loginUsuario({ email, senha })
-      login(usuario) // <-- em vez de localStorage.setItem direto
-      navigate('/PainelDeEventos')
+      login(usuario)
+      // volta pra pagina que a pessoa tentou abrir antes de ser mandada pro login (ver ProtectedRoute)
+      const destino = location.state?.from
+      navigate(destino ? `${destino.pathname}${destino.search}` : '/PainelDeEventos', { replace: true })
     } catch (err) {
         setErros({ senha: err.message })
     } finally {
@@ -56,54 +63,43 @@ function Login() {
   }
 
   return (
-    <div className={`${ui.page} relative overflow-x-clip`}>
-      <div className={ui.container}>
-        {/* o relative prende os adesivos no card */}
-        <div className="relative w-full max-w-[440px]">
-        <form className={`${ui.card} relative z-[2]`} onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-          <h1 className={ui.title}>Entrar</h1>
-          <p className={ui.subtitle}>Preencha os dados para se conectar.</p>
+    <CenaConta adesivos={ADESIVOS}>
+      <Folha as="form" gel="indigo" faixa="h-2.5" className="z-[2]" onSubmit={(e) => { e.preventDefault(); handleLogin(); }} noValidate>
+        <div className="px-6 pb-8 pt-8 sm:px-10 sm:pb-10">
+          <h1 className="text-[2.5rem] font-black leading-none tracking-[-0.025em]">Entrar</h1>
+          <p className="mt-3 text-[15px] text-tinta/65">Preencha os dados para se conectar.</p>
 
-          {/* campo de email, inputClass muda o estilo se tiver erro */}
-          <div className={ui.campo}>
-            <label className={ui.label}>E-mail</label>
-            <input type="email" placeholder="seuemail@exemplo.com" value={email}
-              onChange={(e) => setEmail(e.target.value)} className={inputClass(erros.email)} />
-            {erros.email && <span className={ui.erro}>{erros.email}</span>}
-          </div>
+          <div className="mt-8 flex flex-col gap-5">
+            {/* campo de email, a borda muda se tiver erro */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="login-email" className={rotuloCls}>E-mail</label>
+              <input id="login-email" type="email" autoComplete="email" placeholder="seuemail@exemplo.com" value={email}
+                onChange={(e) => setEmail(e.target.value)} className={campoCls(erros.email)} aria-invalid={Boolean(erros.email)} />
+              {erros.email && <span className={erroCls} role="alert">{erros.email}</span>}
+            </div>
 
-          {/* campo de senha */}
-          <div className={ui.campo}>
-            <label className={ui.label}>Senha</label>
-            <input type="password" placeholder="••••••••" value={senha}
-              onChange={(e) => setSenha(e.target.value)} className={inputClass(erros.senha)} />
-            {erros.senha && <span className={ui.erro}>{erros.senha}</span>}
+            {/* campo de senha */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="login-senha" className={rotuloCls}>Senha</label>
+              <input id="login-senha" type="password" autoComplete="current-password" placeholder="••••••••" value={senha}
+                onChange={(e) => setSenha(e.target.value)} className={campoCls(erros.senha)} aria-invalid={Boolean(erros.senha)} />
+              {erros.senha && <span className={erroCls} role="alert">{erros.senha}</span>}
+            </div>
           </div>
 
           {/* voltar pra home e entrar */}
-          <div className={ui.botoes}>
-            <Link to="/" className={ui.btnVoltar}>Voltar</Link>
-            <button type="submit" className={ui.btnPrimary} disabled={apiLoading}>{apiLoading ? 'Entrando...' : 'Login'}</button>
+          <div className="mt-8 grid grid-cols-[auto_1fr] gap-3">
+            <Link to="/" className={btn('claro', 'lg')}>Voltar</Link>
+            <button type="submit" className={btn('primario', 'lg')} disabled={apiLoading}>{apiLoading ? 'Entrando...' : 'Login'}</button>
           </div>
 
           {/* link pra quem ainda nao tem conta */}
-          <div className={ui.footerLink}>
-            Ainda não tem uma conta? <Link to="/Cadastro">Cadastre-se</Link>
-          </div>
-        </form>
-        {/* adesivo pequeno na quina do card (celular e tablet) */}
-        <Sticker nome="estrela" tamanho={70} rotate={14} className="-right-2 -top-9 z-[3] lg:hidden" />
-        {/* adesivos grandes nas laterais, so em tela larga */}
-        <Sticker nome="fita" tamanho={150} rotate={-9} delay={0.5} className="-left-[124px] top-[8%] z-[3] hidden lg:block" />
-        <Sticker nome="cd" tamanho={120} rotate={12} delay={1.5} className="-left-[94px] bottom-[6%] z-[3] hidden lg:block" />
-        <Sticker nome="estrela" tamanho={100} rotate={-12} delay={1} className="-right-[74px] top-[6%] z-[3] hidden lg:block" />
-        <Sticker nome="vinil" tamanho={140} rotate={8} delay={0.2} className="-right-[114px] bottom-[4%] z-[3] hidden lg:block" />
+          <p className="mt-7 border-t border-tinta/10 pt-6 text-center text-sm text-tinta/65">
+            Ainda não tem uma conta? <Link to="/Cadastro" className={linkClaroCls}>Cadastre-se</Link>
+          </p>
         </div>
-      </div>
-
-      {/* rodape do site */}
-      <Footer />
-    </div>
+      </Folha>
+    </CenaConta>
   )
 }
 

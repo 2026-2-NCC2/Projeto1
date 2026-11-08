@@ -1,24 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Sticker from '../components/Sticker'
-import { Link } from 'react-router-dom'
+import Semicirculos from '../components/ui/Semicirculos'
+import { IconBusca, IconHolofote, IconSeta, IconSetaDiagonal, IconSom, IconUsuarios } from '../components/ui/Icones'
+import { btn, containerCls, linkEscuroCls } from '../components/ui/estilos'
 import { solicitar } from '../services/api'
+import { rolarAteSecao } from '../utils/rolagem'
 
+// cada categoria tem uma cor pastel (roxos e azuis) que cresce no canto do card ao passar o mouse
 const CATEGORIAS = [
-  { titulo: 'Shows e música', texto: 'Descubra apresentações e novos artistas.', icone: '♫', cor: 'text-tt-branco', fundo: 'bg-tt-azul-marinho', brilho: 'bg-tt-roxo-vivo' },
-  { titulo: 'Cultura e teatro', texto: 'Encontre espetáculos e experiências culturais.', icone: '✦', cor: 'text-tt-branco', fundo: 'bg-tt-azul-marinho', brilho: 'bg-tt-rosa-vivo' },
-  { titulo: 'Festivais e encontros', texto: 'Explore eventos para compartilhar bons momentos.', icone: '⌖', cor: 'text-tt-branco', fundo: 'bg-tt-azul-marinho', brilho: 'bg-tt-laranja-principal' },
+  { titulo: 'Shows e música', texto: 'Descubra apresentações e novos artistas.', Icone: IconSom, fundo: 'bg-gel-ceu' },
+  { titulo: 'Cultura e teatro', texto: 'Encontre espetáculos e experiências culturais.', Icone: IconHolofote, fundo: 'bg-gel-magenta' },
+  { titulo: 'Festivais e encontros', texto: 'Explore eventos para compartilhar bons momentos.', Icone: IconUsuarios, fundo: 'bg-gel-indigo' },
 ]
 
 const ETAPAS = [
-  { titulo: 'Encontre um evento', texto: 'Explore opções e descubra experiências que combinam com você.' },
-  { titulo: 'Escolha seu ingresso', texto: 'Consulte as informações do evento em um só lugar.' },
-  { titulo: 'Aproveite com tranquilidade', texto: 'Tenha os detalhes do seu evento sempre à mão.' },
+  { titulo: 'Encontre um evento', texto: 'Explore opções e descubra experiências que combinam com você.', gel: 'bg-gel-indigo' },
+  { titulo: 'Escolha seu ingresso', texto: 'Consulte as informações do evento em um só lugar.', gel: 'bg-gel-magenta' },
+  { titulo: 'Aproveite com tranquilidade', texto: 'Tenha os detalhes do seu evento sempre à mão.', gel: 'bg-gel-ceu' },
 ]
 
-// Indicadores da faixa escura: vêm do banco (GET /api/eventos), nada fixo no código.
+// Indicadores: vêm do banco (GET /api/eventos), nada fixo no código.
 // O sistema ainda não vende ingressos nem tem cidades cadastradas, então só existe
-// o número de eventos publicados. Se a API falhar ou não houver eventos, a faixa não aparece.
+// o número de eventos publicados. Se a API falhar ou não houver eventos, nada aparece.
 function useIndicadores() {
   const [indicadores, setIndicadores] = useState([])
 
@@ -27,9 +32,9 @@ function useIndicadores() {
       try {
         const eventos = await solicitar('/eventos')
         const publicados = eventos.filter((e) => e.status_publicacao === 'Publicado').length
-        setIndicadores(publicados > 0 ? [{ rotulo: 'Eventos publicados', valor: publicados.toLocaleString('pt-BR') }] : [])
+        setIndicadores(publicados > 0 ? [{ rotulo: 'eventos publicados', valor: publicados.toLocaleString('pt-BR') }] : [])
       } catch {
-        // se der erro a faixa so nao aparece
+        // se der erro o indicador so nao aparece
       }
     }
     carregar()
@@ -38,151 +43,228 @@ function useIndicadores() {
   return indicadores
 }
 
-function LandingPage() {
-  const indicadores = useIndicadores()
+// ingresso da primeira dobra: inclina em 3D seguindo o mouse e um reflexo de luz passa por cima.
+// quem pede menos movimento ve o ingresso parado. E so ilustracao (role="img").
+function IngressoInterativo() {
+  const ref = useRef(null)
+
+  function mover(e) {
+    const el = ref.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const r = el.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width - 0.5
+    const y = (e.clientY - r.top) / r.height - 0.5
+    el.style.setProperty('--rx', `${(-y * 12).toFixed(2)}deg`)
+    el.style.setProperty('--ry', `${(x * 16).toFixed(2)}deg`)
+    el.style.setProperty('--bx', `${((x + 0.5) * 100).toFixed(1)}%`)
+    el.style.setProperty('--by', `${((y + 0.5) * 100).toFixed(1)}%`)
+  }
+
+  function sair() {
+    const el = ref.current
+    if (!el) return
+    el.style.setProperty('--rx', '0deg')
+    el.style.setProperty('--ry', '0deg')
+    el.style.setProperty('--bx', '50%')
+    el.style.setProperty('--by', '0%')
+  }
 
   return (
-    <main className="bg-tt-branco text-tt-azul-marinho">
-      <section className="relative overflow-hidden border-b border-tt-azul-marinho bg-tt-branco">
-        <span className="tt-blob tt-blob--violeta -right-24 -top-24 size-[460px] opacity-70" aria-hidden="true" />
-        <span className="tt-blob -right-10 top-24 size-[380px] opacity-60 max-[760px]:top-[40%]" aria-hidden="true" />
-        <span className="tt-blob tt-blob--rosa -bottom-32 left-[18%] size-[420px] opacity-70" aria-hidden="true" />
-        <span className="tt-globe absolute right-[4%] top-6 z-[1] size-[76px] max-[760px]:hidden" aria-hidden="true" />
-        <span className="tt-semi-l absolute -left-0 bottom-10 z-[1] h-[96px] w-[48px] max-[760px]:hidden" aria-hidden="true" />
-        <div className="relative z-[1] mx-auto grid min-h-[560px] w-[calc(100%_-_48px)] max-w-[1180px] grid-cols-[minmax(0,1.08fr)_minmax(300px,0.92fr)] items-center gap-12 py-[68px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:grid-cols-1 max-[760px]:gap-3 max-[760px]:py-[54px] max-[760px]:pb-10">
-          <div className="max-w-[620px]">
-            <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Eventos e ingressos em um só lugar</span>
-            <h1 className="tt-display my-5 text-[clamp(34px,5.4vw,76px)] text-tt-azul-marinho">
-              Encontre seu próximo <span className="tt-outline">grande momento.</span>
+    <div
+      className="group/ingresso relative grid min-h-[460px] place-items-center [perspective:1100px] max-[860px]:min-h-[360px]"
+      onPointerMove={mover}
+      onPointerLeave={sair}
+      role="img"
+      aria-label="Ilustração de um ingresso de evento"
+    >
+      {/* ingresso: o wrapper gira (variaveis --rx/--ry), o ingresso fica levemente inclinado */}
+      <div
+        ref={ref}
+        className="relative w-[min(400px,90%)] transition-transform duration-300 ease-saida [transform-style:preserve-3d] [transform:rotateX(var(--rx,0deg))_rotateY(var(--ry,0deg))]"
+      >
+        <div className="relative -rotate-[4deg] overflow-hidden border-[1.5px] border-black border-t-[5px] border-t-gel-fogo bg-folha text-tinta shadow-brutal">
+          {/* reflexo de luz que segue o mouse */}
+          <div
+            className="pointer-events-none absolute inset-0 z-[3] opacity-0 transition-opacity duration-300 group-hover/ingresso:opacity-60 mix-blend-soft-light [background:radial-gradient(circle_at_var(--bx,50%)_var(--by,0%),rgb(255_255_255/0.9),transparent_55%)]"
+            aria-hidden="true"
+          />
+
+          <div className="relative z-[2] flex items-center justify-between px-6 pt-5 font-mono text-[10px] font-semibold tracking-[0.14em]">
+            <span className="grid size-9 place-items-center bg-tinta text-xs font-black tracking-[-0.04em] text-white">TT</span>
+            <span>SEU PRÓXIMO EVENTO</span>
+          </div>
+
+          <div className="relative px-6 pb-7 pt-10">
+            {/* circulo lavanda atras do titulo */}
+            <span className="absolute -right-12 top-2 size-32 rounded-full bg-gel-indigo/70" aria-hidden="true" />
+            <p className="relative text-[2.9rem] font-black leading-[0.92] tracking-[-0.03em] max-[480px]:text-[2.5rem]">
+              Momentos<br />que <span className="text-transparent [-webkit-text-stroke:1.5px_var(--color-tinta)]">ficam.</span>
+            </p>
+          </div>
+
+          {/* linha de picote com os dois recortes do canhoto (semicirculos na cor do palco) */}
+          <div className="relative border-t-[1.5px] border-dashed border-tinta/40">
+            <span className="absolute -left-4 top-0 size-8 -translate-y-1/2 rounded-full border-[1.5px] border-black bg-palco" aria-hidden="true" />
+            <span className="absolute -right-4 top-0 size-8 -translate-y-1/2 rounded-full border-[1.5px] border-black bg-palco" aria-hidden="true" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4 px-6 py-5">
+            <span className="font-mono text-[10px] font-semibold tracking-[0.14em] text-tinta/70">VIVA A EXPERIÊNCIA</span>
+            <span className="h-7 w-24 bg-[repeating-linear-gradient(90deg,var(--color-tinta)_0_2px,transparent_2px_4px,var(--color-tinta)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
+          </div>
+        </div>
+
+        {/* etiqueta laranja colada no ingresso (detalhe) */}
+        <span className="absolute -bottom-5 -right-3 z-[4] border-[1.5px] border-black bg-gel-fogo px-4 py-2 text-xs font-bold text-tinta [transform:translateZ(30px)_rotate(-5deg)]">
+          Descubra. Escolha. Aproveite.
+        </span>
+      </div>
+
+      {/* adesivos em volta */}
+      <Sticker nome="cd" tamanho={104} rotate={12} className="-top-2 right-[4%] z-[5] max-[860px]:w-[76px]" />
+      <Sticker nome="estrela" tamanho={86} rotate={-14} delay={1.2} className="bottom-2 left-[2%] z-[5] max-[860px]:w-[64px]" />
+    </div>
+  )
+}
+
+function LandingPage() {
+  const indicadores = useIndicadores()
+  const navigate = useNavigate()
+  const [busca, setBusca] = useState('')
+
+  return (
+    <main className="fundo-luz relative overflow-x-clip text-white">
+      <Semicirculos
+        posicoes={[
+          { lado: 'esq', topo: 'top-[520px]', cor: 'bg-gel-fogo', tamanho: 'm' },
+          { lado: 'dir', topo: 'top-[160px]', cor: 'bg-gel-indigo', tamanho: 'p' },
+          { lado: 'dir', topo: 'top-[1120px]', cor: 'bg-gel-fogo', tamanho: 'g' },
+          { lado: 'esq', topo: 'top-[2050px]', cor: 'bg-gel-ceu', tamanho: 'p' },
+        ]}
+      />
+
+      {/* ── Primeira dobra: titulo + busca a esquerda, ingresso interativo a direita ── */}
+      <section className="relative border-b border-white/10">
+        <div className={`${containerCls} grid min-h-[min(760px,calc(100svh-68px))] grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] items-center gap-14 py-16 max-[860px]:grid-cols-1 max-[860px]:gap-8 max-[860px]:py-12`}>
+          <div className="relative z-[2]">
+            <h1 className="text-[clamp(2.75rem,6.4vw,5.75rem)] font-black leading-[0.92] tracking-[-0.025em] text-white">
+              Encontre seu próximo{' '}
+              {/* destaque vazado: tarja laranja com as letras "recortadas" (na cor do fundo), sem contorno */}
+              {/* destaque: so o contorno laranja, letras vazadas por dentro.
+                  o traco e desenhado antes do preenchimento (paint-order) e o miolo vai na cor do fundo:
+                  assim os riscos internos da fonte ficam escondidos e sobra so a borda de fora (3px visiveis) */}
+              <span className="text-palco [-webkit-text-stroke:6px_var(--color-gel-fogo)] [paint-order:stroke_fill]">grande momento.</span>
             </h1>
-            <p className="mb-[26px] max-w-[510px] text-base leading-[1.7] text-tt-grafite/75">
+            <p className="mt-7 max-w-[46ch] text-lg leading-relaxed text-white/75">
               Descubra eventos, conheça novas experiências e tenha tudo o que precisa
               para aproveitar cada momento.
             </p>
-            <div className="flex max-w-[560px] items-center gap-3 rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco py-[7px] pl-[17px] pr-2 max-[480px]:gap-2 max-[480px]:pl-3" aria-label="Busca ilustrativa">
-              <span className="text-2xl leading-none text-tt-grafite/60" aria-hidden="true">⌕</span>
+
+            <form
+              role="search"
+              className="mt-9 flex max-w-[560px] items-center gap-2 border-[1.5px] border-black bg-folha p-2 shadow-brutal"
+              onSubmit={(e) => {
+                e.preventDefault()
+                const termo = busca.trim()
+                navigate(termo ? `/PainelDeEventos?q=${encodeURIComponent(termo)}` : '/PainelDeEventos')
+              }}
+            >
+              <span className="pl-3 text-tinta/50"><IconBusca tamanho={20} /></span>
               <input
                 type="search"
-                aria-label="Busca ilustrativa de eventos"
-                className="w-full min-w-0 border-0 bg-transparent py-[10px] text-[13px] text-tt-grafite/75 outline-none placeholder:text-tt-grafite/60 max-[480px]:text-[11px]"
+                aria-label="Buscar eventos"
+                className="min-h-12 w-full min-w-0 bg-transparent px-1 text-[15px] text-tinta outline-none placeholder:text-tinta/50"
                 placeholder="Busque eventos, artistas ou lugares"
-                readOnly
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
               />
-              <Link to="/PainelDeEventos" className="shrink-0 rounded-full bg-tt-azul-marinho px-5 py-3 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-roxo-vivo max-[480px]:px-[14px] max-[480px]:py-[11px] max-[480px]:text-xs">Explorar</Link>
+              <button type="submit" className={`${btn('primario', 'lg')} max-[480px]:px-4`}>Explorar</button>
+            </form>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+              <a className={linkEscuroCls} href="#categorias" onClick={rolarAteSecao}>Descobrir categorias</a>
+              <span className="text-white/60">Uma experiência simples, do começo ao evento.</span>
             </div>
-            <div className="mt-[18px] flex flex-wrap items-center gap-[14px] text-xs max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-1.5">
-              <a className="font-bold text-tt-azul-marinho underline decoration-tt-roxo-vivo decoration-2 underline-offset-4" href="#categorias">Descobrir categorias</a>
-              <span className="text-tt-grafite/60">Uma experiência simples, do começo ao evento.</span>
-            </div>
+
+            {indicadores.map((s) => (
+              <p key={s.rotulo} className="mt-10 flex items-baseline gap-3 border-t border-white/10 pt-5">
+                <span className="tabular text-4xl font-black tracking-[-0.025em] text-white">{s.valor}</span>
+                <span className="text-sm font-semibold text-white/65">{s.rotulo}</span>
+              </p>
+            ))}
           </div>
 
-        <div className="isolate relative grid min-h-[320px] place-items-center max-[760px]:min-h-[270px]" aria-label="Ilustração de um ingresso digital" role="img">
-  <div className="absolute -z-10 aspect-square w-[min(380px,90%)] rounded-full bg-[image:var(--tt-gradiente-principal)] opacity-40 blur-[40px]" />
-
-  {/* wrapper novo: só cuida do tamanho e da animação */}
-  <div className="relative w-[min(330px,86%)] max-[760px]:w-[min(300px,78%)]">
-    {/* ingresso: mantém a inclinação e ocupa 100% do wrapper */}
-    <div className="relative w-full rotate-[4deg] overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-azul-marinho p-[22px] text-tt-branco shadow-[10px_10px_0_var(--tt-roxo-vivo)]">
-      <span className="absolute -left-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
-      <span className="absolute -right-4 top-[46%] size-8 rounded-full bg-tt-branco" aria-hidden="true" />
-      <div className="flex items-center justify-between gap-3 text-[9px] font-extrabold tracking-[0.12em]">
-        <span className="grid size-[34px] place-items-center rounded-full bg-tt-branco text-xs tracking-[-0.06em] text-tt-azul-marinho">TT</span>
-        <span>SEU PRÓXIMO EVENTO</span>
-      </div>
-      <div className="relative flex min-h-[174px] items-end border-b border-dashed border-tt-branco/35 py-6 max-[760px]:min-h-[150px]">
-        <span className="absolute right-[17px] top-[23px] text-[52px] text-tt-rosa-vivo">✦</span>
-        <p className="tt-display m-0 text-[30px] text-tt-branco" style={{ fontStretch: '118%' }}>Momentos<br />que ficam.</p>
-      </div>
-      <div className="flex items-center justify-between gap-3 pt-4 text-[9px] font-extrabold tracking-[0.12em] text-tt-branco/70">
-        <span>VIVA A EXPERIÊNCIA</span>
-        <span className="h-[23px] w-[66px] bg-[repeating-linear-gradient(90deg,var(--tt-branco)_0_2px,transparent_2px_4px,var(--tt-branco)_4px_5px,transparent_5px_8px)]" aria-hidden="true" />
-      </div>
-    </div>
-  </div>
-
-  {/* adesivos colados em volta do ingresso */}
-  <Sticker nome="cd" tamanho={104} rotate={12} className="-top-3 right-0 max-[760px]:right-1 max-[760px]:top-0 max-[760px]:w-[76px]" />
-  <Sticker nome="estrela" tamanho={86} rotate={-14} delay={1.2} className="bottom-6 left-0 max-[760px]:left-1 max-[760px]:w-[64px]" />
-
-  <span className="absolute bottom-[14px] right-0 rotate-[-4deg] rounded-full border-[1.5px] border-tt-azul-marinho bg-tt-branco px-[15px] py-[10px] text-[11px] font-bold text-tt-azul-marinho max-[760px]:right-[4%] max-[760px]:bottom-[7px]">Descubra. Escolha. Aproveite.</span>
-      </div>
+          <IngressoInterativo />
         </div>
       </section>
 
-      {indicadores.length > 0 && (
-       <section className="relative overflow-hidden bg-tt-azul-marinho">
-              <span className="tt-blob tt-blob--violeta left-[30%] -top-24 h-[200px] w-[420px] opacity-40" aria-hidden="true" />
-              <div className="relative z-[1] mx-auto flex w-[calc(100%-48px)] max-w-[1180px] divide-x divide-tt-branco/30 py-9 max-[560px]:flex-col max-[560px]:divide-x-0 max-[560px]:divide-y max-[560px]:py-4">
-                 {indicadores.map((s) => (
-              <div key={s.rotulo} className="flex flex-1 flex-col items-start gap-1 px-6 max-[560px]:py-4">
-                 <span className="tt-display text-[clamp(30px,4.4vw,56px)] text-tt-branco">{s.valor}</span>
-                   <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-tt-branco/75">{s.rotulo}</span>
-              </div>
-                     ))}
-               </div>
-                  </section>
-      )}
-
-      <section className="relative mx-auto w-[calc(100%_-_48px)] max-w-[1180px] py-[84px] pb-[92px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="categorias">
-        <Sticker nome="vinil" tamanho={104} rotate={-10} delay={0.6} className="right-[24%] top-[40px] hidden min-[1000px]:block" />
-        <div className="mb-10 flex items-end justify-between gap-6 border-t border-tt-azul-marinho pt-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3">
-          <div>
-            <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Inspire-se</span>
-            <h2 className="tt-display mb-0 mt-3 text-[clamp(28px,4.2vw,58px)] text-tt-azul-marinho">O que você quer viver?</h2>
-          </div>
-          <Link className="shrink-0 border-b-2 border-tt-azul-marinho pb-0.5 text-[13px] font-bold text-tt-azul-marinho no-underline" to="/PainelDeEventos">Ver eventos <span aria-hidden="true">→</span></Link>
+      {/* ── Categorias: cards que se alargam ao passar o mouse, com um circulo pastel crescendo no canto ── */}
+      <section className={`${containerCls} relative py-24 max-[760px]:py-16`} id="categorias">
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+          <h2 className="max-w-[14ch] text-[clamp(2.25rem,4.6vw,4rem)] font-black leading-[0.95] tracking-[-0.025em]">O que você quer viver?</h2>
+          <Link className={`${linkEscuroCls} inline-flex items-center gap-2 text-sm`} to="/PainelDeEventos">
+            Ver eventos <IconSeta />
+          </Link>
         </div>
-        <div className="grid grid-cols-3 gap-[18px] max-[760px]:grid-cols-1">
-          {CATEGORIAS.map((categoria) => (
+
+        <div className="flex gap-5 max-[760px]:flex-col">
+          {CATEGORIAS.map(({ titulo, texto, Icone, fundo }) => (
             <Link
-              className="group relative flex min-h-[205px] flex-col items-start overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[23px] no-underline transition duration-150 hover:-translate-y-[3px] hover:shadow-[6px_6px_0_var(--tt-azul-marinho)] max-[760px]:min-h-[175px]"
-              key={categoria.titulo}
+              key={titulo}
               to="/PainelDeEventos"
+              className="group relative flex min-h-[340px] flex-1 flex-col justify-between overflow-hidden border-[1.5px] border-black border-t-[5px] border-t-gel-fogo bg-folha p-6 text-tinta no-underline shadow-brutal transition-[flex-grow,transform] duration-500 ease-saida hover:-translate-y-1 min-[761px]:hover:flex-[1.6] min-[761px]:focus-visible:flex-[1.6] max-[760px]:min-h-[200px]"
             >
-              <span className={`absolute -bottom-16 -right-10 size-[170px] rounded-full opacity-30 blur-[28px] transition-opacity duration-150 group-hover:opacity-70 ${categoria.brilho}`} aria-hidden="true" />
-              <span className={`mb-[22px] grid size-[42px] place-items-center rounded-full text-[22px] ${categoria.fundo} ${categoria.cor}`} aria-hidden="true">{categoria.icone}</span>
-              <span className="absolute right-6 top-[25px] text-lg text-tt-azul-marinho" aria-hidden="true">↗</span>
-              <h3 className="z-[1] mb-1.5 text-lg font-extrabold text-tt-azul-marinho">{categoria.titulo}</h3>
-              <p className="z-[1] m-0 max-w-[28ch] text-[13px] leading-[1.55] text-tt-grafite/75">{categoria.texto}</p>
+              {/* circulo pastel que cresce a partir do canto */}
+              <span className={`absolute -right-16 -top-16 size-44 rounded-full ${fundo} scale-50 opacity-80 transition-transform duration-500 ease-saida group-hover:scale-110 group-focus-visible:scale-110`} aria-hidden="true" />
+
+              <div className="relative flex items-start justify-between">
+                <span className={`grid size-12 place-items-center border-[1.5px] border-black ${fundo}`}><Icone tamanho={22} /></span>
+                <span className="relative grid size-10 place-items-center border-[1.5px] border-black bg-papel transition-colors duration-200 group-hover:bg-gel-fogo">
+                  <IconSetaDiagonal tamanho={18} />
+                </span>
+              </div>
+
+              <div className="relative max-w-[30ch]">
+                <h3 className="text-2xl font-black leading-tight tracking-[-0.015em]">{titulo}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-tinta/75">{texto}</p>
+              </div>
             </Link>
           ))}
         </div>
+        <Sticker nome="vinil" tamanho={110} rotate={-10} delay={0.6} className="-top-2 right-[30%] hidden min-[1100px]:block" />
       </section>
 
-      <section className="relative overflow-hidden border-y border-tt-azul-marinho bg-tt-branco py-[84px] pb-[92px] max-[760px]:py-[52px] max-[760px]:pb-[58px]" id="como-funciona">
-        <span className="tt-blob tt-blob--rosa -left-24 top-10 size-[380px] opacity-60" aria-hidden="true" />
-        <span className="tt-semi-r absolute -right-0 top-12 h-[110px] w-[55px] max-[760px]:hidden" aria-hidden="true" />
-        <Sticker nome="fita" tamanho={150} rotate={-8} delay={1.4} className="left-[3%] top-[56px] hidden min-[1100px]:block" />
-        <Sticker nome="globo" tamanho={84} rotate={10} delay={0.3} className="right-[9%] top-[44px] hidden min-[1100px]:block" />
-        <div className="relative z-[1] mx-auto w-[calc(100%_-_48px)] max-w-[1180px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px]">
-          <div className="mb-6 flex justify-center gap-6 text-center max-[480px]:items-center max-[480px]:flex-col max-[480px]:gap-3">
-            <div>
-              <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Sem complicação</span>
-              <h2 className="tt-display mb-0 mt-3 text-[clamp(26px,4vw,52px)] text-tt-azul-marinho">Uma jornada simples até o seu evento</h2>
-            </div>
-          </div>
-          <div className="mt-12 grid grid-cols-3 border-[1.5px] border-tt-azul-marinho bg-tt-branco/80 backdrop-blur-sm max-[760px]:grid-cols-1">
-            {ETAPAS.map((etapa, index) => (
-              // linha separando as etapas (menos antes da primeira): do lado no computador, em cima no celular
-              <article className={`border-tt-azul-marinho p-[28px_26px] ${index > 0 ? 'border-l-[1.5px] max-[760px]:border-l-0 max-[760px]:border-t-[1.5px]' : ''}`} key={etapa.titulo}>
-                <span className="tt-display tt-outline mb-6 block text-[64px] leading-none">{String(index + 1).padStart(2, '0')}</span>
-                <h3 className="mb-2 text-lg font-extrabold text-tt-azul-marinho">{etapa.titulo}</h3>
-                <p className="m-0 text-[13px] leading-[1.6] text-tt-grafite/75">{etapa.texto}</p>
-              </article>
+      {/* ── Como funciona: faixa de descanso, um feixe dividido em tres trechos ── */}
+      <section className="relative border-y border-white/10 bg-palco-2/55 py-24 max-[760px]:py-16" id="como-funciona">
+        <div className={containerCls}>
+          <h2 className="max-w-[18ch] text-[clamp(2rem,4vw,3.5rem)] font-black leading-[0.95] tracking-[-0.025em]">Uma jornada simples até o seu evento</h2>
+          <ol className="mt-14 grid grid-cols-3 gap-1 max-[760px]:grid-cols-1 max-[760px]:gap-10">
+            {ETAPAS.map((etapa) => (
+              <li key={etapa.titulo}>
+                <span className={`block h-2 ${etapa.gel}`} aria-hidden="true" />
+                <div className="pr-8 pt-6">
+                  <h3 className="text-xl font-extrabold">{etapa.titulo}</h3>
+                  <p className="mt-2 max-w-[34ch] text-[15px] leading-relaxed text-white/65">{etapa.texto}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section className="relative mx-auto my-[84px] flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 overflow-hidden rounded-none border-[1.5px] border-tt-azul-marinho bg-tt-branco p-[48px_44px] max-[760px]:my-[42px] max-[760px]:w-[calc(100%_-_36px)] max-[760px]:max-w-[560px] max-[760px]:items-start max-[760px]:flex-col max-[760px]:p-[26px]">
-        <span className="tt-blob -right-20 -top-24 size-[420px] opacity-70" aria-hidden="true" />
-        <span className="tt-blob tt-blob--violeta right-[22%] -bottom-40 size-[360px] opacity-60" aria-hidden="true" />
-        <div className="relative z-[1]">
-          <span className="tt-eyebrow text-xs font-extrabold uppercase leading-[1.4] tracking-[0.1em]">Seu próximo momento começa aqui</span>
-          <h2 className="tt-display mb-0 mt-3 text-[clamp(26px,4vw,52px)] text-tt-azul-marinho">Pronto para descobrir algo novo?</h2>
-          <p className="mb-0 mt-[14px] max-w-[58ch] text-sm font-medium text-tt-azul-marinho">Explore a página de eventos e encontre a próxima experiência para guardar na memória.</p>
+      {/* ── Fechamento: card grande no estilo original (borda preta, faixa laranja, sombra chapada) ── */}
+      <section className={`${containerCls} relative py-24 max-[760px]:py-16`}>
+        <div className="relative flex flex-wrap items-end justify-between gap-8 overflow-hidden border-[1.5px] border-black border-t-[5px] border-t-gel-fogo bg-gel-indigo py-10 pl-16 pr-10 text-tinta shadow-brutal max-[760px]:p-7">
+          <span className="absolute left-0 top-10 h-20 w-7 rounded-r-full bg-gel-fogo max-[760px]:hidden" aria-hidden="true" />
+          <span className="absolute right-0 top-8 h-14 w-6 rounded-l-full bg-tinta max-[760px]:hidden" aria-hidden="true" />
+          <div className="relative">
+            <h2 className="max-w-[16ch] text-[clamp(2.25rem,5vw,4.25rem)] font-black leading-[0.92] tracking-[-0.025em]">Pronto para descobrir algo novo?</h2>
+            <p className="mt-5 max-w-[52ch] text-base font-medium leading-relaxed text-tinta/80">Explore a página de eventos e encontre a próxima experiência para guardar na memória.</p>
+          </div>
+          <Link to="/PainelDeEventos" className={`${btn('tinta', 'lg')} relative`}>
+            Explorar eventos <IconSeta />
+          </Link>
         </div>
-        <Link to="/PainelDeEventos" className="relative z-[1] inline-flex shrink-0 items-center gap-3 rounded-full bg-tt-azul-marinho px-6 py-4 text-[13px] font-bold text-tt-branco no-underline transition hover:-translate-y-px hover:bg-tt-roxo-vivo">Explorar eventos <span aria-hidden="true">→</span></Link>
       </section>
 
       <Footer />
