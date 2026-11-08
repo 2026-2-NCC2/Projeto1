@@ -24,8 +24,8 @@ const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
 function atalhos(pendentes) {
   return [
     { to: '/AprovarCadastros', Icone: IconCheck, titulo: 'Aprovar Cadastros', desc: `${plural(pendentes, 'solicitação aguardando', 'solicitações aguardando')} revisão`, badge: pendentes, pronto: true },
-    { Icone: IconUsuarios, titulo: 'Lista de Usuários', desc: 'Compradores, vendedores e suas permissões', pronto: false },
-    { Icone: IconRelatorio, titulo: 'Relatórios', desc: 'Atividade da plataforma e métricas de uso', pronto: false },
+    { to: '/admin/usuarios', Icone: IconUsuarios, titulo: 'Lista de Usuários', desc: 'Compradores, vendedores e suas permissões', pronto: true },
+    { to: '/admin/relatorios', Icone: IconRelatorio, titulo: 'Relatórios', desc: 'Atividade da plataforma e métricas de uso', pronto: true },
   ];
 }
 
