@@ -3,7 +3,10 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import CenaConta from '../components/ui/CenaConta'
 import Folha from '../components/ui/Folha'
 import { btn, campoCls, erroCls, linkClaroCls, rotuloCls } from '../components/ui/estilos'
-import { loginUsuario } from '../services/api'
+import Footer from '../components/Footer'
+import Sticker from '../components/Sticker'
+import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
+import { loginUsuario, reenviarVerificacao } from '../services/api'
 import { useAuth } from '../services/AuthContext'
 import { erroEmail } from '../utils/validacao'
 
@@ -23,6 +26,21 @@ function Login() {
   const location = useLocation()
 
   const [apiLoading, setApiLoading] = useState(false)
+
+  // true quando o servidor diz que falta confirmar o e-mail (mostra o botao de reenviar)
+  const [precisaConfirmar, setPrecisaConfirmar] = useState(false)
+  const [reenvio, setReenvio] = useState({ carregando: false, mensagem: '' })
+
+  // pede um novo link de confirmacao pro e-mail digitado
+  async function handleReenviar() {
+    setReenvio({ carregando: true, mensagem: '' })
+    try {
+      const r = await reenviarVerificacao(email)
+      setReenvio({ carregando: false, mensagem: r.mensagem })
+    } catch (err) {
+      setReenvio({ carregando: false, mensagem: err.message })
+    }
+  }
 
   // valida os campos e devolve os erros encontrados
   // se voltar vazio e porque ta tudo certo
@@ -48,6 +66,8 @@ function Login() {
       return
     }
     setErros({})
+    setPrecisaConfirmar(false)
+    setReenvio({ carregando: false, mensagem: '' })
     setApiLoading(true)
     try {
       const usuario = await loginUsuario({ email, senha })
@@ -57,6 +77,7 @@ function Login() {
       navigate(destino ? `${destino.pathname}${destino.search}` : '/PainelDeEventos', { replace: true })
     } catch (err) {
         setErros({ senha: err.message })
+        setPrecisaConfirmar(err.codigo === 'email_nao_verificado')
     } finally {
       setApiLoading(false) // sem isso o botao ficaria preso depois de um erro
     }
@@ -86,6 +107,17 @@ function Login() {
               {erros.senha && <span className={erroCls} role="alert">{erros.senha}</span>}
             </div>
           </div>
+
+          {/* e-mail ainda nao confirmado: da pra pedir um novo link */}
+          {precisaConfirmar && (
+            <div className="mb-4 text-sm text-tt-grafite/70">
+              <button type="button" onClick={handleReenviar} disabled={reenvio.carregando}
+                className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-tt-azul-marinho underline disabled:cursor-not-allowed disabled:opacity-50">
+                {reenvio.carregando ? 'Enviando...' : 'Reenviar e-mail de confirmação'}
+              </button>
+              {reenvio.mensagem && <p className="mt-2" role="status">{reenvio.mensagem}</p>}
+            </div>
+          )}
 
           {/* voltar pra home e entrar */}
           <div className="mt-8 grid grid-cols-[auto_1fr] gap-3">

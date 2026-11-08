@@ -6,6 +6,7 @@ import LandingPage from '../pages/LandingPage'
 import NotFound from '../pages/NotFound'
 import Cadastro from '../pages/Cadastro'
 import Login from '../pages/Login'
+import VerificarEmail from '../pages/VerificarEmail'
 import PainelDeEventos from '../pages/PainelDeEventos'
 import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
 import EventRegistration from '../components/EventRegistration.jsx'
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <LandingPage /> },
       { path: '/Cadastro', element: <Cadastro /> },
       { path: '/Login', element: <Login /> },
+      { path: '/verificar-email', element: <VerificarEmail /> },
       { path: '/PainelDeEventos', element: <PainelDeEventos /> },
 
       // perfil do usuario — qualquer perfil logado

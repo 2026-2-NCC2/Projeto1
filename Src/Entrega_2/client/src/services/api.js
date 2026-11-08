@@ -42,6 +42,7 @@ export async function solicitar(path, options = {}, mensagemPadrao = 'Não foi p
     erro.status = response.status
     erro.campo = data.campo // 409: qual campo já existe ('email' | 'username' | 'cnpj')
     erro.campos = data.campos // 400: { campo: mensagem } vindo da validação do servidor
+    erro.codigo = data.codigo // 403 no login: 'email_nao_verificado' quando falta confirmar o e-mail
     throw erro
   }
 
@@ -54,6 +55,16 @@ export function cadastrarUsuario(dados) {
 
 export function loginUsuario(dados) {
   return solicitar('/login', { method: 'POST', body: JSON.stringify(dados) }, 'Erro ao entrar.')
+}
+
+// Confirma o e-mail com o token que veio no link do e-mail
+export function verificarEmail(token) {
+  return solicitar('/verificar-email', { method: 'POST', body: JSON.stringify({ token }) }, 'Não foi possível confirmar o e-mail.')
+}
+
+// Pede um novo link de confirmação (a resposta é a mesma exista a conta ou não)
+export function reenviarVerificacao(email) {
+  return solicitar('/reenviar-verificacao', { method: 'POST', body: JSON.stringify({ email }) }, 'Não foi possível reenviar o e-mail.')
 }
 
 export function buscarCadastros() {
