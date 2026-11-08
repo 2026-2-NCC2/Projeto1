@@ -13,6 +13,7 @@ const tokens={fornecedor:assinar(7,'fornecedor'),organizador:assinar(8,'organiza
 let resposta='enviada'
 let coberta=0
 let commits=0, rollbacks=0, inserts=0
+let ultimoEvento=null, ultimaProposta=null, propostaVencida=false
 
 // Resolve a resposta simulada pra cada formato de query que as rotas mandam.
 // `texto` é o SQL com `?` no lugar de cada valor interpolado (facilita
@@ -21,12 +22,14 @@ function resolverQuery(texto, args) {
  if(/SELECT\s+id_evento\s+FROM evento/.test(texto))return Number(args[0])===1?[{id_evento:1}]:[]
  if(texto.includes('SELECT i.*'))return [{id_item_custo:10,categoria:'Estrutura',descricao_detalhada:'Tenda',quantidade:5,valor_unitario:100,quantidade_coberta:coberta,quantidade_restante:Math.max(0,5-coberta)}]
  if(texto.includes('SELECT e.id_evento'))return args[1]===8?[{id_evento:1}]:[]
- if(texto.includes('SELECT * FROM solicitacao_fornecimento'))return [{status:resposta}]
+ if(/SELECT \*,\s*\(data_validade[^)]*\) AS vencida\s+FROM solicitacao_fornecimento/.test(texto))return [{status:resposta,vencida:propostaVencida}]
  if(texto.includes('SELECT * FROM produto_solicitacao'))return [{id_item_custo_fk:10,quantidade:2}]
  if(texto.includes('SELECT f.id_fornecedor'))return [{id_fornecedor:7,nome_organizacao:'Empresa teste',id:1,produto:'Tenda',quantidade:2,descricao_detalhada:'Tenda'}]
+ if(texto.trim().startsWith('INSERT INTO evento (')){ultimoEvento=args;return [{id_evento:55}]}
+ if(texto.trim().startsWith('UPDATE evento')){ultimoEvento=args;const r=[];r.count=1;return r}
  if(texto.trim().startsWith('INSERT')){
   inserts++
-  if(texto.includes('solicitacao_fornecimento'))return [{id:123}]
+  if(texto.includes('solicitacao_fornecimento')){ultimaProposta=args;return [{id:123}]}
   return [{}]
  }
  if(texto.trim().startsWith('UPDATE solicitacao')){
@@ -147,4 +150,57 @@ test('empresas confirmadas disponíveis aos dois perfis; clientes bloqueados',as
   assert.equal((await r.json())[0].nome_organizacao,'Empresa teste')
  }
  assert.equal((await request('/eventos/1/fornecedores','cliente')).status,403)
+})
+// RF05: cadastro e edição de eventos (público mínimo/máximo e rascunho)
+const amanha=new Date(Date.now()+86400000).toISOString().slice(0,10)
+const novoEvento=(lotes={},extra={})=>({
+ eventData:{name:'Festa',date:amanha,startTime:'20:00',endTime:'23:00',location:'Clube',city:'São Paulo, SP'},
+ lotData:{firstLot:'50,00',secondLot:'',minAudience:'100',maxAudience:'500',margin:'',...lotes},
+ groups:[],independentCosts:[],...extra
+})
+test('criar evento exige público mínimo e máximo coerentes',async()=>{
+ ultimoEvento=null
+ for(const lotes of [{minAudience:''},{maxAudience:''},{minAudience:'600'},{maxAudience:'0'},{minAudience:'abc'}])
+  assert.equal((await request('/eventos','organizador','POST',novoEvento(lotes))).status,400)
+ assert.equal(ultimoEvento,null)
+})
+test('criar evento publica por padrão e aceita rascunho',async()=>{
+ let r=await request('/eventos','organizador','POST',novoEvento())
+ assert.equal(r.status,201)
+ assert.ok(ultimoEvento.includes(100)&&ultimoEvento.includes(500)&&ultimoEvento.includes('publicado'))
+ r=await request('/eventos','organizador','POST',novoEvento({},{status:'rascunho'}))
+ assert.equal(r.status,201);assert.ok(ultimoEvento.includes('rascunho'))
+ assert.equal((await request('/eventos','cliente','POST',novoEvento())).status,403)
+})
+test('editar evento altera público mínimo e máximo e valida os limites',async()=>{
+ const base={titulo:'Festa',inicio:amanha,fim:amanha,endereco:'Clube, SP',status:'Publicado',ticket:'50',publicoMinimo:'200',publicoMaximo:'900'}
+ const r=await request('/eventos/55','organizador','PATCH',base)
+ assert.equal(r.status,200);assert.ok(ultimoEvento.includes(200)&&ultimoEvento.includes(900))
+ for(const mudanca of [{publicoMinimo:''},{publicoMaximo:undefined},{publicoMinimo:'1000'},{publicoMaximo:'0',publicoMinimo:'0'},{publicoMinimo:'-1'}])
+  assert.equal((await request('/eventos/55','organizador','PATCH',{...base,...mudanca})).status,400)
+})
+
+// RF10: validade e observações da proposta
+const dia=(n)=>{const d=new Date();d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+test('proposta grava validade e observações; ambos são opcionais',async()=>{
+ coberta=0;resposta='enviada'
+ let r=await request('/propostas','fornecedor','POST',{...proposta,validade:dia(5),observacoes:'  Pagamento em 30 dias  '})
+ assert.equal(r.status,201);assert.ok(ultimaProposta.includes(dia(5))&&ultimaProposta.includes('Pagamento em 30 dias'))
+ r=await request('/propostas','fornecedor','POST',proposta)
+ assert.equal(r.status,201);assert.equal(ultimaProposta[3],null);assert.equal(ultimaProposta[4],null)
+ r=await request('/propostas','fornecedor','POST',{...proposta,validade:dia(0)});assert.equal(r.status,201)
+})
+test('proposta recusa validade inválida/passada e observações longas',async()=>{
+ const antes=inserts
+ for(const mudanca of [{validade:dia(-1)},{validade:'2026-02-30'},{validade:'amanhã'},{validade:20260101},{observacoes:'x'.repeat(1001)},{observacoes:123}])
+  assert.equal((await request('/propostas','fornecedor','POST',{...proposta,...mudanca})).status,400)
+ assert.equal(inserts,antes)
+})
+test('proposta vencida não pode ser aceita, mas pode ser recusada',async()=>{
+ coberta=0;resposta='enviada';propostaVencida=true
+ const r=await request('/propostas/123','organizador','PATCH',{status:'aceita'})
+ assert.equal(r.status,409);assert.match((await r.json()).erro,/vencida/)
+ assert.equal(resposta,'enviada')
+ assert.equal((await request('/propostas/123','organizador','PATCH',{status:'recusada'})).status,200)
+ propostaVencida=false;resposta='enviada'
 })

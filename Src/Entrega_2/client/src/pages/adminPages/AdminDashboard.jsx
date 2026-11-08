@@ -145,49 +145,27 @@ export default function AdminDashboard() {
           ))}
         </ul>
 
-        <div className="mt-14 grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-          {/* Acesso rapido: atalhos pras outras paginas do admin */}
-          <section aria-labelledby="titulo-atalhos" className="min-w-0">
-            <h2 id="titulo-atalhos" className="mb-5 text-2xl font-black tracking-[-0.015em]">Acesso rápido</h2>
-            <ul className="divide-y divide-white/10 border-y border-white/10">
-              {atalhos(stats.pendentes).map(({ to, Icone, titulo, desc, badge, pronto }) => {
-                const conteudo = (
-                  <>
-                    <span className={`grid size-10 shrink-0 place-items-center rounded-none ${pronto ? 'bg-gel-indigo text-tinta' : 'bg-palco-3 text-white/60'}`}><Icone tamanho={18} /></span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex flex-wrap items-center gap-2 font-bold">
-                        {titulo}
-                        {pronto && !semDados && badge > 0 && (
-                          <span className="tabular rounded-none bg-gel-ambar px-2 py-0.5 text-[11px] font-bold text-tinta">
-                            {badge}<span className="sr-only"> pendentes</span>
-                          </span>
-                        )}
-                        {!pronto && (
-                          <span className="border border-white/30 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] text-white/70">Em breve</span>
-                        )}
-                      </span>
-                      <span className="mt-0.5 block text-[13px] text-white/55">{desc}</span>
-                    </span>
-                  </>
-                );
-                return (
-                  <li key={titulo}>
-                    {pronto ? (
-                      <Link to={to} className="group flex items-center gap-4 py-4 text-white no-underline transition-colors">
-                        {conteudo}
-                        <span className="text-white/40 transition-transform duration-150 group-hover:translate-x-1 group-hover:text-white group-focus-visible:translate-x-1"><IconSeta /></span>
-                      </Link>
-                    ) : (
-                      // pagina ainda nao existe: nao e link, so mostra que vem ai
-                      <div className="flex cursor-not-allowed items-center gap-4 py-4 text-white/55" aria-disabled="true">
-                        {conteudo}
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+        {/* Acesso rapido - atalhos pras outras paginas do admin */}
+        <section className="relative mt-16">
+          <TituloSecao legenda="Atalhos" titulo="Acesso rápido" />
+          {/* fita cassete colada no canto do titulo, so aparece em tela maior */}
+          <Sticker nome="fita" tamanho={138} rotate={7} delay={0.8} className="-top-6 right-0 hidden md:block" />
+          <div className="grid gap-4 md:grid-cols-3">
+            {/* o badge mostra quantos cadastros tao esperando aprovacao */}
+            <QuickCard to="/AprovarCadastros" icon={<IconCheck />} numero="01"
+              titulo="Aprovar Cadastros"
+              desc={`${stats.pendentes} solicitações aguardando revisão`}
+              badge={stats.pendentes}
+            />
+            <QuickCard to="/admin/usuarios" icon={<IconUsers />} numero="02"
+              titulo="Lista de Usuários"
+              desc="Compradores, vendedores e suas permissões" />
+            <QuickCard to="/admin/relatorios" icon={<IconReport />} numero="03"
+              titulo="Relatórios"
+              desc="Atividade da plataforma e métricas de uso"
+            />
+          </div>
+        </section>
 
           {/* Cadastros recentes: ultimos pedidos que chegaram */}
           <section aria-labelledby="titulo-recentes" className="min-w-0">

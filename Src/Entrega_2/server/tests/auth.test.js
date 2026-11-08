@@ -97,6 +97,15 @@ const server = app.listen(0, '127.0.0.1')
 await new Promise((r) => server.once('listening', r))
 after(() => server.close())
 const base = `http://127.0.0.1:${server.address().port}/api`
+test('consultas gerenciais exigem login e perfil de administrador', async () => {
+    for (const rota of ['/admin/usuarios', '/admin/relatorios', '/admin/eventos/1']) {
+        assert.equal((await fetch(base + rota)).status, 401)
+        for (const perfil of ['cliente', 'organizador', 'fornecedor']) {
+            const token = jwt.sign({ id_usuario: 4, perfil }, process.env.JWT_SECRET)
+            assert.equal((await fetch(base + rota, { headers: { Authorization: `Bearer ${token}` } })).status, 403)
+        }
+    }
+})
 const post = (caminho, corpo, token) => fetch(base + caminho, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(corpo) })
 const patch = (caminho, corpo, token) => fetch(base + caminho, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(corpo) })
 

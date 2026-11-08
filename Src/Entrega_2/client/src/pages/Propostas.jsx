@@ -139,52 +139,62 @@ export default function Propostas() {
             </p>
           </div>
         ) : (
-          visiveis.map((p) => {
-            const gel = GELS[gelDoId(p.id_evento ?? p.id)]
-            return (
-              <article key={p.id} className="relative overflow-hidden rounded-none border-[1.5px] border-black bg-folha text-tinta shadow-folha">
-                {/* faixa fina no topo, na gelatina do evento */}
-                <div className={`h-2 ${gel.bg}`} aria-hidden="true" />
-                <div className="px-6 py-6 sm:px-8 sm:py-7">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-mono text-[11px] tracking-[0.04em] text-tinta/55">Proposta #{p.id} · {new Date(p.criada_em).toLocaleDateString('pt-BR')}</p>
-                      <h2 className="mt-1.5 text-xl font-extrabold leading-tight">{p.titulo_evento}</h2>
-                      <p className="mt-1 text-sm text-tinta/65">{fornecedor ? `Para: ${p.organizador}` : `De: ${p.fornecedor}`}</p>
-                    </div>
-                    <Badge label={STATUS[p.status]} variant={p.status} />
-                  </div>
+          visiveis.map((p) => (
+            <article key={p.id} className="rounded-2xl border border-tt-azul-marinho/10 bg-tt-branco p-5 shadow-sm sm:p-7">
+              <div className="flex flex-wrap justify-between gap-3">
+                <div>
+                  <p className="text-xs text-tt-grafite/70">Proposta #{p.id} · {new Date(p.criada_em).toLocaleDateString('pt-BR')}</p>
+                  <h2 className="mt-1 text-xl font-bold">{p.titulo_evento}</h2>
+                  <p className="mt-1 text-sm">{fornecedor ? `Para: ${p.organizador}` : `De: ${p.fornecedor}`}</p>
+                </div>
+                <span className={`h-fit rounded-full px-3 py-1 text-xs font-bold ${STATUS[p.status].classe}`}>
+                  {STATUS[p.status].rotulo}
+                </span>
+              </div>
 
-                  <ul className="tabular mt-5 divide-y divide-tinta/10 border-y border-tinta/10">
-                    {p.produtos.map((i) => (
-                      <li key={i.id} className="flex flex-wrap items-baseline justify-between gap-2 py-3 text-sm">
-                        <span className="min-w-0">
-                          <strong className="font-semibold">{i.produto}</strong>
-                          <span className="ml-2 text-tinta/60">{i.quantidade} × {brl(i.valor_unitario)}</span>
-                        </span>
-                        <strong>{brl(i.quantidade * Number(i.valor_unitario))}</strong>
-                      </li>
-                    ))}
-                  </ul>
+              <ul className="my-5 divide-y divide-tt-azul-marinho/10">
+                {p.produtos.map((i) => (
+                  <li key={i.id} className="flex flex-wrap justify-between gap-2 py-3 text-sm">
+                    <span>
+                      <strong>{i.produto}</strong>
+                      <br />
+                      {i.quantidade} × {brl(i.valor_unitario)}
+                    </span>
+                    <strong>{brl(i.quantidade * Number(i.valor_unitario))}</strong>
+                  </li>
+                ))}
+              </ul>
 
-                  <div className="mt-4 flex items-baseline justify-between gap-4">
-                    <span className={dadoRotuloCls}>Total da proposta</span>
-                    <span className="tabular text-2xl font-black tracking-[-0.015em]">{brl(totalDaProposta(p.produtos))}</span>
-                  </div>
+              <div className="flex justify-between rounded-xl bg-tt-cinza-claro p-4 font-bold">
+                <span>Total da proposta</span>
+                <span>{brl(totalDaProposta(p.produtos))}</span>
+              </div>
+              <p className="mt-4 whitespace-pre-wrap break-words rounded-xl border border-tt-azul-marinho/10 p-4 text-sm">{p.mensagem}</p>
+              {p.observacoes && (
+                <p className="mt-3 whitespace-pre-wrap break-words rounded-xl border border-tt-azul-marinho/10 p-4 text-sm">
+                  <strong>Observações:</strong> {p.observacoes}
+                </p>
+              )}
+              {p.data_validade && (
+                <p className={`mt-3 text-sm font-bold ${p.vencida && p.status === 'enviada' ? 'text-tt-rosa-principal' : ''}`}>
+                  Válida até {p.data_validade.split('-').reverse().join('/')}
+                  {p.vencida && p.status === 'enviada' ? ' · vencida' : ''}
+                </p>
+              )}
 
-                  <blockquote className="m-0 mt-5 whitespace-pre-wrap break-words rounded-none bg-tinta/[0.04] px-4 py-3 text-sm leading-relaxed text-tinta/80">{p.mensagem}</blockquote>
-
-                  {/* so o organizador responde, e so se a proposta ainda ta aguardando */}
-                  {perfil === 'organizador' && p.status === 'enviada' && (
-                    <div className="mt-5 flex flex-wrap justify-end gap-3">
-                      <button disabled={ocupado === p.id} onClick={() => responder(p.id, 'recusada')} className={btn('perigo')}>
-                        Recusar proposta
-                      </button>
-                      <button disabled={ocupado === p.id} onClick={() => responder(p.id, 'aceita')} className={btn('primario')}>
-                        {ocupado === p.id ? 'Salvando…' : 'Aceitar proposta'}
-                      </button>
-                    </div>
-                  )}
+              {/* so o organizador responde, e so se a proposta ainda ta aguardando */}
+              {perfil === 'organizador' && p.status === 'enviada' && (
+                <div className="mt-5 flex flex-wrap justify-end gap-3">
+                  <button
+                    disabled={ocupado === p.id}
+                    onClick={() => responder(p.id, 'recusada')}
+                    className="rounded-xl border border-tt-rosa-principal px-4 py-2 text-sm font-bold text-tt-rosa-principal disabled:opacity-50"
+                  >
+                    Recusar proposta
+                  </button>
+                  <button disabled={ocupado === p.id || p.vencida} onClick={() => responder(p.id, 'aceita')} className={botao}>
+                    {ocupado === p.id ? 'Salvando…' : 'Aceitar proposta'}
+                  </button>
                 </div>
               </article>
             )

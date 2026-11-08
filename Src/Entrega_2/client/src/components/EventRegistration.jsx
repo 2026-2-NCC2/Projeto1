@@ -79,6 +79,8 @@ export default function EventRegistration() {
   const [resumo, setResumo] = useState(null);
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
+  // true = salva como rascunho em vez de publicar
+  const [rascunho, setRascunho] = useState(false);
   // A etapa 4 apenas abre a revisão; não envia nada para a API.
   function revisar(dados) {
     if (step !== 4 || salvando || finished) return;
@@ -103,6 +105,7 @@ export default function EventRegistration() {
         body: JSON.stringify({
           eventData,
           lotData,
+          status: rascunho ? 'rascunho' : 'publicado',
           groups: gruposFinais,
           independentCosts: independentCosts.map((cost) => ({
             ...cost,
@@ -258,34 +261,46 @@ export default function EventRegistration() {
                 <h2 id="titulo-revisao" className="text-2xl font-black tracking-[-0.015em]">
                   Revise antes de salvar o evento
                 </h2>
-                <p className="mt-2 text-sm text-tinta/65">
-                  O evento só será publicado ao clicar em Confirmar e salvar.
+                <p className="mt-2 text-sm text-tt-grafite/70">
+                  {rascunho
+                    ? 'O evento será salvo como rascunho e só você poderá vê-lo.'
+                    : 'O evento só será publicado ao clicar em Confirmar e salvar.'}
                 </p>
-
-                <div className="mt-6 border-t border-tinta/10 pt-5">
-                  <p className="text-lg font-extrabold">{eventData.name}</p>
-                  <p className="mt-1 text-sm text-tinta/70">
-                    {eventData.date} · {eventData.startTime} às {eventData.endTime}
-                  </p>
-                </div>
-
-                <dl className="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-3">
-                  <div>
-                    <dt className={dadoRotuloCls}>Lote inicial</dt>
-                    <dd className="tabular mt-1 font-bold">{brlTexto(String(lotData.firstLot).replace(',', '.'))}</dd>
-                  </div>
-                  <div>
-                    <dt className={dadoRotuloCls}>Margem de lucro</dt>
-                    <dd className="mt-1 font-bold">{lotData.margin?.trim() ? `${lotData.margin}%` : 'não informada (0%)'}</dd>
-                  </div>
-                  <div>
-                    <dt className={dadoRotuloCls}>Custos independentes</dt>
-                    <dd className="mt-1 font-bold">{independentCosts.length} adicionados</dd>
-                  </div>
-                </dl>
-
-                <p className="mt-6 font-bold">
-                  Itens de custo: {revisao.groups.reduce((sum, group) => sum + group.items.length, 0)}
+                <label className="mt-3 flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={rascunho}
+                    disabled={salvando}
+                    onChange={(e) => setRascunho(e.target.checked)}
+                  />
+                  Salvar como rascunho (não publicar ainda)
+                </label>
+                <p className="mt-4 font-bold">{eventData.name}</p>
+                <p className="text-sm">
+                  {eventData.date} · {eventData.startTime} às{' '}
+                  {eventData.endTime}
+                </p>
+                <p className="mt-3 text-sm">
+                  Lote inicial:{' '}
+                  {Number(
+                    String(lotData.firstLot).replace(',', '.'),
+                  ).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </p>
+                <p className="text-sm">
+                  Margem de lucro: {lotData.margin?.trim() ? `${lotData.margin}%` : 'não informada (0%)'}
+                </p>
+                <p className="text-sm">
+                  Custos independentes adicionados: {independentCosts.length}
+                </p>
+                <p className="mt-3 font-bold">
+                  Itens de custo:{' '}
+                  {revisao.groups.reduce(
+                    (sum, group) => sum + group.items.length,
+                    0,
+                  )}
                 </p>
                 <ul className="mt-2 divide-y divide-tinta/10 border-y border-tinta/10">
                   {revisao.groups.flatMap((group) =>

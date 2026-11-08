@@ -113,6 +113,8 @@ CREATE TABLE solicitacao_fornecimento (
     id_evento_fk INT NOT NULL,
     id_fornecedor_fk INT NOT NULL,
     mensagem VARCHAR(1000) NOT NULL,
+    data_validade DATE NULL,           -- RF10: até quando a proposta vale (opcional)
+    observacoes VARCHAR(1000) NULL,    -- RF10: observações adicionais do fornecedor (opcional)
     status tipo_status_solicitacao NOT NULL DEFAULT 'enviada',
     criada_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,  -- [MELHORIA] TIMESTAMPTZ
     respondida_em TIMESTAMPTZ NULL,                   -- [MELHORIA] TIMESTAMPTZ
@@ -141,6 +143,10 @@ CREATE INDEX idx_proposta_status ON proposta(status_proposta);
 -- O Postgres NAO cria indice automatico para chave estrangeira. Estes indices
 -- aceleram os JOINs e os DELETE ... CASCADE usados pelas rotas de eventos e propostas.
 -- IF NOT EXISTS: pode ser rodado de novo, inclusive no banco que ja existe, sem apagar nada.
+-- Migração (RF10) para bancos já criados antes das colunas existirem. Seguro rodar de novo.
+ALTER TABLE solicitacao_fornecimento ADD COLUMN IF NOT EXISTS data_validade DATE NULL;
+ALTER TABLE solicitacao_fornecimento ADD COLUMN IF NOT EXISTS observacoes VARCHAR(1000) NULL;
+
 CREATE INDEX IF NOT EXISTS idx_evento_organizador ON evento(id_organizador_fk);
 CREATE INDEX IF NOT EXISTS idx_itemcusto_evento ON itemcusto(id_evento_fk);
 CREATE INDEX IF NOT EXISTS idx_custoindependente_evento ON custoindependente(id_evento_fk);
