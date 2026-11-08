@@ -2,14 +2,29 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../services/AuthContext'
 import { solicitar } from '../services/api'
-import { brl, campo, botao } from '../styles/propostas'
+import { brl } from '../utils/formato'
+import Aviso from '../components/ui/Aviso'
+import Badge from '../components/ui/Badge'
+import CabecalhoPagina from '../components/ui/CabecalhoPagina'
+import Spinner from '../components/ui/Spinner'
+import Semicirculos from '../components/ui/Semicirculos'
+import { IconVoltar } from '../components/ui/Icones'
+import { GELS, btn, containerCls, dadoRotuloCls, gelDoId } from '../components/ui/estilos'
 
-// texto e cor da etiqueta de cada status (os mesmos do banco: enviada, aceita, recusada)
+// texto de cada status (os mesmos do banco: enviada, aceita, recusada); a cor vem do Badge
 const STATUS = {
-  enviada: { rotulo: 'Aguardando resposta', classe: 'bg-tt-laranja-claro' },
-  aceita: { rotulo: 'Aceita', classe: 'bg-tt-verde-claro' },
-  recusada: { rotulo: 'Recusada', classe: 'bg-tt-rosa-claro text-tt-rosa-principal' },
+  enviada: 'Aguardando resposta',
+  aceita: 'Aceita',
+  recusada: 'Recusada',
 }
+
+// filtros por status (o valor bate com o banco)
+const FILTROS = [
+  { valor: 'todas', rotulo: 'Todas' },
+  { valor: 'enviada', rotulo: 'Aguardando' },
+  { valor: 'aceita', rotulo: 'Aceitas' },
+  { valor: 'recusada', rotulo: 'Recusadas' },
+]
 
 // soma em centavos pra nao dar erro de arredondamento
 function totalDaProposta(produtos) {
@@ -63,10 +78,10 @@ export default function Propostas() {
   // a rota ja e protegida pelo ProtectedRoute, isso aqui e so por garantia
   if (!permitido) {
     return (
-      <main className="mx-auto max-w-5xl p-8">
-        <h1 className="text-2xl font-bold">Acesso restrito</h1>
-        <p>Esta área é exclusiva de fornecedores e organizadores.</p>
-        <Link to="/Login" className="text-tt-azul-principal underline">Entrar</Link>
+      <main className={`${containerCls} py-16`}>
+        <h1 className="text-3xl font-black">Acesso restrito</h1>
+        <p className="mt-2 text-white/70">Esta área é exclusiva de fornecedores e organizadores.</p>
+        <Link to="/Login" className={`${btn('primario')} mt-6`}>Entrar</Link>
       </main>
     )
   }
@@ -74,96 +89,106 @@ export default function Propostas() {
   const visiveis = dados.filter((p) => filtro === 'todas' || p.status === filtro)
 
   return (
-    <main className="tt-canvas tt-canvas--semis min-h-screen">
-      <section className="relative overflow-hidden border-b-[1.5px] border-tt-branco/25 px-5 py-12 text-tt-branco">
-        <div className="mx-auto max-w-5xl">
-          <p className="tt-eyebrow text-xs font-extrabold uppercase tracking-[0.1em] text-tt-branco before:bg-tt-branco">Negócios no TrocaTicket</p>
-          <h1 className="tt-display mt-3 text-[clamp(32px,5vw,56px)]">{fornecedor ? 'Propostas enviadas' : 'Propostas recebidas'}</h1>
-          <p className="mt-3 text-tt-branco/75">
-            {fornecedor
-              ? 'Acompanhe suas ofertas e as respostas dos organizadores.'
-              : 'Confira os produtos, compare os custos e responda aos fornecedores.'}
-          </p>
+    <main className="relative min-h-[calc(100svh-68px)] overflow-x-clip fundo-luz pb-24">
+      <Semicirculos />
+      <CabecalhoPagina
+        titulo={fornecedor ? 'Propostas enviadas' : 'Propostas recebidas'}
+        sub={fornecedor
+          ? 'Acompanhe suas ofertas e as respostas dos organizadores.'
+          : 'Confira os produtos, compare os custos e responda aos fornecedores.'}
+        voltar={
+          <Link className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-white/70 no-underline transition-colors hover:text-white" to="/PainelDeEventos">
+            <IconVoltar /> Painel de eventos
+          </Link>
+        }
+      />
+
+      <div className="mx-auto w-full max-w-[920px] space-y-5 px-4 pt-8 sm:px-6">
+        {/* filtro por status: controle segmentado com a contagem de cada um */}
+        <div className="flex flex-wrap border-[1.5px] border-white/40 bg-palco-2 sm:w-fit" role="group" aria-label="Filtrar por status">
+          {FILTROS.map((f) => {
+            const qtd = f.valor === 'todas' ? dados.length : dados.filter((p) => p.status === f.valor).length
+            const ativo = filtro === f.valor
+            return (
+              <button
+                key={f.valor}
+                type="button"
+                aria-pressed={ativo}
+                onClick={() => setFiltro(f.valor)}
+                className={`flex items-center gap-2 rounded-none border-r-[1.5px] border-white/20 px-3.5 py-2 text-xs font-bold uppercase tracking-[0.06em] transition-colors last:border-r-0 ${ativo ? 'bg-folha text-tinta' : 'text-white/65 hover:bg-white/8 hover:text-white'}`}
+              >
+                {f.rotulo}
+                <span className={`tabular font-mono text-[11px] ${ativo ? 'text-tinta/55' : 'text-white/40'}`}>{qtd}</span>
+              </button>
+            )
+          })}
         </div>
-      </section>
 
-      <div className="mx-auto max-w-5xl space-y-5 px-5 py-8">
-        <Link className="inline-block text-sm font-bold text-tt-branco underline underline-offset-4 hover:text-tt-roxo-suave" to="/PainelDeEventos">← Painel de eventos</Link>
-
-        <label className="block max-w-xs text-sm font-bold">
-          Status
-          <select className={`${campo} mt-2`} value={filtro} onChange={(e) => setFiltro(e.target.value)}>
-            <option value="todas">Todas as propostas</option>
-            <option value="enviada">Aguardando resposta</option>
-            <option value="aceita">Aceitas</option>
-            <option value="recusada">Recusadas</option>
-          </select>
-        </label>
-
-        {erro && <p role="alert" className="border-[1.5px] border-tt-rosa-principal bg-tt-rosa-claro p-4 text-tt-rosa-principal">{erro}</p>}
-        {aviso && <p role="status" className="border-[1.5px] border-tt-azul-marinho bg-tt-verde-claro p-4 text-tt-azul-marinho">{aviso}</p>}
+        {erro && <Aviso tipo="erro" escuro>{erro}</Aviso>}
+        {aviso && <Aviso tipo="sucesso" escuro>{aviso}</Aviso>}
 
         {carregando ? (
-          <p role="status" className="text-tt-branco/80">Carregando propostas…</p>
+          <Spinner text="Carregando propostas…" escuro />
         ) : !visiveis.length ? (
-          <div className="tt-card p-10 text-center">
-            <h2 className="tt-display text-2xl">Nenhuma proposta por aqui</h2>
-            <p className="mt-2 text-tt-grafite/70">
+          <div className="rounded-none border border-dashed border-white/15 px-6 py-16 text-center">
+            <h2 className="text-2xl font-black tracking-[-0.015em]">Nenhuma proposta por aqui</h2>
+            <p className="mx-auto mt-2 max-w-[44ch] text-white/60">
               {fornecedor
                 ? 'Acesse os custos de um evento para enviar sua primeira proposta.'
                 : 'As propostas dos fornecedores aparecerão aqui.'}
             </p>
           </div>
         ) : (
-          visiveis.map((p) => (
-            <article key={p.id} className="tt-card p-5 sm:p-7">
-              <div className="flex flex-wrap justify-between gap-3">
-                <div>
-                  <p className="text-xs text-tt-grafite/70">Proposta #{p.id} · {new Date(p.criada_em).toLocaleDateString('pt-BR')}</p>
-                  <h2 className="mt-1 font-display text-xl font-black">{p.titulo_evento}</h2>
-                  <p className="mt-1 text-sm">{fornecedor ? `Para: ${p.organizador}` : `De: ${p.fornecedor}`}</p>
+          visiveis.map((p) => {
+            const gel = GELS[gelDoId(p.id_evento ?? p.id)]
+            return (
+              <article key={p.id} className="relative overflow-hidden rounded-none border-[1.5px] border-black bg-folha text-tinta shadow-folha">
+                {/* faixa fina no topo, na gelatina do evento */}
+                <div className={`h-2 ${gel.bg}`} aria-hidden="true" />
+                <div className="px-6 py-6 sm:px-8 sm:py-7">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-mono text-[11px] tracking-[0.04em] text-tinta/55">Proposta #{p.id} · {new Date(p.criada_em).toLocaleDateString('pt-BR')}</p>
+                      <h2 className="mt-1.5 text-xl font-extrabold leading-tight">{p.titulo_evento}</h2>
+                      <p className="mt-1 text-sm text-tinta/65">{fornecedor ? `Para: ${p.organizador}` : `De: ${p.fornecedor}`}</p>
+                    </div>
+                    <Badge label={STATUS[p.status]} variant={p.status} />
+                  </div>
+
+                  <ul className="tabular mt-5 divide-y divide-tinta/10 border-y border-tinta/10">
+                    {p.produtos.map((i) => (
+                      <li key={i.id} className="flex flex-wrap items-baseline justify-between gap-2 py-3 text-sm">
+                        <span className="min-w-0">
+                          <strong className="font-semibold">{i.produto}</strong>
+                          <span className="ml-2 text-tinta/60">{i.quantidade} × {brl(i.valor_unitario)}</span>
+                        </span>
+                        <strong>{brl(i.quantidade * Number(i.valor_unitario))}</strong>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-4 flex items-baseline justify-between gap-4">
+                    <span className={dadoRotuloCls}>Total da proposta</span>
+                    <span className="tabular text-2xl font-black tracking-[-0.015em]">{brl(totalDaProposta(p.produtos))}</span>
+                  </div>
+
+                  <blockquote className="m-0 mt-5 whitespace-pre-wrap break-words rounded-none bg-tinta/[0.04] px-4 py-3 text-sm leading-relaxed text-tinta/80">{p.mensagem}</blockquote>
+
+                  {/* so o organizador responde, e so se a proposta ainda ta aguardando */}
+                  {perfil === 'organizador' && p.status === 'enviada' && (
+                    <div className="mt-5 flex flex-wrap justify-end gap-3">
+                      <button disabled={ocupado === p.id} onClick={() => responder(p.id, 'recusada')} className={btn('perigo')}>
+                        Recusar proposta
+                      </button>
+                      <button disabled={ocupado === p.id} onClick={() => responder(p.id, 'aceita')} className={btn('primario')}>
+                        {ocupado === p.id ? 'Salvando…' : 'Aceitar proposta'}
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <span className={`tt-tag h-fit ${STATUS[p.status].classe}`}>
-                  {STATUS[p.status].rotulo}
-                </span>
-              </div>
-
-              <ul className="my-5 divide-y divide-tt-azul-marinho/10">
-                {p.produtos.map((i) => (
-                  <li key={i.id} className="flex flex-wrap justify-between gap-2 py-3 text-sm">
-                    <span>
-                      <strong>{i.produto}</strong>
-                      <br />
-                      {i.quantidade} × {brl(i.valor_unitario)}
-                    </span>
-                    <strong>{brl(i.quantidade * Number(i.valor_unitario))}</strong>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex justify-between border-[1.5px] border-tt-azul-marinho bg-tt-cinza-claro p-4 font-bold">
-                <span>Total da proposta</span>
-                <span>{brl(totalDaProposta(p.produtos))}</span>
-              </div>
-              <p className="mt-4 whitespace-pre-wrap break-words border-[1.5px] border-tt-azul-marinho p-4 text-sm">{p.mensagem}</p>
-
-              {/* so o organizador responde, e so se a proposta ainda ta aguardando */}
-              {perfil === 'organizador' && p.status === 'enviada' && (
-                <div className="mt-5 flex flex-wrap justify-end gap-3">
-                  <button
-                    disabled={ocupado === p.id}
-                    onClick={() => responder(p.id, 'recusada')}
-                    className="border-[1.5px] border-tt-rosa-principal px-4 py-2 text-sm font-bold text-tt-rosa-principal transition-colors hover:bg-tt-rosa-claro disabled:opacity-50"
-                  >
-                    Recusar proposta
-                  </button>
-                  <button disabled={ocupado === p.id} onClick={() => responder(p.id, 'aceita')} className={botao}>
-                    {ocupado === p.id ? 'Salvando…' : 'Aceitar proposta'}
-                  </button>
-                </div>
-              )}
-            </article>
-          ))
+              </article>
+            )
+          })
         )}
       </div>
     </main>

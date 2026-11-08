@@ -7,6 +7,8 @@ import {
   Select,
   Textarea,
 } from '../components/FormUI.jsx';
+import { IconMais, IconX } from '../components/ui/Icones';
+import { btn } from '../components/ui/estilos';
 
 // valores iniciais do formulario, usado tambem pra limpar depois de adicionar
 const initialDraft = { type: 'Fiscal', description: '', value: '' };
@@ -50,7 +52,7 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
   return (
     // card padrao das etapas do formulario
     <FormCard
-      eyebrow="Etapa 3 de 4"
+      gel="ceu"
       title="Custos Independentes"
       subtitle="Registre taxas, licenças e despesas que não pertencem a uma categoria operacional."
       footer={
@@ -94,42 +96,42 @@ export function IndependentCosts({ costs, setCosts, onBack, onNext }) {
         {/* botao de adicionar, fica alinhado na direita */}
         <button
           type="button"
-          className="-mt-1 min-h-[42px] cursor-pointer justify-self-end border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal px-4 py-2.5 text-[.78rem] font-extrabold text-tt-azul-marinho transition-transform duration-150 hover:-translate-y-px"
+          className={`${btn('tinta')} justify-self-end max-sm:w-full`}
           onClick={addCost}
         >
-          + Adicionar outro tipo de custo
+          <IconMais /> Adicionar outro tipo de custo
         </button>
       </div>
 
       {/* lista dos custos ja adicionados, so aparece se tiver algum */}
       {costs.length > 0 && (
-        <div className="mt-7 border-t border-tt-azul-marinho/12 pt-6">
-          <h2 className="mb-3 mt-0 text-[.95rem] text-tt-azul-marinho">
+        <div className="mt-8 border-t border-tinta/10 pt-6">
+          <h2 className="mb-2 text-base font-extrabold">
             Custos adicionados
           </h2>
           {costs.map((cost) => (
             // no celular o valor e o botao ficam um embaixo do outro
             <div
-              className="flex items-center justify-between gap-[18px] border-b border-tt-azul-marinho/12 py-3 max-[460px]:items-start"
+              className="flex items-center justify-between gap-5 border-b border-tinta/10 py-3.5 last:border-b-0 max-[460px]:items-start"
               key={cost.id}
             >
               {/* tipo e descricao na esquerda */}
-              <div className="grid gap-[3px]">
-                <strong>{cost.type}</strong>
-                <span className="text-[.75rem] text-tt-grafite/70">
+              <div className="grid min-w-0 gap-1">
+                <span className="w-fit rounded-none bg-gel-indigo/30 px-2 py-0.5 text-xs font-semibold text-gel-indigo-forte">{cost.type}</span>
+                <span className="break-words text-sm text-tinta/70">
                   {cost.description}
                 </span>
               </div>
               {/* valor e botao de remover na direita */}
               <div className="flex items-center gap-2.5 whitespace-nowrap max-[460px]:flex-col max-[460px]:items-end">
-                <strong className="text-[.8rem]">R$ {cost.value}</strong>
+                <strong className="tabular text-[15px]">R$ {cost.value}</strong>
                 <button
                   type="button"
-                  className="size-[30px] cursor-pointer border-0 bg-tt-cinza-claro font-black text-tt-grafite/70 hover:bg-tt-rosa-claro hover:text-tt-rosa-principal"
+                  className="grid size-8 place-items-center rounded-none text-tinta/55 transition-colors hover:bg-gel-rubi hover:text-white"
                   onClick={() => removeCost(cost.id)}
                   aria-label="Remover custo"
                 >
-                  ×
+                  <IconX />
                 </button>
               </div>
             </div>

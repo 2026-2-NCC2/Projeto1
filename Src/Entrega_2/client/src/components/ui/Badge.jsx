@@ -1,30 +1,48 @@
-// liga cada status/tipo a uma cor (as cores tt-... vem do styles/index.css)
-// pra adicionar um novo e so colocar mais um item aqui
-const CORES = {
-  sucesso: 'bg-tt-verde-claro text-tt-verde-sucesso',
-  perigo: 'bg-tt-rosa-claro text-tt-rosa-principal',
-  pendente: 'bg-tt-lilas-claro text-tt-roxo-principal',
-  primaria: 'bg-tt-lilas-claro text-tt-azul-principal',
-  destaque: 'bg-tt-verde-claro text-tt-azul-marinho',
-  neutra: 'bg-tt-cinza-claro text-tt-azul-marinho',
-};
+// etiqueta de status/tipo: uma amostrinha da gelatina + o texto
+// cada status tem sempre a mesma gelatina no site inteiro
+const COR = {
+  verde: 'bg-gel-verde',
+  rubi: 'bg-gel-rubi',
+  ambar: 'bg-gel-ambar',
+  indigo: 'bg-gel-indigo',
+  fogo: 'bg-gel-fogo',
+  ceu: 'bg-gel-ceu',
+  magenta: 'bg-gel-magenta',
+  neutra: 'bg-tinta/30',
+}
 
 const VARIANTS = {
-  pendente: CORES.pendente,
-  aprovado: CORES.sucesso,
-  rejeitado: CORES.perigo,
-  ativo: CORES.sucesso,
-  inativo: CORES.neutra,
-  administrador: CORES.primaria,
-  organizador: CORES.primaria,
-  fornecedor: CORES.destaque,
-};
+  pendente: 'ambar',
+  aprovado: 'verde',
+  rejeitado: 'rubi',
+  ativo: 'verde',
+  inativo: 'neutra',
+  publicado: 'verde',
+  rascunho: 'ambar',
+  encerrado: 'neutra',
+  cancelado: 'rubi',
+  enviada: 'ambar',
+  aceita: 'verde',
+  recusada: 'rubi',
+  administrador: 'indigo',
+  organizador: 'indigo',
+  fornecedor: 'ceu',
+  cliente: 'magenta',
+}
 
-// etiqueta colorida reutilizavel
-// label = texto que aparece / variant = qual cor usar
-export default function Badge({ label, variant }) {
-  // procura a cor pelo variant, se nao achar tenta pelo proprio texto, e se nada der certo fica cinza
-  const cor = VARIANTS[variant] || VARIANTS[label?.toLowerCase()] || CORES.neutra;
-  // capitalize deixa a primeira letra maiuscula (ex: "pendente" vira "Pendente")
-  return <span className={`inline-block border-[1.5px] border-tt-azul-marinho px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide ${cor}`}>{label}</span>;
+// label = texto / variant = qual cor (se nao vier, tenta pelo proprio texto) / escuro = versao pra fundo escuro
+export default function Badge({ label, variant, escuro = false, className = '' }) {
+  // so a primeira letra maiuscula (ex: "aguardando resposta" vira "Aguardando resposta")
+  const texto = label ? String(label).charAt(0).toUpperCase() + String(label).slice(1) : label
+  const cor = COR[VARIANTS[variant] || VARIANTS[label?.toLowerCase()] || 'neutra']
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-none border-[1.5px] px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.05em] ${
+        escuro ? 'border-white/60 bg-palco/70 text-white' : 'border-tinta bg-papel text-tinta'
+      } ${className}`}
+    >
+      <span className={`size-2 rounded-none ${cor}`} aria-hidden="true" />
+      {texto}
+    </span>
+  )
 }

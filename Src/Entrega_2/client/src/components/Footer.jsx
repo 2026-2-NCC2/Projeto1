@@ -1,20 +1,22 @@
 import { Link } from 'react-router-dom'
 import logo from '../assets/branding/logos/logo_navbar_web_128.png' // versao 128px (a original de 1024px pesa 1,3 MB)
+import { containerCls } from './ui/estilos'
+
+// rodape: faixa escura simples, so com a linha fina do topo
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t-[2px] border-tt-destaque bg-tt-azul-marinho text-tt-branco">
-      <span className="tt-blob tt-blob--violeta -right-20 -top-28 size-[360px] opacity-40" aria-hidden="true" />
-      <div className="relative z-[1] mx-auto flex w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 py-[44px] pb-8 max-[640px]:w-[calc(100%_-_36px)] max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-4">
+    <footer className="relative mt-auto overflow-hidden border-t-2 border-gel-fogo bg-palco-2 text-white">
+      <div className={`${containerCls} flex flex-wrap items-end justify-between gap-6 py-10`}>
         <div>
-          <Link to="/" aria-label="TrocaTicket, início" className="inline-flex items-center gap-[9px] font-display text-base font-black text-tt-branco no-underline">
-            <img src={logo} alt="" className="size-8 bg-tt-branco object-contain" />
-            <span>TrocaTicket</span>
+          <Link to="/" aria-label="TrocaTicket, início" className="inline-flex items-center gap-2.5 text-lg font-black tracking-[-0.025em] text-white no-underline">
+            <img src={logo} alt="" className="size-8 object-contain" />
+            <span>Troca<span className="text-gel-indigo">Ticket</span></span>
           </Link>
-          <p className="mt-2 text-xs text-tt-branco/75">Descubra eventos e encontre experiências para viver e compartilhar.</p>
+          <p className="mt-3 max-w-[40ch] text-sm leading-relaxed text-white/65">Descubra eventos e encontre experiências para viver e compartilhar.</p>
         </div>
       </div>
-      <div className="relative z-[1] mx-auto flex min-h-[50px] w-[calc(100%_-_48px)] max-w-[1180px] items-center justify-between gap-7 border-t border-tt-branco/30 text-[10px] text-tt-branco/70 max-[640px]:w-[calc(100%_-_36px)] max-[640px]:flex-col max-[640px]:items-start max-[640px]:justify-center max-[640px]:gap-3 max-[640px]:py-3">
+      <div className={`${containerCls} flex flex-wrap items-center justify-between gap-3 border-t border-white/10 py-5 text-xs text-white/55`}>
         <span>© {new Date().getFullYear()} TrocaTicket. Todos os direitos reservados.</span>
         <span>Uma experiência feita para aproximar pessoas e eventos.</span>
       </div>

@@ -1,267 +1,128 @@
-/* fonte Inter do Google Fonts, com todos os pesos usados no site */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Archivo:wdth,wght@100..125,700..900&display=swap');
 @import "tailwindcss";
 
-/* ── Paleta oficial Troca Ticket ──
-   Todas as cores do site saem daqui. Nao use hex, rgb() ou cores nomeadas fora deste bloco:
-   pra suavizar uma cor use opacidade (ex: text-tt-grafite/70 ou color-mix sobre o token). */
-:root {
-  /* Paleta "roxos quentes" vivos: ameixa #5A2A66, roxo #9B24B3, magenta #B03A9E, orquidea #C65AB8, lilas #F3E4F6, ambar #FFB020 (destaque, so em poucos pontos).
-     Os nomes antigos (azul, laranja...) foram mantidos pra nao quebrar as classes ja usadas nas telas. */
+/* ── Mesa de Luz ──
+   O site imita um catalogo de gelatinas de iluminacao de palco: fundo escuro de palco,
+   folhas de dados claras e filtros coloridos translucidos que se somam quando se sobrepoem.
+   Todas as cores saem daqui. Pra suavizar uma cor use opacidade (ex: text-tinta/70). */
+@theme {
+  /* fontes (servidas pelo proprio projeto via @fontsource, ver main.jsx) */
+  --font-sans: 'Schibsted Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* azuis (agora roxos quentes) */
-  --tt-azul-principal: #8B2F94;   /* links e destaques */
-  --tt-azul-vivo: #B03A9E;        /* destaques e acoes */
-  --tt-azul-claro: #C58BC0;       /* icones, detalhes */
-  --tt-azul-suave: #F3E4F6;       /* fundos e cards */
+  /* regra 60-30-10: o preto e a cor dominante (60%), as folhas claras e as superficies lavanda/azul
+     sao os 30%, e o laranja de acao + detalhes pastel sao os 10% */
+  /* palco: o preto, levemente suavizado (nao e #000) */
+  --color-palco: #111017;      /* fundo das paginas: o preto principal */
+  /* descanso: um preto mais suave, usado em faixas escolhidas pra quebrar a massa escura */
+  --color-palco-2: #1d1b27;    /* cabecalhos de pagina, secao "como funciona", rodape, filtros */
+  --color-palco-3: #2b2838;    /* campos e botoes sobre o escuro */
+  /* manchas de luz do fundo das telas internas (voltaram do visual original, um pouco mais suaves) */
+  --color-luz-violeta: #6d4fd8;
+  --color-luz-rosa: #f0306a;   /* rosa avermelhado, como o #F72585 do visual original */
 
-  /* roxos */
-  --tt-roxo-principal: #5A2A66;   /* destaques secundarios */
-  --tt-roxo-vivo: #9B24B3;        /* gradientes e elementos ativos */
-  --tt-roxo-suave: #B58AC8;       /* hover e elementos secundarios */
-  --tt-lilas-claro: #F3E4F6;      /* backgrounds */
+  /* folha de dados: superficies claras em cinza-bege (nada de branco puro) e o texto que vai em cima delas */
+  --color-folha: #e6e2db;      /* cards e formularios */
+  --color-mesa: #edeae4;       /* superficies grandes claras (um pouco mais claras que a folha) */
+  --color-papel: #f3f0ea;      /* o que antes era branco dentro das folhas: campos, etiquetas, caixas internas */
+  --color-tinta: #15131c;      /* texto sobre a folha (preto quente) */
 
-  /* rosas */
-  --tt-rosa-principal: #E91E8C;   /* erros e notificacoes (mantido rosa pra erro continuar se destacando) */
-  --tt-rosa-vivo: #B03A9E;        /* CTA e elementos chamativos */
-  --tt-rosa-suave: #D9A9D2;       /* elementos decorativos */
-  --tt-rosa-claro: #FCE7F3;       /* fundo das mensagens de erro */
+  /* gelatinas em tons pastel: destacam sem ofuscar. Roxos e azuis decoram; o fogo e so pra acao */
+  --color-gel-fogo: #ff7a45;       /* laranja: SO detalhe e decoracao (semicirculos, faixa do topo dos cards, sublinhados). Nunca botao */
+  --color-gel-indigo: #ab9ff2;     /* lavanda: botao principal, faixas, etapas, cor do organizador */
+  --color-gel-indigo-hover: #c2b8f7; /* botao principal com o mouse em cima */
+  --color-gel-magenta: #d3abea;    /* lilas: decoracao */
+  --color-gel-ceu: #9cbff2;        /* azul: decoracao, cor do fornecedor */
+  --color-gel-rubi: #ee9dab;       /* erro e exclusao (fundos e amostras) */
+  --color-gel-ambar: #f2d38a;      /* pendente / aguardando */
+  --color-gel-verde: #9fd8b4;      /* sucesso / aprovado */
 
-  /* laranjas e dourado (agora roxos quentes) */
-  --tt-laranja-principal: #C65AB8; /* CTA (botoes principais) */
-  --tt-laranja-vivo: #DD82D0;      /* hover e destaque */
-  --tt-ambar: #FFB020;             /* alertas e informacoes */
-  --tt-destaque: #FF6A3D;          /* laranja avermelhado: so em detalhes visuais discretos (marcadores, linhas ativas, foco) */
-  --tt-laranja-claro: #F5EDF5;     /* backgrounds */
+  /* versoes fortes, so pra TEXTO e contorno em cima da folha clara (as pastel nao dao contraste) */
+  --color-gel-indigo-forte: #5a4bbd;
+  --color-gel-rubi-forte: #b03a52;
+  --color-gel-verde-forte: #2d7a4f;
+  /* anel de foco: contraste minimo de 3:1 tanto no palco quanto na folha */
+  --color-foco: #7a6be0;
 
-  /* fundos: cores originais das manchas de luz dos fundos escuros (nao seguem a paleta de roxos quentes de proposito) */
-  --tt-fundo-violeta: #7C3AED;
-  --tt-fundo-rosa: #F72585;
-  --tt-fundo-rosa-suave: #F9A8D4;
+  /* cantos: a folha de gelatina tem a quina levemente arredondada */
+  /* brutalista: tudo em quina viva */
+  --radius-folha: 0px;
+  --radius-controle: 0px;
 
-  /* neutros */
-  --tt-azul-marinho: #0A0A0F;     /* preto: titulos, linhas e fundos escuros */
-  --tt-grafite: #17171C;          /* textos principais */
-  --tt-cinza-claro: #F7F5FA;      /* fundo de paginas e cards */
-  --tt-branco: #FFFFFF;           /* fundo principal */
+  /* sombra brutalista suave: um deslocamento chapado em lavanda translucida + uma sombra macia embaixo */
+  --shadow-folha: 6px 6px 0 rgb(171 159 242 / 0.4), 0 18px 36px -20px rgb(10 8 20 / 0.55);
+  --shadow-gel: 0 14px 24px -14px rgb(31 29 46 / 0.35);
+  /* sombra chapada do visual original (card branco com sombra roxa dura), agora no roxo da paleta nova */
+  --shadow-brutal: 6px 6px 0 #7a6be0;
 
-  /* sucesso (fora das 20 cores, adicionado de proposito: a paleta nao tem verde) */
-  --tt-verde-sucesso: #15803D;
-  --tt-verde-claro: #DCFCE7;
-
-  /* gradientes permitidos (nao crie outros) */
-  /* principal: so usado como mancha de fundo na landing, por isso mantem as cores originais */
-  --tt-gradiente-principal: linear-gradient(135deg, #6D3FD1, #A855F7, #E91E8C, #F9A8D4);
-  --tt-gradiente-azul-roxo: linear-gradient(135deg, #5A2A66, #B03A9E);
-  --tt-gradiente-rosa-laranja: linear-gradient(135deg, #8B2F94, #D9A9D2);
+  --ease-saida: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* fonte e cores viram classes do tailwind (ex: bg-tt-azul-principal, text-tt-grafite/70) */
-@theme inline {
-  --font-sans: 'Inter', sans-serif;
-  --font-display: 'Archivo', 'Inter', sans-serif;
-
-  --color-tt-azul-principal: var(--tt-azul-principal);
-  --color-tt-azul-vivo: var(--tt-azul-vivo);
-  --color-tt-azul-claro: var(--tt-azul-claro);
-  --color-tt-azul-suave: var(--tt-azul-suave);
-  --color-tt-roxo-principal: var(--tt-roxo-principal);
-  --color-tt-roxo-vivo: var(--tt-roxo-vivo);
-  --color-tt-roxo-suave: var(--tt-roxo-suave);
-  --color-tt-lilas-claro: var(--tt-lilas-claro);
-  --color-tt-rosa-principal: var(--tt-rosa-principal);
-  --color-tt-rosa-vivo: var(--tt-rosa-vivo);
-  --color-tt-rosa-suave: var(--tt-rosa-suave);
-  --color-tt-rosa-claro: var(--tt-rosa-claro);
-  --color-tt-laranja-principal: var(--tt-laranja-principal);
-  --color-tt-laranja-vivo: var(--tt-laranja-vivo);
-  --color-tt-ambar: var(--tt-ambar);
-  --color-tt-destaque: var(--tt-destaque);
-  --color-tt-laranja-claro: var(--tt-laranja-claro);
-  --color-tt-azul-marinho: var(--tt-azul-marinho);
-  --color-tt-grafite: var(--tt-grafite);
-  --color-tt-cinza-claro: var(--tt-cinza-claro);
-  --color-tt-branco: var(--tt-branco);
-  --color-tt-verde-sucesso: var(--tt-verde-sucesso);
-  --color-tt-verde-claro: var(--tt-verde-claro);
-
-  /* sombras do tailwind (shadow-sm, shadow-md...) em azul marinho, em vez do preto padrao */
-  --shadow-2xs: 0 1px color-mix(in srgb, var(--tt-azul-marinho) 5%, transparent);
-  --shadow-xs: 0 1px 2px 0 color-mix(in srgb, var(--tt-azul-marinho) 5%, transparent);
-  --shadow-sm: 0 1px 3px 0 color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 1px 2px -1px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
-  --shadow-md: 0 4px 6px -1px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 2px 4px -2px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
-  --shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
-  --shadow-xl: 0 20px 25px -5px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent), 0 8px 10px -6px color-mix(in srgb, var(--tt-azul-marinho) 10%, transparent);
-  --shadow-2xl: 0 25px 50px -12px color-mix(in srgb, var(--tt-azul-marinho) 25%, transparent);
-}
-
-/* estilos base que valem pro site todo */
 @layer base {
-  /* padding e borda entram no tamanho do elemento */
-  * { box-sizing: border-box; }
+  html {
+    background: var(--color-palco);
+    color-scheme: dark;
+    scrollbar-color: var(--color-palco-3) var(--color-palco);
+  }
 
-  html { background: var(--tt-azul-marinho); }
-
-  /* fundo cinza claro e texto grafite */
   body {
     margin: 0;
     min-width: 320px;
-    color: var(--tt-grafite);
-    background: var(--tt-azul-marinho);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--color-palco);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01';
     -webkit-font-smoothing: antialiased;
   }
 
-  /* faz os campos de formulario usarem a mesma fonte do site */
   button, input, textarea, select { font: inherit; }
-  /* tira o quadrado azul que aparece ao tocar no celular */
   button, a { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled), [role='button'] { cursor: pointer; }
 
-  /* foco visivel pra quem navega pelo teclado (mouse nao mostra) */
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--tt-laranja-principal); outline-offset: 2px; }
+  h1, h2, h3 { text-wrap: balance; letter-spacing: -0.015em; }
+  p { text-wrap: pretty; }
 
-  /* tudo quadrado: a linguagem do site e brutalista, so circulos decorativos (adesivos, manchas) ficam redondos */
-  button, input, select, textarea { border-radius: 0; }
+  /* foco visivel so pra teclado, sempre na cor de acao */
+  :focus-visible { outline: 2px solid var(--color-foco); outline-offset: 2px; }
 
-  /* detalhes em laranja avermelhado: cursor de digitacao e caixinhas/radios marcados */
-  input, textarea { caret-color: var(--tt-destaque); }
-  input[type="checkbox"], input[type="radio"] { accent-color: var(--tt-destaque); }
+  ::selection { background: var(--color-gel-indigo); color: var(--color-tinta); }
+  input, textarea { caret-color: var(--color-gel-indigo-forte); }
+  input[type='checkbox'], input[type='radio'] { accent-color: var(--color-gel-indigo-forte); }
 
-  /* ── Tokens de compatibilidade ──
-     As telas Admin (AdminDashboard e AprovarCadastros) usam var(--color-*) com os nomes abaixo.
-     Sao apelidos dos tokens da paleta, nao crie cores novas aqui. */
-  :root {
-    --color-primary:       var(--tt-azul-principal);
-    /* fundo e bordas */
-    --color-bg:            var(--tt-cinza-claro);
-    --color-border:        color-mix(in srgb, var(--tt-azul-marinho) 12%, transparent);
-    /* textos */
-    --color-text-muted:    color-mix(in srgb, var(--tt-grafite) 70%, transparent);
-    /* status: erro em rosa, sucesso em verde, pendente em roxo */
-    --color-danger:        var(--tt-rosa-principal);
-    --color-danger-light:  var(--tt-rosa-claro);
-    --color-success:       var(--tt-verde-sucesso);
-    --color-success-light: var(--tt-verde-claro);
-    --color-pending:       var(--tt-roxo-principal);
-    --color-pending-light: var(--tt-lilas-claro);
+  /* numeros de dinheiro e tabela: algarismos alinhados na base.
+     (tabular-nums nao: nessa fonte ele alarga virgula, ponto e dois-pontos e o texto fica "R$ 180 , 00") */
+  table, .tabular { font-variant-numeric: lining-nums; }
 
-    /* sombra pequena */
-    --shadow-sm: 0 1px 3px color-mix(in srgb, var(--tt-azul-marinho) 8%, transparent);
-  }
-}
-
-
-/* ── Linguagem visual editorial/brutalista ──
-   Titulos largos e pesados, linhas finas pretas, formas geometricas e manchas de gradiente.
-   So apresentacao: nenhum texto do site e criado ou alterado aqui. */
-@layer base {
-  h1, h2 { font-family: var(--font-display); font-stretch: 112%; }
-  h3 { font-family: var(--font-display); font-stretch: 100%; }
-  ::selection { background: var(--tt-roxo-vivo); color: var(--tt-branco); }
+  dialog::backdrop { background: rgb(13 12 17 / 0.72); backdrop-filter: blur(3px); }
 }
 
 @layer components {
-  /* fundo escuro padrao das telas internas: preto com manchas de luz violeta e rosa (igual login/cadastro) */
-  .tt-canvas {
-    background-color: var(--tt-azul-marinho);
+  /* fundo das telas internas e de conta: o preto com duas manchas de luz em elipse,
+     violeta no canto de cima a direita e rosa avermelhado no canto de baixo a esquerda, presas na tela (nao rolam junto) */
+  .fundo-luz {
+    background-color: var(--color-palco);
     background-image:
-      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-fundo-violeta) 45%, transparent), transparent),
-      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-fundo-rosa) 30%, transparent), transparent);
+      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--color-luz-violeta) 38%, transparent), transparent),
+      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--color-luz-rosa) 30%, transparent), transparent);
     background-attachment: fixed;
-    color: var(--tt-branco);
   }
-  /* variacao com dois semicirculos pequenos nas bordas: so pras telas sem adesivos (Painel, Propostas, Perfil, 404) */
-  .tt-canvas--semis {
-    background-attachment: scroll, scroll, fixed, fixed;
-    background-image:
-      radial-gradient(circle at 0 420px, var(--tt-destaque) 0 28px, transparent 29px),
-      radial-gradient(circle at 100% 700px, var(--tt-roxo-vivo) 0 22px, transparent 23px),
-      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-fundo-violeta) 45%, transparent), transparent),
-      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-fundo-rosa) 30%, transparent), transparent);
-  }
-  /* variacao so com semicirculos na esquerda: pra telas com adesivos do lado direito (Admin) */
-  .tt-canvas--esq {
-    background-attachment: scroll, scroll, fixed, fixed;
-    background-image:
-      radial-gradient(circle at 0 420px, var(--tt-destaque) 0 28px, transparent 29px),
-      radial-gradient(circle at 0 960px, var(--tt-roxo-vivo) 0 20px, transparent 21px),
-      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--tt-fundo-violeta) 45%, transparent), transparent),
-      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--tt-fundo-rosa) 30%, transparent), transparent);
-  }
-  /* card brutalista: fundo branco, borda preta fina e sombra roxa chapada */
-  .tt-card {
-    background: var(--tt-branco);
-    color: var(--tt-azul-marinho);
-    border: 1.5px solid var(--tt-azul-marinho);
-    box-shadow: 6px 6px 0 var(--tt-roxo-vivo);
-    border-top: 5px solid var(--tt-destaque);
-  }
-  /* etiqueta quadrada de status */
-  .tt-tag {
-    display: inline-block;
-    border: 1.5px solid var(--tt-azul-marinho);
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-  }
-  /* titulo grande, largo e pesado */
-  .tt-display {
-    font-family: var(--font-display);
-    font-stretch: 125%;
-    font-weight: 900;
-    letter-spacing: -0.035em;
-    line-height: 0.98;
-  }
-  /* texto so com contorno (mantem a palavra original, so muda o preenchimento) */
-  .tt-outline {
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--tt-azul-marinho);
-  }
-  /* legenda pequena com quadradinho preto na frente */
-  .tt-eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--tt-azul-marinho); }
-  .tt-eyebrow::before { content: ''; width: 9px; height: 9px; background: var(--tt-destaque); flex: none; }
-  /* mancha de luz difusa, sempre atras do conteudo */
-  .tt-blob {
+
+  /* furo de rebite das folhas de gelatina: um circulo vazado na cor do palco */
+  .rebite {
     position: absolute;
+    width: 14px;
+    height: 14px;
     border-radius: 9999px;
-    filter: blur(56px);
+    background: var(--color-palco);
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6), 0 0 0 3px rgb(19 18 23 / 0.08);
     pointer-events: none;
-    z-index: 0;
-    background: radial-gradient(closest-side, var(--tt-fundo-rosa), transparent 72%);
   }
-  .tt-blob--violeta { background: radial-gradient(closest-side, var(--tt-fundo-violeta), transparent 72%); }
-  .tt-blob--rosa { background: radial-gradient(closest-side, var(--tt-fundo-rosa-suave), transparent 72%); }
-  /* circulo preto com linhas internas (globo) */
-  .tt-globe {
-    position: relative;
-    display: block;
-    border-radius: 9999px;
-    background:
-      repeating-linear-gradient(0deg, transparent 0 9px, var(--tt-branco) 9px 10px),
-      var(--tt-azul-marinho);
-    overflow: hidden;
+
+  /* filtro translucido: sobre a folha clara, as cores se somam (multiply) */
+  .gelatina {
+    mix-blend-mode: multiply;
   }
-  .tt-globe::before, .tt-globe::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 9999px;
-    border: 1.5px solid var(--tt-branco);
-  }
-  .tt-globe::before { transform: scaleX(0.55); }
-  .tt-globe::after { transform: scaleX(0.2); }
-  /* semicirculo preto */
-  .tt-semi-l { background: var(--tt-azul-marinho); border-radius: 0 9999px 9999px 0; }
-  .tt-semi-r { background: var(--tt-azul-marinho); border-radius: 9999px 0 0 9999px; }
-  /* texto so com contorno, versao clara pra usar em fundo escuro */
-  .tt-outline-claro {
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--tt-branco);
-  }
-  /* adesivo decorativo (componente Sticker): inclinado, com sombra de adesivo colado e uma flutuada leve.
-     --r = inclinacao, --d = atraso da animacao (cada adesivo se mexe num tempo diferente) */
+
+  /* adesivo decorativo (componente Sticker) */
   .tt-sticker {
     position: absolute;
     z-index: 1;
@@ -270,9 +131,7 @@
     pointer-events: none;
     user-select: none;
     transform: rotate(var(--r, 0deg));
-    filter:
-      drop-shadow(0 1px 1px color-mix(in srgb, var(--tt-azul-marinho) 35%, transparent))
-      drop-shadow(0 8px 12px color-mix(in srgb, var(--tt-azul-marinho) 28%, transparent));
+    filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
     animation: tt-sticker-flutuar 7s ease-in-out var(--d, 0s) infinite;
   }
 }
@@ -282,7 +141,7 @@
   50% { transform: rotate(calc(var(--r, 0deg) + 2.5deg)) translateY(-7px); }
 }
 
-/* quem pede menos movimento nao ve transicoes */
+/* quem pede menos movimento nao ve transicoes nem animacoes */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
 }
