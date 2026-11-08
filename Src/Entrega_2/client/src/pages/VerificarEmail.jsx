@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import Footer from '../components/Footer'
-import { ui } from '../styles/ui'
 import { verificarEmail } from '../services/api'
 
 // pagina aberta pelo link do e-mail de confirmacao: /verificar-email?token=...

@@ -5,7 +5,6 @@ import Folha from '../components/ui/Folha'
 import { btn, campoCls, erroCls, linkClaroCls, rotuloCls } from '../components/ui/estilos'
 import Footer from '../components/Footer'
 import Sticker from '../components/Sticker'
-import { ui, inputClass } from '../styles/ui' // classes de estilo compartilhadas entre as paginas
 import { loginUsuario, reenviarVerificacao } from '../services/api'
 import { useAuth } from '../services/AuthContext'
 import { erroEmail } from '../utils/validacao'
