@@ -84,7 +84,7 @@ No SQL Editor do Supabase (ou em um cliente PostgreSQL), execute os scripts da p
 1. `bancoPG.sql`: cria tabelas, tipos e índices.
 2. `seed.sql` (opcional): carrega dados de exemplo para testar o sistema.
 
-> Atenção: o `seed.sql` cria usuários com a senha `123456`. Não use esse script em um ambiente publicado sem trocar as senhas. O `reset.sql` apaga todo o schema `public`; use somente em banco de testes.
+> Atenção: o `seed.sql` cria usuários com a senha padrão definida pela equipe. Não use esse script em um ambiente publicado sem trocar as senhas. O `reset.sql` apaga todo o schema `public`; use somente em banco de testes.
 
 ### 3. Configurar e iniciar o back-end
 
