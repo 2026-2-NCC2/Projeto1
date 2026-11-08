@@ -172,6 +172,7 @@ export default function Cadastro() {
   const [step, setStep] = useState(0); // etapa atual
   const [role, setRole] = useState(""); // tipo de conta escolhido
   const [done, setDone] = useState(false); // true quando termina o cadastro
+  const [emailEnviado, setEmailEnviado] = useState(true); // false se o servidor nao conseguiu mandar o e-mail de confirmacao
 
   // dados basicos
   const [nome, setNome] = useState("");
@@ -283,14 +284,15 @@ export default function Cadastro() {
         payload.areaAtuacao = areaAtuacaoDosServicos();
       }
 
-      await cadastrarUsuario(payload);
+      const resposta = await cadastrarUsuario(payload);
+      setEmailEnviado(resposta.emailEnviado !== false);
       setDone(true);
     } catch (err) {
-      // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem
+      // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem / 429 = e-mail pendente, aguarde 1 min
       const camposComErro =
         err.status === 400 && err.campos
           ? err.campos
-          : err.status === 409 && err.campo
+          : (err.status === 409 || err.status === 429) && err.campo
             ? { [err.campo]: err.message }
             : null;
       const etapas = camposComErro
@@ -309,7 +311,7 @@ export default function Cadastro() {
           ),
         );
         setStep(Math.min(...etapas)); // volta pra primeira etapa que tem erro
-      } else if (err.status === 400 || err.status === 409) {
+      } else if (err.status === 400 || err.status === 409 || err.status === 429) {
         setApiError(err.message);
       } else {
         setApiError(
@@ -370,9 +372,16 @@ export default function Cadastro() {
 
           <h2 className="tt-display mb-3 text-[clamp(28px,6vw,40px)] text-tt-azul-marinho">Cadastro <span className="tt-outline">Realizado!</span></h2>
 
-          {/* mensagem muda: cliente ja ta pronto, organizador/fornecedor ficou pendente */}
+          {/* mensagem muda: cliente so falta confirmar o e-mail, organizador/fornecedor ficou pendente */}
           <p className="mb-6 text-[15px] text-tt-grafite/75">
-            {isUser ? 'Bem-vindo ao TrocaTicket! Sua conta está pronta.' : <><strong>{role === 'organizador' ? 'Organizador' : 'Fornecedor'}</strong>: sua solicitação foi enviada.</>}
+            {isUser ? 'Bem-vindo ao TrocaTicket!' : <><strong>{role === 'organizador' ? 'Organizador' : 'Fornecedor'}</strong>: sua solicitação foi enviada.</>}
+          </p>
+
+          {/* aviso da confirmacao de e-mail: vale pra todos os tipos de conta */}
+          <p className="mb-6 max-w-[400px] border-[1.5px] border-tt-azul-marinho bg-tt-lilas-claro px-4 py-3 text-sm leading-relaxed text-tt-azul-marinho">
+            {emailEnviado
+              ? <>Enviamos um link de confirmação para <strong>{email.trim()}</strong>. Confirme seu e-mail para poder entrar.</>
+              : <>Não conseguimos enviar o e-mail de confirmação agora. Na tela de login, use <strong>Reenviar e-mail de confirmação</strong>.</>}
           </p>
 
           {/* codigo do cadastro, so pra quem precisa de aprovacao */}
@@ -402,12 +411,12 @@ export default function Cadastro() {
           )}
           {/* texto explicando o proximo passo, muda conforme o tipo de conta */}
           <p className="mb-8 max-w-[400px] text-sm leading-relaxed text-tt-grafite/75">
-            {isUser ? 'Você já pode comprar e trocar ingressos na plataforma.' : 'Um administrador irá revisar sua conta. Logo ela deverá ser aprovada ou rejeitada.'}
+            {isUser ? 'Depois de confirmar, você já pode comprar e trocar ingressos na plataforma.' : 'Depois de confirmar o e-mail, um administrador irá revisar sua conta. Logo ela deverá ser aprovada ou rejeitada.'}
           </p>
 
-          {/* botao que volta pra home, so o texto muda */}
-          <button className={`${BTN_PRIMARIO} sm:w-full`} onClick={() => navigate('/')}>
-            {isUser ? 'Ir para a plataforma' : 'Voltar ao início'}
+          {/* botao pro login (cliente) ou pra home, so o texto muda */}
+          <button className={`${BTN_PRIMARIO} sm:w-full`} onClick={() => navigate(isUser ? '/login' : '/')}>
+            {isUser ? 'Ir para o login' : 'Voltar ao início'}
           </button>
 
         </Card>
