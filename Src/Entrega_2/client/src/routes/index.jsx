@@ -10,6 +10,7 @@ import PainelDeEventos from '../pages/PainelDeEventos'
 import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
 import EventRegistration from '../components/EventRegistration.jsx'
 import AdminDashboard from '../pages/adminPages/AdminDashboard.jsx'
+import ConsultasAdmin from '../pages/adminPages/ConsultasAdmin.jsx'
 import ProtectedRoute from '../components/ProtectedRoute'
 import Propostas from '../pages/Propostas'
 import Usuario from '../pages/Usuario'
@@ -33,6 +34,8 @@ export const router = createBrowserRouter([
       // admin — so perfil 'administrador'
       { path: '/AprovarCadastros', element: <ProtectedRoute roles={['administrador']}><AprovarCadastros /></ProtectedRoute> },
       { path: '/AdminDashboard', element: <ProtectedRoute roles={['administrador']}><AdminDashboard /></ProtectedRoute> },
+      { path: '/admin/usuarios', element: <ProtectedRoute roles={['administrador']}><ConsultasAdmin key="usuarios" usuarios /></ProtectedRoute> },
+      { path: '/admin/relatorios', element: <ProtectedRoute roles={['administrador']}><ConsultasAdmin key="relatorios" /></ProtectedRoute> },
 
       // criar evento — so perfil 'organizador'
       {

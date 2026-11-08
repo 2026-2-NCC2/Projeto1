@@ -197,11 +197,10 @@ export default function AdminDashboard() {
               desc={`${stats.pendentes} solicitações aguardando revisão`}
               badge={stats.pendentes}
             />
-            {/* to="#" porque essas paginas ainda nao foram feitas */}
-            <QuickCard to="#" icon={<IconUsers />} numero="02"
+            <QuickCard to="/admin/usuarios" icon={<IconUsers />} numero="02"
               titulo="Lista de Usuários"
               desc="Compradores, vendedores e suas permissões" />
-            <QuickCard to="#" icon={<IconReport />} numero="03"
+            <QuickCard to="/admin/relatorios" icon={<IconReport />} numero="03"
               titulo="Relatórios"
               desc="Atividade da plataforma e métricas de uso"
             />
