@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { solicitar } from '../services/api'
-import { brl } from '../utils/formato'
-import Aviso from './ui/Aviso'
-import { IconCheck, IconSeta } from './ui/Icones'
-import { btn, campoCls, dadoRotuloCls, linkClaroCls, rotuloCls } from './ui/estilos'
+import { brl, campo, botao } from '../styles/propostas'
 
 // data de hoje (YYYY-MM-DD) no horario local, usada como minimo da validade
 function hojeLocal() {
@@ -104,72 +101,61 @@ export default function CustosFornecedor({ evento }) {
   }
 
   function conteudo() {
-    if (loading) return <p role="status" className="py-8 text-sm text-tinta/65">Carregando itens…</p>
+    if (loading) return <p role="status" className="py-8">Carregando itens…</p>
 
     if (sucesso) {
       return (
-        <Aviso tipo="sucesso" className="mt-5">
+        <div role="status" className="mt-5 rounded-xl bg-tt-verde-claro p-5">
           <strong>Proposta enviada ao organizador!</strong>
           <p className="mt-2">
-            <Link className={`${linkClaroCls} inline-flex items-center gap-1.5`} to="/propostas">Acompanhar propostas enviadas <IconSeta /></Link>
+            <Link className="font-bold underline" to="/propostas">Acompanhar propostas enviadas →</Link>
           </p>
-        </Aviso>
+        </div>
       )
     }
 
     if (!itens.length) {
-      return <p className="mt-5 rounded-none border border-dashed border-tinta/20 px-4 py-5 text-sm text-tinta/65">Este evento não tem itens disponíveis para cotação.</p>
+      return <p className="mt-4 rounded-xl bg-tt-cinza-claro p-5">Este evento não tem itens disponíveis para cotação.</p>
     }
 
     return (
-      <form onSubmit={enviar} className="mt-5 space-y-3">
+      <form onSubmit={enviar} className="mt-5 space-y-4">
         {itens.map((i) => {
           const p = selecionados[i.id_item_custo] // undefined = item nao marcado
-          const coberto = i.quantidade_restante === 0
           return (
-            <div
-              key={i.id_item_custo}
-              className={`rounded-none border bg-papel transition-colors ${p ? 'border-gel-indigo-forte shadow-gel' : 'border-tinta/12'} ${coberto ? 'opacity-60' : ''}`}
-            >
-              <label className={`flex items-start gap-3 p-4 ${coberto ? '' : 'cursor-pointer'}`}>
-                {/* caixinha de marcar desenhada por cima do checkbox nativo (o nativo continua acessivel) */}
-                <span className="relative mt-0.5 grid size-5 shrink-0 place-items-center">
-                  <input
-                    type="checkbox"
-                    className="peer absolute inset-0 m-0 cursor-pointer appearance-none rounded-none border border-tinta/30 bg-papel checked:border-gel-indigo-forte checked:bg-gel-indigo disabled:cursor-not-allowed"
-                    disabled={coberto}
-                    checked={Boolean(p)}
-                    onChange={(e) => alternarItem(i, e.target.checked)}
-                  />
-                  <span className="pointer-events-none relative hidden text-tinta peer-checked:block"><IconCheck tamanho={13} strokeWidth="2.8" /></span>
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className={dadoRotuloCls}>{i.categoria}</span>
-                  <strong className="mt-0.5 block font-bold">{i.descricao_detalhada}</strong>
-                  <span className="tabular mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-tinta/65">
-                    <span>Solicitado: {i.quantidade}</span>
-                    <span>Coberto: {i.quantidade_coberta}</span>
-                    <span className={coberto ? 'font-semibold text-gel-verde-forte' : 'font-semibold text-tinta'}>
-                      {coberto ? 'Já coberto' : `Restam: ${i.quantidade_restante}`}
-                    </span>
-                    <span>Estimativa unitária: {brl(i.valor_unitario)}</span>
+            <div key={i.id_item_custo} className="rounded-xl border border-tt-azul-marinho/15 p-4">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-4 accent-tt-azul-principal"
+                  disabled={i.quantidade_restante === 0}
+                  checked={Boolean(p)}
+                  onChange={(e) => alternarItem(i, e.target.checked)}
+                />
+                <span>
+                  <span className="block text-xs font-bold text-tt-azul-principal">{i.categoria}</span>
+                  <strong className="block">{i.descricao_detalhada}</strong>
+                  <span className="text-sm text-tt-grafite/70">
+                    Solicitado: {i.quantidade} · Coberto: {i.quantidade_coberta} ·{' '}
+                    {i.quantidade_restante === 0 ? 'Já coberto' : `Restam: ${i.quantidade_restante}`} ·
+                    Estimativa unitária: {brl(i.valor_unitario)}
                   </span>
                 </span>
               </label>
 
               {p && (
-                <div className="grid gap-3 border-t border-tinta/10 px-4 pb-4 pt-4 sm:grid-cols-2">
-                  <label className="flex flex-col gap-2 sm:col-span-2">
-                    <span className={rotuloCls}>Produto ou serviço oferecido</span>
-                    <input required maxLength={255} className={campoCls()} value={p.produto} onChange={(e) => alterar(i.id_item_custo, 'produto', e.target.value)} />
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <label className="text-sm sm:col-span-2">
+                    Produto ou serviço oferecido
+                    <input required maxLength={255} className={`${campo} mt-1`} value={p.produto} onChange={(e) => alterar(i.id_item_custo, 'produto', e.target.value)} />
                   </label>
-                  <label className="flex flex-col gap-2">
-                    <span className={rotuloCls}>Quantidade</span>
-                    <input required type="number" min="1" max={i.quantidade_restante} step="1" className={`${campoCls()} tabular`} value={p.quantidade} onChange={(e) => alterar(i.id_item_custo, 'quantidade', e.target.value)} />
+                  <label className="text-sm">
+                    Quantidade
+                    <input required type="number" min="1" max={i.quantidade_restante} step="1" className={`${campo} mt-1`} value={p.quantidade} onChange={(e) => alterar(i.id_item_custo, 'quantidade', e.target.value)} />
                   </label>
-                  <label className="flex flex-col gap-2">
-                    <span className={rotuloCls}>Valor unitário (R$)</span>
-                    <input required type="number" min="0.01" max="9999999999" step="0.01" className={`${campoCls()} tabular`} value={p.valorUnitario} onChange={(e) => alterar(i.id_item_custo, 'valorUnitario', e.target.value)} />
+                  <label className="text-sm">
+                    Valor unitário (R$)
+                    <input required type="number" min="0.01" max="9999999999" step="0.01" className={`${campo} mt-1`} value={p.valorUnitario} onChange={(e) => alterar(i.id_item_custo, 'valorUnitario', e.target.value)} />
                   </label>
                 </div>
               )}
@@ -177,13 +163,13 @@ export default function CustosFornecedor({ evento }) {
           )
         })}
 
-        <label className="flex flex-col gap-2 pt-3">
-          <span className={rotuloCls}>Mensagem ao organizador</span>
+        <label className="block text-sm font-bold">
+          Mensagem ao organizador
           <textarea
             required
             maxLength={1000}
             rows={3}
-            className={`${campoCls()} resize-y`}
+            className={`${campo} mt-2`}
             value={mensagem}
             onChange={(e) => setMensagem(e.target.value)}
             placeholder="Descreva sua oferta, condições e prazo de entrega."
@@ -225,10 +211,11 @@ export default function CustosFornecedor({ evento }) {
   }
 
   return (
-    <section className="mt-10 border-t border-tinta/10 pt-8" aria-labelledby="titulo-custos">
-      <h2 id="titulo-custos" className="text-2xl font-black tracking-[-0.015em]">Itens de custos do evento</h2>
-      <p className="mt-2 text-sm text-tinta/65">Selecione os itens que deseja fornecer e informe seus produtos e preços.</p>
-      {erro && <Aviso tipo="erro" className="my-4">{erro}</Aviso>}
+    <section className="mt-8 border-t border-tt-azul-marinho/10 pt-6">
+      <p className="text-xs font-bold uppercase text-tt-azul-principal">Área do fornecedor</p>
+      <h2 className="mt-1 text-2xl font-bold">Itens de custos do evento</h2>
+      <p className="mt-2 text-sm text-tt-grafite/70">Selecione os itens que deseja fornecer e informe seus produtos e preços.</p>
+      {erro && <p role="alert" className="my-4 rounded-xl bg-tt-rosa-claro p-4 text-tt-rosa-principal">{erro}</p>}
       {conteudo()}
     </section>
   )

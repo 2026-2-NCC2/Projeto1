@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Aviso from '../components/ui/Aviso';
 import {
   ActionRow,
   CurrencyInput,
@@ -92,14 +91,14 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
 
   return (
     <FormCard
-      gel="magenta"
+      eyebrow="Etapa 2 de 4"
       title="Público e Lotes"
       subtitle="Defina capacidade, quantidade disponível e o preço inicial dos ingressos."
       footer={
         <ActionRow onBack={onBack} onNext={handleNext} backLabel="Voltar" />
       }
     >
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="form-grid two-cols">
         <Field
           label="Preço do lote inicial (R$)"
           required
@@ -146,7 +145,7 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
         </Field>
       </div>
 
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <div className="form-grid two-cols">
         <Field
           label="Margem de lucro (%)"
           error={errors.margin}
@@ -162,11 +161,14 @@ export function AudienceLots({ data, setData, onBack, onNext }) {
         </Field>
       </div>
 
-      <Aviso tipo="info" className="mt-7">
-        O público máximo também pode ser usado como limite inicial de
-        ingressos. Depois você poderá dividir a quantidade por lotes e
-        setores.
-      </Aviso>
+      <div className="info-banner">
+        <span className="info-icon">i</span>
+        <p>
+          O público máximo também pode ser usado como limite inicial de
+          ingressos. Depois você poderá dividir a quantidade por lotes e
+          setores.
+        </p>
+      </div>
     </FormCard>
   );
 }

@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import { solicitar } from '../services/api'
-import Aviso from './ui/Aviso'
-import { IconCheck } from './ui/Icones'
 
 // lista as empresas que tiveram proposta aceita no evento (GET /eventos/:id/fornecedores)
 // o servidor nao manda preco nem mensagem, so o que foi confirmado
@@ -32,23 +30,20 @@ export default function FornecedoresConfirmados({ eventoId }) {
   const empresas = Object.values(grupos)
 
   function conteudo() {
-    if (erro) return <Aviso tipo="erro" className="mt-4">{erro}</Aviso>
-    if (dados === null) return <p role="status" className="mt-4 text-sm text-tinta/65">Carregando fornecedores…</p>
-    if (!empresas.length) return <p className="mt-4 rounded-none border border-dashed border-tinta/20 px-4 py-5 text-sm text-tinta/65">Nenhuma proposta aceita até o momento.</p>
+    if (erro) return <p role="alert" className="mt-3">{erro}</p>
+    if (dados === null) return <p role="status">Carregando fornecedores…</p>
+    if (!empresas.length) return <p className="mt-3 text-sm">Nenhuma proposta aceita até o momento.</p>
 
     return (
-      <div className="mt-4 divide-y divide-tinta/10 overflow-hidden rounded-none border border-tinta/12 bg-papel">
+      <div className="mt-4 space-y-3">
         {empresas.map((empresa) => (
-          <article key={empresa.nome + empresa.itens[0].id} className="flex gap-3 px-4 py-4">
-            <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-none bg-gel-verde text-tinta"><IconCheck tamanho={14} strokeWidth="2.6" /></span>
-            <div className="min-w-0">
-              <h3 className="font-bold">{empresa.nome}</h3>
-              <ul className="tabular mt-1.5 space-y-1 text-sm text-tinta/70">
-                {empresa.itens.map((item) => (
-                  <li key={item.id}>{item.quantidade} × {item.descricao_detalhada} — {item.produto}</li>
-                ))}
-              </ul>
-            </div>
+          <article key={empresa.nome + empresa.itens[0].id} className="rounded-xl bg-tt-verde-claro p-4">
+            <h3 className="font-bold">{empresa.nome}</h3>
+            <ul className="mt-2 space-y-1 text-sm">
+              {empresa.itens.map((item) => (
+                <li key={item.id}>{item.quantidade} × {item.descricao_detalhada} — {item.produto}</li>
+              ))}
+            </ul>
           </article>
         ))}
       </div>
@@ -56,8 +51,8 @@ export default function FornecedoresConfirmados({ eventoId }) {
   }
 
   return (
-    <section className="mt-2" aria-labelledby="titulo-fornecedores">
-      <h2 id="titulo-fornecedores" className="text-2xl font-black tracking-[-0.015em]">Fornecedores confirmados</h2>
+    <section className="mt-6 border-t border-tt-azul-marinho/10 pt-5">
+      <h2 className="text-xl font-bold">Fornecedores confirmados</h2>
       {conteudo()}
     </section>
   )

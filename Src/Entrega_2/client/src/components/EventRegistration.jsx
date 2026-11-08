@@ -5,15 +5,9 @@ import { EventBasics } from '../pages/EventBasics.jsx';
 import { AudienceLots } from '../pages/AudienceLots.jsx';
 import { IndependentCosts } from '../pages/IndependentCosts.jsx';
 import { CostItems } from '../pages/CostItems.jsx';
+import './eventRegistration.css';
 import { solicitar } from '../services/api';
 import { useAuth } from '../services/AuthContext';
-import Aviso from './ui/Aviso';
-import CabecalhoPagina from './ui/CabecalhoPagina';
-import Etapas from './ui/Etapas';
-import Folha from './ui/Folha';
-import Semicirculos from './ui/Semicirculos';
-import { IconSeta } from './ui/Icones';
-import { GELS, btn, dadoRotuloCls } from './ui/estilos';
 
 // nome de cada etapa na url, na ordem (ex: /criar-evento/publico-lotes)
 const steps = [
@@ -21,14 +15,6 @@ const steps = [
   'publico-lotes',
   'custos-independentes',
   'itens-custos',
-];
-
-// rotulo e gelatina de cada etapa (a mesma cor aparece na linha de etapas e na faixa da folha)
-const ETAPAS = [
-  { label: 'Evento', gel: 'indigo' },
-  { label: 'Público e lotes', gel: 'magenta' },
-  { label: 'Custos independentes', gel: 'ceu' },
-  { label: 'Itens de custos', gel: 'indigo' },
 ];
 
 // pagina que controla o formulario de criar evento
@@ -145,120 +131,193 @@ export default function EventRegistration() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  const brlTexto = (valor) => Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
   return (
-    <main className="relative min-h-[calc(100svh-68px)] overflow-x-clip fundo-luz pb-24">
-      <Semicirculos />
-      {/* faixa do topo com o titulo */}
-      <CabecalhoPagina
-        titulo="Crie seu evento no TrocaTicket"
-        sub="Configure informações, lotes e custos em poucos passos."
-        gels={ETAPAS.map((e) => GELS[e.gel].bg)}
-      />
-
-      <div className="mx-auto w-full max-w-[900px] px-4 sm:px-6">
-        {/* linha de etapas: as ja visitadas viram botoes pra voltar nelas */}
-        <div className="py-8">
-          <Etapas
-            itens={ETAPAS}
-            atual={step - 1}
-            maisAvancada={etapaMaisAvancada - 1}
-            onIr={(i) => goTo(i + 1)}
-            bloqueado={finished || salvando || Boolean(revisao)}
-            escuro
-            rotulo="Etapas do cadastro"
-          />
-        </div>
-
-        {/* Confirma os preços e a contagem retornados pelo servidor. */}
-        {finished && (
-          <Aviso tipo="sucesso" escuro className="mb-4">
-            <strong>Evento Cadastrado!</strong>{' '}
-            Evento cadastrado com sucesso! ele já pode ser acessado e consultado no painel.
-          </Aviso>
-        )}
-        {erro && <Aviso tipo="erro" escuro className="mb-4">{erro}</Aviso>}
-        {salvando && <p role="status" className="mb-4 text-sm text-white/70">Salvando evento…</p>}
-        {finished && resumo && (
-          <Folha gel="verde" className="mb-6" role="status">
-            <dl className="grid gap-px bg-tinta/10 sm:grid-cols-3">
-              {[
-                ['Lote inicial', brlTexto(resumo.primeiro_lote)],
-                ['Segundo lote', resumo.segundo_lote == null ? 'Não informado' : brlTexto(resumo.segundo_lote)],
-                ['Itens de custo salvos', resumo.quantidade_itens],
-              ].map(([rotulo, valor]) => (
-                <div key={rotulo} className="bg-folha px-6 py-5">
-                  <dt className={dadoRotuloCls}>{rotulo}</dt>
-                  <dd className="tabular mt-1.5 text-2xl font-black tracking-[-0.015em]">{valor}</dd>
-                </div>
-              ))}
-            </dl>
-          </Folha>
-        )}
-        {finished && (
-          <Link to="/PainelDeEventos?tab=meus" className={btn('primario', 'lg')}>
-            Ver meus eventos <IconSeta />
-          </Link>
-        )}
-        {!finished && (
-          <fieldset disabled={salvando} className="m-0 min-w-0 border-0 p-0">
-            {/* mostra so a etapa atual, cada uma recebe seus dados e as funcoes de voltar/avancar */}
-            {/* na etapa 1 o voltar leva pro painel de eventos */}
-            {step === 1 && (
-              <EventBasics
-                data={eventData}
-                setData={setEventData}
-                onBack={() => navigate('/PainelDeEventos')}
-                onNext={() => goTo(2)}
-              />
-            )}
-            {step === 2 && (
-              <AudienceLots
-                data={lotData}
-                setData={setLotData}
-                onBack={() => goTo(1)}
-                onNext={() => goTo(3)}
-              />
-            )}
-            {step === 3 && (
-              <IndependentCosts
-                costs={independentCosts}
-                setCosts={setIndependentCosts}
-                onBack={() => goTo(2)}
-                onNext={() => goTo(4)}
-              />
-            )}
-            {/* etapa 4 recebe os custos da etapa 3 pra somar no total */}
-            {step === 4 && (
-              <CostItems
-                groups={groups}
-                setGroups={setGroups}
-                independentCosts={independentCosts}
-                onBack={() => goTo(3)}
-                onFinish={revisar}
-              />
-            )}
-          </fieldset>
-        )}
-
-        {/* revisao antes de salvar: dialogo nativo (prende o foco e fecha com Esc) */}
-        <dialog
-          ref={dialogo}
-          aria-labelledby="titulo-revisao"
-          onCancel={(event) => {
-            event.preventDefault();
-            if (!envioEmAndamento.current) setRevisao(null);
-          }}
-          className="m-auto max-h-[90vh] w-[calc(100%_-_32px)] max-w-[650px] overflow-hidden rounded-none border-0 bg-folha p-0 text-tinta shadow-folha"
+    // essa classe ativa o css do eventRegistration.css (por causa do @scope)
+    <div className="event-registration">
+      <main className="main-content">
+        {/* faixa do topo com o titulo */}
+        <section className="hero-strip">
+          <div>
+            <span className="hero-kicker">Área do organizador</span>
+            <h2>Crie seu evento no TrocaTicket</h2>
+            <p>Configure informações, lotes e custos em poucos passos.</p>
+          </div>
+        </section>
+        <nav
+          aria-label="Etapas do cadastro"
+          className="mx-auto my-7 w-full max-w-4xl px-4"
         >
-          {revisao && (
-            <div className="flex max-h-[90vh] flex-col">
-              <div className="flex h-2.5 shrink-0" aria-hidden="true">
-                {ETAPAS.map((e) => <span key={e.gel} className={`flex-1 ${GELS[e.gel].bg}`} />)}
+          <ol className="grid grid-cols-4">
+            {[
+              {
+                label: 'Evento',
+                circle: 'border-tt-azul-principal bg-tt-azul-principal',
+                line: 'bg-tt-azul-principal',
+              },
+              {
+                label: 'Público e lotes',
+                circle: 'border-tt-roxo-principal bg-tt-roxo-principal',
+                line: 'bg-tt-roxo-principal',
+              },
+              {
+                label: 'Custos independentes',
+                circle: 'border-tt-rosa-principal bg-tt-rosa-principal',
+                line: 'bg-tt-rosa-principal',
+              },
+              {
+                label: 'Itens de custos',
+                circle: 'border-tt-laranja-principal bg-tt-laranja-principal',
+                line: 'bg-tt-laranja-principal',
+              },
+            ].map(({ label, circle, line }, position) => {
+              const number = position + 1;
+              const visitada = number <= etapaMaisAvancada;
+              const ativa = step === number;
+              const bloqueada =
+                finished || salvando || Boolean(revisao) || !visitada;
+
+              return (
+                <li key={label} className="relative min-w-0">
+                  {number < 4 && (
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none absolute left-1/2 top-[18px] h-1 w-full sm:top-5 ${number < etapaMaisAvancada ? line : 'bg-tt-azul-marinho/15'}`}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    disabled={bloqueada}
+                    aria-current={ativa ? 'step' : undefined}
+                    onClick={() => goTo(number)}
+                    className="relative z-10 flex w-full flex-col items-center gap-3 rounded-lg px-1 text-center text-[10px] font-semibold text-tt-azul-marinho outline-none focus-visible:ring-2 focus-visible:ring-tt-azul-principal disabled:cursor-default sm:text-xs"
+                  >
+                    <span
+                      className={`grid size-10 shrink-0 place-items-center rounded-full border-2 text-sm font-bold ring-4 ring-tt-branco transition duration-200 sm:size-11 ${visitada ? `${circle} text-tt-branco` : 'border-tt-azul-marinho/20 bg-tt-cinza-claro text-tt-grafite/50'} ${ativa ? 'scale-110 shadow-md' : ''}`}
+                    >
+                      {number}
+                    </span>
+                    <span className={ativa ? 'font-extrabold' : 'font-medium'}>
+                      {label}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+        <div className="content-wrap">
+          {/* Confirma os preços e a contagem retornados pelo servidor. */}
+          {finished && (
+            <div className="success-banner">
+              <strong>Evento Cadastrado!</strong>
+              <span>
+                Evento cadastrado com sucesso! ele já pode ser acessado e consultado
+                no painel.
+              </span>
+            </div>
+          )}
+          {erro && (
+            <p
+              role="alert"
+              className="mb-4 rounded-xl bg-tt-rosa-claro p-4 text-tt-rosa-principal"
+            >
+              {erro}
+            </p>
+          )}
+          {salvando && <p role="status">Salvando evento…</p>}
+          {finished && resumo && (
+            <div
+              role="status"
+              className="mb-4 grid gap-3 rounded-xl bg-tt-azul-marinho p-5 text-tt-branco sm:grid-cols-3"
+            >
+              <div>
+                <p className="text-xs text-tt-branco/70">Lote inicial</p>
+                <strong>
+                  {Number(resumo.primeiro_lote).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </strong>
               </div>
-              <div className="overflow-y-auto px-6 py-7 sm:px-8">
-                <h2 id="titulo-revisao" className="text-2xl font-black tracking-[-0.015em]">
+              <div>
+                <p className="text-xs text-tt-branco/70">Segundo lote</p>
+                <strong>
+                  {resumo.segundo_lote == null
+                    ? 'Não informado'
+                    : Number(resumo.segundo_lote).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
+                </strong>
+              </div>
+              <div>
+                <p className="text-xs text-tt-branco/70">
+                  Itens de custo salvos
+                </p>
+                <strong>{resumo.quantidade_itens}</strong>
+              </div>
+            </div>
+          )}
+          {finished && (
+            <Link
+              to="/PainelDeEventos?tab=meus"
+              className="block p-4 font-bold text-tt-azul-principal"
+            >
+              Ver meus eventos →
+            </Link>
+          )}
+          {!finished && (
+            <fieldset disabled={salvando}>
+              {/* mostra so a etapa atual, cada uma recebe seus dados e as funcoes de voltar/avancar */}
+              {/* na etapa 1 o voltar leva pro painel de eventos */}
+              {step === 1 && (
+                <EventBasics
+                  data={eventData}
+                  setData={setEventData}
+                  onBack={() => navigate('/PainelDeEventos')}
+                  onNext={() => goTo(2)}
+                />
+              )}
+              {step === 2 && (
+                <AudienceLots
+                  data={lotData}
+                  setData={setLotData}
+                  onBack={() => goTo(1)}
+                  onNext={() => goTo(3)}
+                />
+              )}
+              {step === 3 && (
+                <IndependentCosts
+                  costs={independentCosts}
+                  setCosts={setIndependentCosts}
+                  onBack={() => goTo(2)}
+                  onNext={() => goTo(4)}
+                />
+              )}
+              {/* etapa 4 recebe os custos da etapa 3 pra somar no total */}
+              {step === 4 && (
+                <CostItems
+                  groups={groups}
+                  setGroups={setGroups}
+                  independentCosts={independentCosts}
+                  onBack={() => goTo(3)}
+                  onFinish={revisar}
+                />
+              )}
+            </fieldset>
+          )}
+          <dialog
+            ref={dialogo}
+            aria-labelledby="titulo-revisao"
+            onCancel={(event) => {
+              event.preventDefault();
+              if (!envioEmAndamento.current) setRevisao(null);
+            }}
+            className="m-auto max-h-[90vh] w-[calc(100%_-_32px)] max-w-[650px] overflow-y-auto rounded-2xl border-0 bg-tt-branco p-6 text-tt-azul-marinho shadow-2xl backdrop:bg-tt-azul-marinho/60"
+          >
+            {revisao && (
+              <>
+                <h2 id="titulo-revisao" className="text-xl font-bold">
                   Revise antes de salvar o evento
                 </h2>
                 <p className="mt-2 text-sm text-tt-grafite/70">
@@ -302,36 +361,57 @@ export default function EventRegistration() {
                     0,
                   )}
                 </p>
-                <ul className="mt-2 divide-y divide-tinta/10 border-y border-tinta/10">
+                <ul className="my-3 divide-y divide-tt-azul-marinho/10">
                   {revisao.groups.flatMap((group) =>
                     group.items.map((item) => (
-                      <li key={item.id} className="flex flex-wrap justify-between gap-2 py-2.5 text-sm">
-                        <span><span className="text-tinta/55">{group.name} —</span> {item.description}</span>
-                        <span className="tabular text-tinta/80">{item.qty} × {brlTexto(item.unit)}</span>
+                      <li key={item.id} className="py-2 text-sm">
+                        {group.name} — {item.description} · {item.qty} ×{' '}
+                        {Number(item.unit).toLocaleString('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        })}
                       </li>
                     )),
                   )}
                 </ul>
                 {revisao.groups.every((group) => group.items.length === 0) && (
-                  <Aviso tipo="atencao" className="mt-4">
+                  <p className="rounded-xl bg-tt-laranja-claro p-3 text-sm">
                     Nenhum item de fornecimento foi adicionado. Volte para
                     preencher os itens se deseja receber propostas.
-                  </Aviso>
+                  </p>
                 )}
-                {erro && <Aviso tipo="erro" className="mt-4">{erro}</Aviso>}
-              </div>
-              <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-tinta/10 bg-tinta/[0.03] px-6 py-4 sm:px-8">
-                <button type="button" autoFocus disabled={salvando} onClick={() => setRevisao(null)} className={btn('claro')}>
-                  Voltar e continuar preenchendo
-                </button>
-                <button type="button" disabled={salvando} onClick={confirmarSalvar} className={btn('primario')}>
-                  {salvando ? 'Salvando…' : 'Confirmar e salvar'}
-                </button>
-              </div>
-            </div>
-          )}
-        </dialog>
-      </div>
-    </main>
+                {erro && (
+                  <p
+                    role="alert"
+                    className="mt-3 text-sm text-tt-rosa-principal"
+                  >
+                    {erro}
+                  </p>
+                )}
+                <div className="mt-5 flex flex-wrap justify-end gap-3">
+                  <button
+                    type="button"
+                    autoFocus
+                    disabled={salvando}
+                    onClick={() => setRevisao(null)}
+                    className="rounded-xl border border-tt-azul-marinho/20 px-4 py-3 text-sm font-bold"
+                  >
+                    Voltar e continuar preenchendo
+                  </button>
+                  <button
+                    type="button"
+                    disabled={salvando}
+                    onClick={confirmarSalvar}
+                    className="rounded-xl bg-tt-azul-marinho px-4 py-3 text-sm font-bold text-tt-branco disabled:opacity-50"
+                  >
+                    {salvando ? 'Salvando…' : 'Confirmar e salvar'}
+                  </button>
+                </div>
+              </>
+            )}
+          </dialog>
+        </div>
+      </main>
+    </div>
   );
 }

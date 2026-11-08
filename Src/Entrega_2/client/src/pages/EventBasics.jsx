@@ -50,13 +50,13 @@ export function EventBasics({ data, setData, onBack, onNext }) {
   return (
     // card padrao das etapas do formulario
     <FormCard
-      gel="indigo"
+      eyebrow="Etapa 1 de 4"
       title="Cadastro de Eventos"
       subtitle="Comece pelas informações essenciais que aparecerão para o comprador."
       footer={<ActionRow onBack={onBack} onNext={handleNext} />}
     >
       {/* campos em 2 colunas */}
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="form-grid two-cols">
         <Field label="Nome do evento" required error={errors.name}>
           <Input value={data.name} onChange={patch('name')} placeholder="Ex: Festival TrocaTicket 2026" maxLength={150} />
         </Field>

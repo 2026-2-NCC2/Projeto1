@@ -3,10 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import { AuthProvider } from './services/AuthContext.jsx'
-// fontes servidas pelo proprio projeto (sem depender do Google Fonts)
-import '@fontsource-variable/schibsted-grotesk'
-import '@fontsource/jetbrains-mono/400.css'
-import '@fontsource/jetbrains-mono/600.css'
 import './styles/index.css'
 
 // ponto de entrada do app: coloca o react dentro da div "root" do index.html

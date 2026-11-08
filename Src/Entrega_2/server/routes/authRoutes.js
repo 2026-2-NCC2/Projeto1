@@ -98,7 +98,7 @@ router.post("/login", async (req, res) => {
   try {
     // lower(): contas criadas com letras maiúsculas no e-mail continuam entrando
     const [usuario] = await sql`
-      SELECT id_usuario, nome, username, email, senha, perfil FROM usuario
+      SELECT id_usuario, nome, email, senha, perfil FROM usuario
       WHERE lower(email) = ${normalizarEmail(email)}
     `;
 
@@ -151,7 +151,6 @@ router.post("/login", async (req, res) => {
       usuario: {
         id_usuario: usuario.id_usuario,
         nome: usuario.nome,
-        username: usuario.username,
         email: usuario.email,
         perfil: usuario.perfil,
       },

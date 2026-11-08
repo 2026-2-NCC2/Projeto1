@@ -1,22 +1,16 @@
 import { Link } from 'react-router-dom'
-import { btn } from '../components/ui/estilos'
-import Semicirculos from '../components/ui/Semicirculos'
 
 // pagina de erro 404, aparece quando a rota nao existe (rota "*" em routes/index.jsx)
-// tres gelatinas apagadas: a luz que deveria estar aqui nao acendeu
 function NotFound() {
   return (
-    <main className="relative flex min-h-[calc(100svh-68px)] flex-col items-center justify-center gap-5 overflow-x-clip fundo-luz px-4 py-16 text-center text-white">
-      <Semicirculos posicoes={[{ lado: 'esq', topo: 'top-[30%]', cor: 'bg-gel-fogo', tamanho: 'g' }, { lado: 'dir', topo: 'top-[62%]', cor: 'bg-gel-indigo', tamanho: 'm' }]} />
-      <div className="flex items-end gap-2" aria-hidden="true">
-        <span className="h-20 w-8 rounded-none bg-gel-indigo/30" />
-        <span className="h-28 w-8 rounded-none bg-gel-magenta/30" />
-        <span className="h-16 w-8 rounded-none bg-gel-ceu/30" />
-      </div>
-      <p className="tabular text-[clamp(4.5rem,14vw,8rem)] font-black leading-none tracking-[-0.025em]">404</p>
-      <h1 className="text-2xl font-black">Página não encontrada</h1>
-      <p className="max-w-sm text-[15px] text-white/65">O endereço que você acessou não existe ou foi alterado.</p>
-      <Link to="/" className={`${btn('primario', 'lg')} mt-2`}>
+    <main className="flex min-h-[calc(100vh-72px)] flex-col items-center justify-center gap-4 bg-tt-cinza-claro px-4 text-center text-tt-azul-marinho">
+      <p className="tt-display text-[clamp(64px,12vw,120px)]">404</p>
+      <h1 className="text-2xl font-extrabold">Página não encontrada</h1>
+      <p className="max-w-sm text-sm text-tt-grafite/70">O endereço que você acessou não existe ou foi alterado.</p>
+      <Link
+        to="/"
+        className="border-[1.5px] border-tt-azul-marinho bg-tt-laranja-principal px-5 py-2.5 text-sm font-bold text-tt-azul-marinho no-underline transition-colors hover:bg-tt-laranja-vivo"
+      >
         Voltar ao início
       </Link>
     </main>
