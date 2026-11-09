@@ -11,14 +11,16 @@ export default function FornecedoresConfirmados({ eventoId }) {
 
   // busca os fornecedores quando a tela abre
   useEffect(() => {
+    const controle = new AbortController()
     async function carregar() {
       try {
-        setDados(await solicitar(`/eventos/${eventoId}/fornecedores`))
+        setDados(await solicitar(`/eventos/${eventoId}/fornecedores`, { signal: controle.signal }))
       } catch (e) {
-        setErro(e.message)
+        if (e.name !== 'AbortError') setErro(e.message)
       }
     }
     carregar()
+    return () => controle.abort()
   }, [eventoId])
 
   // o servidor manda uma linha por produto, aqui junta tudo por empresa

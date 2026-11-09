@@ -41,14 +41,16 @@ export default function TicketEstimado({ eventoId }) {
 
   // busca o ticket quando a tela abre
   useEffect(() => {
+    const controle = new AbortController()
     async function carregar() {
       try {
-        mostrar(await solicitar(`/eventos/${eventoId}/ticket`))
+        mostrar(await solicitar(`/eventos/${eventoId}/ticket`, { signal: controle.signal }))
       } catch (e) {
-        setErro(e.message)
+        if (e.name !== 'AbortError') setErro(e.message)
       }
     }
     carregar()
+    return () => controle.abort()
   }, [eventoId])
 
   async function salvarMargem(e) {

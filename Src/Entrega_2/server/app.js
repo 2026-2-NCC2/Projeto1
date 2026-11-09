@@ -10,6 +10,7 @@ import { tratarErros } from './middlewares/erros.js'
 // - Localmente, o index.js importa o app e sobe o servidor na porta 3000.
 // - Na Vercel, o api/index.js exporta o app como função serverless.
 const app = express()
+app.disable('x-powered-by') // menos bytes por resposta e nao expoe o framework
 
 // Origens que podem chamar a API. Em produção, defina CORS_ORIGIN na Vercel
 // (várias separadas por vírgula). Sem a variável, libera o frontend publicado e o Vite local.
@@ -27,6 +28,8 @@ app.use(cors({
         }
         callback(null, false)
     },
+    // o navegador guarda a resposta do preflight (OPTIONS) por 24h, em vez de repetir antes de cada chamada
+    maxAge: 86400,
 }))
 
 // Middleware: permite ler o corpo da requisição como JSON
