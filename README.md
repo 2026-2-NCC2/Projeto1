@@ -176,11 +176,11 @@ As variáveis ficam em arquivos `.env`, que não são versionados.
 
   | Entrega 2 |  Materia | Link |
   |---|---|---|
-  |09/11 |Modelagem do Banco de Dados | [Acessse Aqui](Documentos/Entrega%201/Projeto%20em%20Banco%20de%20Dados/README.md) |
-  |09/11 |Projeto Interdiciplinar | [Acessse Aqui](Documentos/Entrega%201/Projeto%20Interdisciplinar%20-%20Programação%20Web/README.md) |
-  |09/11 |Cálculo - II | [Acessse Aqui](Documentos/Entrega%201/C%C3%A1lculo%20-%20II/Entrega%20Calculo%202.pdf) |
-  |09/11 |Gestão Empresarial e Dinâmicas das Organizações | [Acessse Aqui](Documentos/Entrega%201/Gest%C3%A3o%20Empresarial%20e%20Din%C3%A2micas%20das%20Organiza%C3%A7%C3%B5es/Entrega%201.docx.PDF) |
-  |09/11 |Desenvolvimento Web Full Stack | [Acessse Aqui](Src/Entrega%201/Frontend) |
+  |09/11 |Modelagem do Banco de Dados | [Acessse Aqui](Documentos/Entrega%202/Projeto%20em%20Banco%20de%20Dados/README.md) |
+  |09/11 |Projeto Interdiciplinar | [Acessse Aqui](Documentos/Entrega%202/Projeto%20Interdisciplinar%20-%20Programação%20Web/README.md) |
+  |09/11 |Cálculo - II | [Acessse Aqui](Documentos/Entrega%202/C%C3%A1lculo%20-%20II/Entrega%20Calculo%202.pdf) |
+  |09/11 |Gestão Empresarial e Dinâmicas das Organizações | [Acessse Aqui](Documentos/Entrega%202/Gest%C3%A3o%20Empresarial%20e%20Din%C3%A2micas%20das%20Organiza%C3%A7%C3%B5es/Entrega%201.docx.PDF) |
+  |09/11 |Desenvolvimento Web Full Stack | [Acessse Aqui](Src/Entrega%202/Frontend) |
 
 ## 📋 Licença/License
 <a href="https://github.com/2026-2-NCC2/Projeto1"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Troca Ticket</font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> © 2026 por </font></font><a href="https://www.linkedin.com/in/brenno-alves-souza-890b972b1/">Brenno Alves</a>, <a href="https://www.linkedin.com/in/gabriel-oliveira-a691b2353/">Gabriel Carrocci</a>, <a href="https://www.linkedin.com/in/julia-damasio-b6531a24a">Julia Damasio</a>, <a href="https://www.linkedin.com/in/lucas-araujo-pereira23/">Lucas Araujo</a></font></font></a><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;"> está licenciado sob </font></font><a href="https://creativecommons.org/licenses/by/4.0/"><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">Creative Commons Atribuição 4.0 Internacional</font></font></a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
