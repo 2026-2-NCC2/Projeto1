@@ -66,10 +66,11 @@ export async function enviarEmailVerificacao({ nome, email, token }) {
 <p>O link vale por ${VALIDADE_TOKEN_HORAS} horas. Se você não criou esta conta, ignore esta mensagem.</p>`,
             }),
         })
-        if (!resposta.ok) {
-            console.error('[email] provedor recusou o envio, status', resposta.status)
-            return false
-        }
+       if (!resposta.ok) {
+        const corpo = await resposta.text()
+        console.error('[email] provedor recusou o envio, status', resposta.status, corpo)
+      return false
+}
         return true
     } catch (erro) {
         // Só a mensagem: nada de e-mail ou token no log.
