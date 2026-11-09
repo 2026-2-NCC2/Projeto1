@@ -395,7 +395,7 @@ export default function PainelDeEventos() {
       {/* ── MODAL EDITAR ── */}
       {/* fundo escuro por cima da tela toda com o formulario no meio */}
       {form && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-palco/75 p-4 backdrop-blur-[3px]">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-veu/75 p-4 backdrop-blur-[3px]">
           <div role="dialog" aria-modal="true" aria-labelledby="titulo-editar" className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-none bg-folha text-tinta shadow-folha">
             <div className="h-2.5 bg-gel-indigo" aria-hidden="true" />
             <div className="px-6 py-7">

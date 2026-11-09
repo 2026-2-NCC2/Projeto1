@@ -33,7 +33,7 @@ const BTN_VARIANTE = {
   claro: 'border-tinta bg-transparent text-tinta hover:bg-papel',
   escuro: 'border-white/70 bg-transparent text-white hover:border-white hover:bg-white/8',
   perigo: 'border-gel-rubi-forte bg-transparent text-gel-rubi-forte hover:bg-gel-rubi hover:text-tinta',
-  tinta: 'border-tinta bg-tinta text-white hover:bg-palco-3',
+  tinta: 'border-tinta bg-tinta text-sobre-escuro hover:bg-tinta-hover',
 }
 const BTN_TAMANHO = {
   sm: 'min-h-9 px-3.5 text-[13px]',
@@ -64,7 +64,7 @@ export const dadoRotuloCls = 'text-[11px] font-semibold uppercase tracking-[0.07
 
 // link de texto sobre o palco
 export const linkEscuroCls =
-  'font-semibold text-white underline decoration-gel-fogo decoration-2 underline-offset-4 transition-colors hover:text-gel-indigo'
+  'font-semibold text-white underline decoration-gel-fogo decoration-2 underline-offset-4 transition-colors hover:text-acento-hover'
 // link de texto sobre a folha
 export const linkClaroCls =
   'font-semibold text-tinta underline decoration-gel-fogo decoration-2 underline-offset-4 transition-colors hover:text-gel-indigo-forte'

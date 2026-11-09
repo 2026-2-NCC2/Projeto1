@@ -5,6 +5,15 @@
     <link rel="icon" type="image/png" href="./src/assets/icons/favicon/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#111017" />
+    <!-- aplica o tema salvo antes do primeiro desenho da tela (evita flash). Sem preferencia salva = escuro, o padrao -->
+    <script>
+      try {
+        if (localStorage.getItem('tt-tema') === 'light') {
+          document.documentElement.dataset.theme = 'light'
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f1eee8')
+        }
+      } catch (e) {}
+    </script>
     <meta name="description" content="TrocaTicket: planeje seu evento, calcule o ticket e conecte organizadores e fornecedores." />
     <!-- abre a conexao com a API (DNS + TLS) em paralelo ao download do app, economizando tempo na primeira chamada -->
     <link rel="preconnect" href="https://trocaticket-api.vercel.app" crossorigin />

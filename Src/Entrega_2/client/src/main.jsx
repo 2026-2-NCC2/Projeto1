@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './routes'
 import { AuthProvider } from './services/AuthContext.jsx'
+import { ThemeProvider } from './services/ThemeContext.jsx'
 // fontes servidas pelo proprio projeto (sem depender do Google Fonts)
 import '@fontsource-variable/schibsted-grotesk'
 import '@fontsource/jetbrains-mono/400.css'
@@ -14,8 +15,10 @@ createRoot(document.getElementById('root')).render(
   // StrictMode ajuda a achar problemas durante o desenvolvimento (nao aparece na tela)
   <StrictMode>
     {/* AuthProvider precisa envolver o router, pois Header/outras paginas dentro das rotas usam useAuth() */}
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 )

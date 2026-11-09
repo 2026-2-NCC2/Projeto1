@@ -215,9 +215,9 @@ export default function CustosFornecedor({ evento }) {
         </div>
 
         {/* total da proposta: numero grande, botao do lado */}
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-none bg-tinta px-5 py-4 text-white">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-none bg-tinta px-5 py-4 text-sobre-escuro">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-white/55">Total</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-sobre-escuro/55">Total</p>
             <p className="tabular text-2xl font-black tracking-[-0.015em]">{brl(total)}</p>
           </div>
           <button disabled={sending || !produtos.length} className={btn('primario', 'lg')}>
