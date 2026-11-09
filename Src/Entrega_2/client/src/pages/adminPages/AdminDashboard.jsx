@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Badge from '../../components/ui/Badge';
 import Footer from '../../components/Footer';
 import Aviso from '../../components/ui/Aviso';
@@ -35,26 +35,24 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [erroApi, setErroApi] = useState('');
 
-  // busca os cadastros (os setState so acontecem depois da resposta)
-  const carregar = useCallback(async () => {
-    try {
-      setCadastros(await buscarCadastros());
-    } catch {
-      setErroApi('Não foi possível carregar os cadastros.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // cada vez que esse numero muda a busca roda de novo (o botao "Tentar de novo" soma 1)
+  const [tentativa, setTentativa] = useState(0);
 
+  // busca os cadastros; os setState so acontecem depois da resposta, e uma resposta antiga e ignorada
   useEffect(() => {
-    carregar();
-  }, [carregar]);
+    let ativo = true;
+    buscarCadastros()
+      .then((dados) => { if (ativo) setCadastros(dados); })
+      .catch(() => { if (ativo) setErroApi('Não foi possível carregar os cadastros.'); })
+      .finally(() => { if (ativo) setLoading(false); });
+    return () => { ativo = false; };
+  }, [tentativa]);
 
   // botao "Tentar de novo": volta pro estado de carregando e busca outra vez
   function tentarDeNovo() {
     setLoading(true);
     setErroApi('');
-    carregar();
+    setTentativa((n) => n + 1);
   }
 
   // sem dados confiaveis (carregando ou deu erro): os cards mostram "—" em vez de um 0 que nao e verdade
