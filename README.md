@@ -178,7 +178,7 @@ As variáveis ficam em arquivos `.env`, que não são versionados.
   |---|---|---|
   |09/11 |Modelagem do Banco de Dados | [Acessse Aqui](Documentos/Entrega%202/Projeto%20em%20Banco%20de%20Dados/README.md) |
   |09/11 |Projeto Interdiciplinar | [Acessse Aqui](Documentos/Entrega%202/Projeto%20Interdisciplinar%20-%20Programa%C3%A7%C3%A3o%20Web) |
-  |09/11 |Cálculo - II | [Acessse Aqui](Documentos/Entrega%202/C%C3%A1lculo%20-%20II/Entrega%20Calculo%202.pdf) |
+  |09/11 |Cálculo - II | [Acessse Aqui](Documentos/Entrega%202/C%C3%A1lculo%20-%20II) |
   |09/11 |Gestão Empresarial e Dinâmicas das Organizações | [Acessse Aqui](Documentos/Entrega%202/Gest%C3%A3o%20Empresarial%20e%20Din%C3%A2micas%20das%20Organiza%C3%A7%C3%B5es/Entrega%201.docx.PDF) |
   |09/11 |Desenvolvimento Web Full Stack | [Acessse Aqui](https://troca-ticket.vercel.app/) |
 
