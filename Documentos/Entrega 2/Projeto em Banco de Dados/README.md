@@ -3,10 +3,11 @@
 Banco de dados em **PostgreSQL**, schema `public`. Todas as tabelas têm **Row Level Security (RLS)** habilitado.
 
 ## Anexos
+![Diagrama do Banco de Dados](Imagens/Imagens/BancodeDados1.jpeg)
 
-![Diagrama do Banco de Dados](/Imagens/Imagens/BancodeDados1.jpeg)
-![Diagrama do Banco de Dados](/Imagens/Imagens/BancodeDados2.jpeg)
-![Diagrama do Banco de Dados](/Imagens/Imagens/BancodeDados3.jpeg)
+![Diagrama do Banco de Dados](Imagens/Imagens/BancodeDados2.jpeg)
+
+![Diagrama do Banco de Dados](Imagens/Imagens/BancodeDados3.jpeg)
 
 ## Tipos ENUM
 
