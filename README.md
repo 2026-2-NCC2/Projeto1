@@ -130,17 +130,6 @@ O front-end abre em `http://localhost:5173`.
 cd server
 npm test
 ```
-
-### Contas de teste
-
-Após rodar o `seed.sql`, use as contas de exemplo abaixo (senha `123456`):
-
-| Perfil | E-mail |
-|---|---|
-| Administrador | `<e-mail do admin no seed>` |
-| Organizador | `<e-mail do organizador no seed>` |
-| Fornecedor | `<e-mail do fornecedor no seed>` |
-
 ### Aplicação publicada
 
 - Front-end: https://troca-ticket.vercel.app
@@ -150,7 +139,7 @@ Após rodar o `seed.sql`, use as contas de exemplo abaixo (senha `123456`):
 
 ### Variáveis de ambiente
 
-As variáveis ficam em arquivos `.env`, que não são versionados. Nunca envie senhas, chaves ou strings de conexão para o repositório.
+As variáveis ficam em arquivos `.env`, que não são versionados.
 
 | Pasta | Variável | Desenvolvimento local | Produção |
 |---|---|---|---|
@@ -167,17 +156,6 @@ As variáveis ficam em arquivos `.env`, que não são versionados. Nunca envie s
 | `client` | `npm run build` | Gera a versão de produção |
 | `client` | `npm run lint` | Verifica o código com ESLint |
 
-### Antes de enviar alterações
-
-Rode `npm test` no `server` e `npm run lint` e `npm run build` no `client`.
-
-### Fluxo com Git
-
-1. `git pull` antes de começar.
-2. Commits pequenos, com mensagens claras (por exemplo, `Adiciona validade na proposta`).
-3. `git push` ao terminar.
-4. Se o `package.json` mudou, rode `npm ci` na pasta correspondente.
-
 ### Perfis de usuário
 
 | Perfil | O que faz |
@@ -185,8 +163,6 @@ Rode `npm test` no `server` e `npm run lint` e `npm run build` no `client`.
 | Administrador | Aprova ou rejeita cadastros e acompanha os eventos |
 | Organizador | Cria eventos, cadastra itens e custos, avalia propostas e vê o ticket estimado |
 | Fornecedor | Vê eventos publicados e envia propostas por item de custo |
-
-Para testar o fluxo completo: cadastre um organizador e um fornecedor, aprove os dois pelo administrador, crie um evento, envie uma proposta, aceite-a e confira o ticket. A fórmula está em `FORMULA-TICKET.md`.
 
 ## 💾 Entregas
 
