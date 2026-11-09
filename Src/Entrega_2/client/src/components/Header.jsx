@@ -54,7 +54,7 @@ export default function Header() {
         : null
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-palco/90 text-white backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-palco/95 text-white backdrop-blur-sm">
       {/* desktop: uma linha de 68px em 3 colunas (logo, menu, conta).
           ate 900px: linha 1 (logo + conta) e linha 2 (menu, que rola de lado em vez de quebrar) */}
       <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 sm:px-8 max-[900px]:grid-cols-[1fr_auto] max-[900px]:gap-x-4 max-[900px]:gap-y-0">

@@ -28,9 +28,10 @@ function useIndicadores() {
   const [indicadores, setIndicadores] = useState([])
 
   useEffect(() => {
+    const controle = new AbortController()
     async function carregar() {
       try {
-        const eventos = await solicitar('/eventos')
+        const eventos = await solicitar('/eventos', { signal: controle.signal })
         const publicados = eventos.filter((e) => e.status_publicacao === 'Publicado').length
         setIndicadores(publicados > 0 ? [{ rotulo: 'eventos publicados', valor: publicados.toLocaleString('pt-BR') }] : [])
       } catch {
@@ -38,6 +39,7 @@ function useIndicadores() {
       }
     }
     carregar()
+    return () => controle.abort() // saiu da pagina: cancela a requisicao em andamento
   }, [])
 
   return indicadores
@@ -48,20 +50,29 @@ function useIndicadores() {
 function IngressoInterativo() {
   const ref = useRef(null)
 
+  const quadro = useRef(0) // id do requestAnimationFrame pendente (0 = nenhum)
+
   function mover(e) {
     const el = ref.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const r = el.getBoundingClientRect()
-    const x = (e.clientX - r.left) / r.width - 0.5
-    const y = (e.clientY - r.top) / r.height - 0.5
-    el.style.setProperty('--rx', `${(-y * 12).toFixed(2)}deg`)
-    el.style.setProperty('--ry', `${(x * 16).toFixed(2)}deg`)
-    el.style.setProperty('--bx', `${((x + 0.5) * 100).toFixed(1)}%`)
-    el.style.setProperty('--by', `${((y + 0.5) * 100).toFixed(1)}%`)
+    if (!el || quadro.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const { clientX, clientY } = e
+    // no maximo uma atualizacao por quadro de tela, mesmo que o mouse dispare dezenas de eventos
+    quadro.current = requestAnimationFrame(() => {
+      quadro.current = 0
+      const r = el.getBoundingClientRect()
+      const x = (clientX - r.left) / r.width - 0.5
+      const y = (clientY - r.top) / r.height - 0.5
+      el.style.setProperty('--rx', `${(-y * 12).toFixed(2)}deg`)
+      el.style.setProperty('--ry', `${(x * 16).toFixed(2)}deg`)
+      el.style.setProperty('--bx', `${((x + 0.5) * 100).toFixed(1)}%`)
+      el.style.setProperty('--by', `${((y + 0.5) * 100).toFixed(1)}%`)
+    })
   }
 
   function sair() {
     const el = ref.current
+    cancelAnimationFrame(quadro.current)
+    quadro.current = 0
     if (!el) return
     el.style.setProperty('--rx', '0deg')
     el.style.setProperty('--ry', '0deg')

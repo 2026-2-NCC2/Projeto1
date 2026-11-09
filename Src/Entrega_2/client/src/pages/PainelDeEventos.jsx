@@ -53,16 +53,19 @@ export default function PainelDeEventos() {
   const [carregando, setCarregando] = useState(true);
   // busca os eventos quando a pagina abre
   useEffect(() => {
+    const controle = new AbortController();
     async function carregar() {
       try {
-        setEventos(await solicitar('/eventos'));
+        setEventos(await solicitar('/eventos', { signal: controle.signal }));
+        setCarregando(false);
       } catch (e) {
+        if (e.name === 'AbortError') return; // saiu da pagina: nao mexe no estado
         setErroApi(e.message);
-      } finally {
         setCarregando(false);
       }
     }
     carregar();
+    return () => controle.abort();
   }, []);
 
   // ── Filtragem (usa activeTab vindo da URL) ────────────────────────────────

@@ -11,6 +11,7 @@ export default function Sticker({ nome, tamanho = 120, rotate = 0, delay = 0, cl
       aria-hidden="true"
       draggable="false"
       loading="lazy"
+      decoding="async"
       width={tamanho}
       className={`tt-sticker ${className}`}
       style={{ width: tamanho, '--r': `${rotate}deg`, '--d': `${delay}s` }}

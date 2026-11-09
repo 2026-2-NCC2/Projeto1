@@ -1,52 +1,52 @@
 import { createBrowserRouter } from 'react-router-dom'
 
-// paginas e componentes usados nas rotas
+// so o essencial entra no pacote inicial: layout, landing (primeira tela), protecao de rota e spinner.
+// Todas as outras paginas sao baixadas sob demanda (lazy), na primeira vez que a rota e aberta.
 import AppLayout from '../components/AppLayout'
 import LandingPage from '../pages/LandingPage'
-import NotFound from '../pages/NotFound'
-import Cadastro from '../pages/Cadastro'
-import Login from '../pages/Login'
-import VerificarEmail from '../pages/VerificarEmail'
-import PainelDeEventos from '../pages/PainelDeEventos'
-import AprovarCadastros from '../pages/adminPages/AprovarCadastros'
-import EventRegistration from '../components/EventRegistration.jsx'
-import AdminDashboard from '../pages/adminPages/AdminDashboard.jsx'
-import ConsultasAdmin from '../pages/adminPages/ConsultasAdmin.jsx'
 import ProtectedRoute from '../components/ProtectedRoute'
-import Propostas from '../pages/Propostas'
-import Usuario from '../pages/Usuario'
+import Spinner from '../components/ui/Spinner'
+
+// rota publica carregada sob demanda: o router espera o arquivo chegar antes de trocar de tela
+const pagina = (importar) => async () => ({ Component: (await importar()).default })
+
+// rota protegida carregada sob demanda: mesma ideia, ja embrulhada no ProtectedRoute
+// (a checagem de perfil continua acontecendo antes de mostrar a pagina)
+const paginaProtegida = (importar, roles, { chave, ...props } = {}) => async () => {
+  const Pagina = (await importar()).default
+  // chave: faz o React recriar a tela ao ir de uma rota pra outra que usa o mesmo componente
+  return { element: <ProtectedRoute roles={roles}><Pagina key={chave} {...props} /></ProtectedRoute> }
+}
 
 // todas as rotas do site
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
+    // mostrado so no primeiro carregamento, enquanto o arquivo da rota inicial chega
+    hydrateFallbackElement: <Spinner text="Carregando..." escuro />,
     children: [
       { path: '/', element: <LandingPage /> },
-      { path: '/Cadastro', element: <Cadastro /> },
-      { path: '/Login', element: <Login /> },
-      { path: '/verificar-email', element: <VerificarEmail /> },
-      { path: '/PainelDeEventos', element: <PainelDeEventos /> },
+      { path: '/Cadastro', lazy: pagina(() => import('../pages/Cadastro')) },
+      { path: '/Login', lazy: pagina(() => import('../pages/Login')) },
+      { path: '/verificar-email', lazy: pagina(() => import('../pages/VerificarEmail')) },
+      { path: '/PainelDeEventos', lazy: pagina(() => import('../pages/PainelDeEventos')) },
 
       // perfil do usuario — qualquer perfil logado
-      { path: '/usuario', element: <ProtectedRoute><Usuario /></ProtectedRoute> },
+      { path: '/usuario', lazy: paginaProtegida(() => import('../pages/Usuario')) },
 
       // propostas — fornecedor (enviadas) e organizador (recebidas)
-      { path: '/propostas', element: <ProtectedRoute roles={['fornecedor', 'organizador']}><Propostas /></ProtectedRoute> },
-      
+      { path: '/propostas', lazy: paginaProtegida(() => import('../pages/Propostas'), ['fornecedor', 'organizador']) },
+
       // admin — so perfil 'administrador'
-      { path: '/AprovarCadastros', element: <ProtectedRoute roles={['administrador']}><AprovarCadastros /></ProtectedRoute> },
-      { path: '/AdminDashboard', element: <ProtectedRoute roles={['administrador']}><AdminDashboard /></ProtectedRoute> },
-      { path: '/admin/usuarios', element: <ProtectedRoute roles={['administrador']}><ConsultasAdmin key="usuarios" usuarios /></ProtectedRoute> },
-      { path: '/admin/relatorios', element: <ProtectedRoute roles={['administrador']}><ConsultasAdmin key="relatorios" /></ProtectedRoute> },
+      { path: '/AprovarCadastros', lazy: paginaProtegida(() => import('../pages/adminPages/AprovarCadastros'), ['administrador']) },
+      { path: '/AdminDashboard', lazy: paginaProtegida(() => import('../pages/adminPages/AdminDashboard.jsx'), ['administrador']) },
+      { path: '/admin/usuarios', lazy: paginaProtegida(() => import('../pages/adminPages/ConsultasAdmin.jsx'), ['administrador'], { chave: 'usuarios', usuarios: true }) },
+      { path: '/admin/relatorios', lazy: paginaProtegida(() => import('../pages/adminPages/ConsultasAdmin.jsx'), ['administrador'], { chave: 'relatorios' }) },
 
       // criar evento — so perfil 'organizador'
-      {
-        path: '/criar-evento/:etapa?',
-        element: <ProtectedRoute roles={['organizador']}><EventRegistration /></ProtectedRoute>,
-      },
+      { path: '/criar-evento/:etapa?', lazy: paginaProtegida(() => import('../components/EventRegistration.jsx'), ['organizador']) },
 
-
-      { path: '*', element: <NotFound /> },
+      { path: '*', lazy: pagina(() => import('../pages/NotFound')) },
     ],
   },
 ])

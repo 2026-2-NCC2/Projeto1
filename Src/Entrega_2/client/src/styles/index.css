@@ -98,12 +98,22 @@
 @layer components {
   /* fundo das telas internas e de conta: o preto com duas manchas de luz em elipse,
      violeta no canto de cima a direita e rosa avermelhado no canto de baixo a esquerda, presas na tela (nao rolam junto) */
+  /* (as manchas ficam num pseudo-elemento position:fixed em vez de background-attachment:fixed:
+     o navegador nao precisa repintar o fundo a cada pixel de rolagem, o visual e o mesmo) */
   .fundo-luz {
     background-color: var(--color-palco);
+    isolation: isolate;
+    clip-path: inset(0); /* mantem as manchas dentro da area da pagina, como antes */
+  }
+  .fundo-luz::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image:
       radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--color-luz-violeta) 38%, transparent), transparent),
       radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--color-luz-rosa) 30%, transparent), transparent);
-    background-attachment: fixed;
   }
 
   /* furo de rebite das folhas de gelatina: um circulo vazado na cor do palco */
@@ -132,6 +142,7 @@
     user-select: none;
     transform: rotate(var(--r, 0deg));
     filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.45));
+    will-change: transform; /* vira camada propria: a sombra nao e recalculada a cada quadro da flutuada */
     animation: tt-sticker-flutuar 7s ease-in-out var(--d, 0s) infinite;
   }
 }
