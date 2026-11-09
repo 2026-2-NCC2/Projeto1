@@ -2,7 +2,14 @@ import { Router } from "express";
 import sql from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { normalizarEmail, validarCadastro } from "../services/validacao.js";
+import { emailValido, normalizarEmail, validarCadastro } from "../services/validacao.js";
+import {
+  limiteDeReenvio,
+  enviarEmailVerificacao,
+  expiracaoDoToken,
+  gerarToken,
+  hashToken,
+} from "../services/verificacaoEmail.js";
 
 const router = Router();
 
@@ -45,35 +52,47 @@ router.post("/cadastro", async (req, res) => {
     if (duplicado) return res.status(409).json(duplicado);
 
     const senhaCriptografada = await bcrypt.hash(senha, 10);
+    const { token, hash: hashDoToken } = gerarToken();
 
-    // sql.begin: se o insert em organizador/fornecedor falhar, desfaz o
-    // insert em usuario também (BEGIN/COMMIT/ROLLBACK automáticos).
-    const idUsuario = await sql.begin(async (sql) => {
-      const [{ id_usuario }] = await sql`
-        INSERT INTO usuario (nome, idade, username, email, senha, perfil)
-        VALUES (${nome}, ${idade}, ${username}, ${email}, ${senhaCriptografada}, ${perfil})
-        RETURNING id_usuario
-      `;
+    // Faxina: cadastros pendentes vencidos há mais de 7 dias (a pessoa nunca confirmou).
+    await sql`
+      DELETE FROM cadastro_pendente WHERE token_expira < ${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)}
+    `;
 
-      // id_organizador / id_fornecedor sao o mesmo id_usuario (FK com PK compartilhada)
-      if (perfil === "organizador") {
-        await sql`
-          INSERT INTO organizador (id_organizador, nome_organizacao, cnpj)
-          VALUES (${id_usuario}, ${empresa}, ${cnpj})
-        `;
-      }
+    // Nada é gravado em usuario/organizador/fornecedor ainda: só depois do clique no link.
+    // Cadastrar de novo com o mesmo e-mail substitui o pendente anterior, mas no máximo
+    // 1 vez por minuto (o WHERE do DO UPDATE), para ninguém usar isso para encher uma caixa de e-mail.
+    const [pendente] = await sql`
+      INSERT INTO cadastro_pendente
+        (nome, idade, username, email, senha, perfil, nome_organizacao, cnpj, area_atuacao, token_verificacao, token_expira)
+      VALUES (
+        ${nome}, ${idade}, ${username}, ${email}, ${senhaCriptografada}, ${perfil},
+        ${perfil === "cliente" ? null : empresa},
+        ${perfil === "cliente" ? null : cnpj},
+        ${perfil === "fornecedor" ? areaAtuacao : null},
+        ${hashDoToken}, ${expiracaoDoToken()}
+      )
+      ON CONFLICT (email) DO UPDATE SET
+        nome = EXCLUDED.nome, idade = EXCLUDED.idade, username = EXCLUDED.username,
+        senha = EXCLUDED.senha, perfil = EXCLUDED.perfil,
+        nome_organizacao = EXCLUDED.nome_organizacao, cnpj = EXCLUDED.cnpj,
+        area_atuacao = EXCLUDED.area_atuacao,
+        token_verificacao = EXCLUDED.token_verificacao, token_expira = EXCLUDED.token_expira,
+        criado_em = now()
+      WHERE cadastro_pendente.token_expira < ${limiteDeReenvio()}
+      RETURNING id_pendente
+    `;
+    if (!pendente) {
+      return res.status(429).json({
+        erro: "Já enviamos um link de confirmação para este e-mail. Aguarde 1 minuto para tentar de novo.",
+        campo: "email",
+      });
+    }
 
-      if (perfil === "fornecedor") {
-        await sql`
-          INSERT INTO fornecedor (id_fornecedor, nome_organizacao, cnpj, area_atuacao)
-          VALUES (${id_usuario}, ${empresa}, ${cnpj}, ${areaAtuacao})
-        `;
-      }
+    // Se o e-mail falhar, o cadastro pendente fica salvo e o login oferece o reenvio.
+    const emailEnviado = await enviarEmailVerificacao({ nome, email, token });
 
-      return id_usuario;
-    });
-
-    return res.status(201).json({ ok: true, id: idUsuario });
+    return res.status(201).json({ ok: true, emailEnviado });
   } catch (erro) {
     if (erro.code === "23505") {
       // dois cadastros iguais chegaram juntos e o UNIQUE do banco barrou um deles
@@ -81,6 +100,100 @@ router.post("/cadastro", async (req, res) => {
     }
     // Só a mensagem: o objeto inteiro do erro pode carregar dados do formulário.
     console.error("[cadastro]", erro.message);
+    return res.status(500).json({ erro: "Erro interno." });
+  }
+});
+
+// Confirma o e-mail a partir do token do link e SÓ ENTÃO cria a conta.
+// O token é de uso único e expira.
+router.post("/verificar-email", async (req, res) => {
+  const { token } = req.body ?? {};
+  if (typeof token !== "string" || !/^[0-9a-f]{64}$/.test(token)) {
+    return res.status(400).json({ erro: "Link de confirmação inválido." });
+  }
+  const hash = hashToken(token);
+
+  try {
+    // sql.begin: o DELETE do pendente e os INSERTs da conta valem juntos ou não valem.
+    // Se a criação falhar, o pendente volta e o link continua válido.
+    const perfil = await sql.begin(async (sql) => {
+      const [p] = await sql`
+        DELETE FROM cadastro_pendente
+        WHERE token_verificacao = ${hash} AND token_expira > now()
+        RETURNING *
+      `;
+      if (!p) return null;
+
+      const [{ id_usuario }] = await sql`
+        INSERT INTO usuario (nome, idade, username, email, senha, perfil)
+        VALUES (${p.nome}, ${p.idade}, ${p.username}, ${p.email}, ${p.senha}, ${p.perfil})
+        RETURNING id_usuario
+      `;
+
+      // id_organizador / id_fornecedor sao o mesmo id_usuario (FK com PK compartilhada)
+      if (p.perfil === "organizador") {
+        await sql`
+          INSERT INTO organizador (id_organizador, nome_organizacao, cnpj)
+          VALUES (${id_usuario}, ${p.nome_organizacao}, ${p.cnpj})
+        `;
+      }
+      if (p.perfil === "fornecedor") {
+        await sql`
+          INSERT INTO fornecedor (id_fornecedor, nome_organizacao, cnpj, area_atuacao)
+          VALUES (${id_usuario}, ${p.nome_organizacao}, ${p.cnpj}, ${p.area_atuacao})
+        `;
+      }
+      return p.perfil;
+    });
+
+    if (!perfil) {
+      return res.status(400).json({
+        erro: "Link inválido ou expirado. Se você já confirmou, é só entrar. Se não, peça um novo link na tela de login.",
+      });
+    }
+    return res.status(200).json({ ok: true, perfil });
+  } catch (erro) {
+    if (erro.code === "23505") {
+      // Entre o cadastro e o clique, outra pessoa ficou com o e-mail, o username ou o CNPJ.
+      // O pendente não serve mais: apaga para não ficar travado.
+      try {
+        await sql`DELETE FROM cadastro_pendente WHERE token_verificacao = ${hash}`;
+      } catch {
+        // a limpeza é só para não deixar o pendente travado; o 409 abaixo vale de qualquer jeito
+      }
+      return res.status(409).json({
+        erro: "Enquanto você confirmava, outra pessoa cadastrou o mesmo e-mail, username ou CNPJ. Faça o cadastro novamente.",
+      });
+    }
+    console.error("[verificar-email]", erro.message);
+    return res.status(500).json({ erro: "Erro interno." });
+  }
+});
+
+// Manda um novo link para um cadastro pendente. A resposta é sempre a mesma,
+// exista o cadastro ou não, para ninguém descobrir quais e-mails estão em uso.
+router.post("/reenviar-verificacao", async (req, res) => {
+  const email = typeof req.body?.email === "string" ? normalizarEmail(req.body.email) : "";
+  if (!emailValido(email)) {
+    return res.status(400).json({ erro: "E-mail inválido." });
+  }
+
+  try {
+    const { token, hash } = gerarToken();
+    const [pendente] = await sql`
+      UPDATE cadastro_pendente
+      SET token_verificacao = ${hash}, token_expira = ${expiracaoDoToken()}
+      WHERE email = ${email} AND token_expira < ${limiteDeReenvio()}
+      RETURNING nome
+    `;
+    if (pendente) await enviarEmailVerificacao({ nome: pendente.nome, email, token });
+
+    return res.status(200).json({
+      ok: true,
+      mensagem: "Se existir um cadastro aguardando confirmação com este e-mail, enviamos um novo link.",
+    });
+  } catch (erro) {
+    console.error("[reenviar-verificacao]", erro.message);
     return res.status(500).json({ erro: "Erro interno." });
   }
 });
@@ -96,13 +209,25 @@ router.post("/login", async (req, res) => {
   }
 
   try {
+    const emailNormalizado = normalizarEmail(email);
     // lower(): contas criadas com letras maiúsculas no e-mail continuam entrando
     const [usuario] = await sql`
       SELECT id_usuario, nome, username, email, senha, perfil FROM usuario
-      WHERE lower(email) = ${normalizarEmail(email)}
+      WHERE lower(email) = ${emailNormalizado}
     `;
 
     if (!usuario) {
+      // A conta só existe depois da confirmação do e-mail. Se o e-mail e a senha batem com um
+      // cadastro pendente, avisa que falta confirmar (e o front oferece o reenvio do link).
+      const [pendente] = await sql`
+        SELECT senha FROM cadastro_pendente WHERE email = ${emailNormalizado}
+      `;
+      if (pendente && (await bcrypt.compare(senha, pendente.senha))) {
+        return res.status(403).json({
+          erro: "Confirme seu e-mail para ativar a conta. Enviamos um link de confirmação para o seu e-mail.",
+          codigo: "email_nao_verificado",
+        });
+      }
       return res.status(401).json({ erro: "E-mail ou senha inválidos." });
     }
     const senhaValida = await bcrypt.compare(senha, usuario.senha);

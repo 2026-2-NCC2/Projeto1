@@ -28,6 +28,7 @@ OVERRIDING SYSTEM VALUE VALUES
 (7, 'Lúcia Ferreira',  38, 'lucia_fornecedor',   'lucia@lfilu.com',          '$2b$10$qgQo1.g.KFe6fvJXvIFqVevj7PcNu1SvS3VD9kSx5xro/z55PZGPy', 'fornecedor'),
 (8, 'Tatiana Campos',  31, 'tatiana_fornecedor', 'tati@tceven.com',          '$2b$10$qgQo1.g.KFe6fvJXvIFqVevj7PcNu1SvS3VD9kSx5xro/z55PZGPy', 'fornecedor');
 
+
 -- ── administrador ────────────────────────────────────────────────────────────
 INSERT INTO administrador (id_administrador, nivel_permissao) VALUES
 (1, 'master');

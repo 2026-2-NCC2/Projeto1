@@ -133,6 +133,7 @@ export default function Cadastro() {
   const [step, setStep] = useState(0); // etapa atual
   const [role, setRole] = useState(""); // tipo de conta escolhido
   const [done, setDone] = useState(false); // true quando termina o cadastro
+  const [emailEnviado, setEmailEnviado] = useState(true); // false se o servidor nao conseguiu mandar o e-mail de confirmacao
 
   // dados basicos
   const [nome, setNome] = useState("");
@@ -244,23 +245,24 @@ export default function Cadastro() {
         payload.areaAtuacao = areaAtuacaoDosServicos();
       }
 
-      await cadastrarUsuario(payload);
+      const resposta = await cadastrarUsuario(payload);
+      setEmailEnviado(resposta.emailEnviado !== false);
 
       // cliente nao precisa de aprovacao: ja entra logado (organizador/fornecedor esperam o admin)
       if (role === "cliente") {
         try {
           login(await loginUsuario({ email, senha }));
         } catch {
-          // conta criada; se o login automatico falhar, a pessoa entra pela tela de login
+          // conta criada; se o login automatico falhar (ex: e-mail ainda nao confirmado), a pessoa entra pela tela de login
         }
       }
       setDone(true);
     } catch (err) {
-      // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem
+      // 400 = o servidor recusou algum campo / 409 = e-mail, username ou CNPJ já existem / 429 = e-mail pendente, aguarde 1 min
       const camposComErro =
         err.status === 400 && err.campos
           ? err.campos
-          : err.status === 409 && err.campo
+          : (err.status === 409 || err.status === 429) && err.campo
             ? { [err.campo]: err.message }
             : null;
       const etapas = camposComErro
@@ -279,7 +281,7 @@ export default function Cadastro() {
           ),
         );
         setStep(Math.min(...etapas)); // volta pra primeira etapa que tem erro
-      } else if (err.status === 400 || err.status === 409) {
+      } else if (err.status === 400 || err.status === 409 || err.status === 429) {
         setApiError(err.message);
       } else {
         setApiError(
@@ -348,6 +350,13 @@ export default function Cadastro() {
             {/* mensagem muda: cliente ja ta pronto, organizador/fornecedor ficou pendente */}
             <p className="mt-4 text-[15px] text-tinta/70">
               {isUser ? 'Bem-vindo ao TrocaTicket! Sua conta está pronta.' : <><strong className="text-tinta">{role === 'organizador' ? 'Organizador' : 'Fornecedor'}</strong>: sua solicitação foi enviada.</>}
+            </p>
+
+            {/* aviso da confirmacao de e-mail: vale pra todos os tipos de conta */}
+            <p className="mt-6 max-w-[400px] border-[1.5px] border-tinta/20 bg-papel px-4 py-3 text-sm leading-relaxed text-tinta/80">
+              {emailEnviado
+                ? <>Enviamos um link de confirmação para <strong>{email.trim()}</strong>. Confirme seu e-mail para poder entrar.</>
+                : <>Não conseguimos enviar o e-mail de confirmação agora. Na tela de login, use <strong>Reenviar e-mail de confirmação</strong>.</>}
             </p>
 
             {/* codigo do cadastro, so pra quem precisa de aprovacao */}

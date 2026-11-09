@@ -25,6 +25,25 @@ CREATE TABLE usuario (
     data_criacao TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP -- [MELHORIA] TIMESTAMPTZ para suporte a fusos horários
 );
 
+-- Cadastros aguardando a confirmação do e-mail. A conta (usuario + organizador/fornecedor)
+-- só é criada quando a pessoa clica no link; nesse momento a linha daqui é apagada.
+-- Guardamos só o hash (SHA-256) do token; o token em si vai apenas no e-mail.
+CREATE TABLE cadastro_pendente (
+    id_pendente INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    email VARCHAR(150) NOT NULL UNIQUE,  -- um pendente por e-mail: cadastrar de novo substitui o anterior
+    nome VARCHAR(150) NOT NULL,
+    idade INT NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    senha VARCHAR(255) NOT NULL,         -- já com hash bcrypt
+    perfil tipo_perfil NOT NULL,
+    nome_organizacao VARCHAR(150),       -- só organizador e fornecedor
+    cnpj CHAR(14),                       -- só organizador e fornecedor
+    area_atuacao VARCHAR(80),            -- só fornecedor
+    token_verificacao CHAR(64) NOT NULL UNIQUE,
+    token_expira TIMESTAMPTZ NOT NULL,
+    criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE organizador (
     id_organizador INT PRIMARY KEY,
     nome_organizacao VARCHAR(150) NOT NULL,
