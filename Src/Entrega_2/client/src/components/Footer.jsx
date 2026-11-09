@@ -11,7 +11,7 @@ export default function Footer() {
         <div>
           <Link to="/" aria-label="TrocaTicket, início" className="inline-flex items-center gap-2.5 text-lg font-black tracking-[-0.025em] text-white no-underline">
             <img src={logo} alt="" className="size-8 object-contain" />
-            <span>Troca<span className="text-gel-indigo">Ticket</span></span>
+            <span>Troca<span className="text-acento">Ticket</span></span>
           </Link>
           <p className="mt-3 max-w-[40ch] text-sm leading-relaxed text-white/65">Descubra eventos e encontre experiências para viver e compartilhar.</p>
         </div>

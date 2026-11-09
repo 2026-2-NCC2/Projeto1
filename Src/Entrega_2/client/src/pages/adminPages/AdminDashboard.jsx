@@ -239,7 +239,7 @@ export default function AdminDashboard() {
                       <thead>
                         <tr className="bg-tinta">
                           {['Cadastro', 'Tipo', 'Data', 'Status', 'Ação'].map((h) => (
-                            <th key={h} scope="col" className="px-5 py-3.5 text-left text-[11px] font-extrabold uppercase tracking-[0.1em] text-white">{h}</th>
+                            <th key={h} scope="col" className="px-5 py-3.5 text-left text-[11px] font-extrabold uppercase tracking-[0.1em] text-sobre-escuro">{h}</th>
                           ))}
                         </tr>
                       </thead>

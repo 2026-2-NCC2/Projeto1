@@ -448,7 +448,7 @@ export default function Cadastro() {
                       <span className="text-[13px] leading-snug text-tinta/65">{r.desc}</span>
                     </span>
                     {/* bolinha que marca a escolhida */}
-                    <span className={`grid size-6 shrink-0 place-items-center rounded-none border transition-colors ${escolhido ? 'border-tinta bg-tinta text-white' : 'border-tinta/25'}`} aria-hidden="true">
+                    <span className={`grid size-6 shrink-0 place-items-center rounded-none border transition-colors ${escolhido ? 'border-tinta bg-tinta text-sobre-escuro' : 'border-tinta/25'}`} aria-hidden="true">
                       {escolhido && <IconCheck tamanho={14} strokeWidth="2.6" />}
                     </span>
                   </button>

@@ -168,7 +168,7 @@ export default function AprovarCadastros() {
                   <thead>
                     <tr className="bg-tinta">
                       {['Nome / Empresa', 'Tipo', 'E-mail', 'Data', 'Status', 'Ações'].map(h => (
-                        <th key={h} className="px-5 py-3.5 text-left text-[11px] font-extrabold uppercase tracking-[0.1em] text-white">{h}</th>
+                        <th key={h} className="px-5 py-3.5 text-left text-[11px] font-extrabold uppercase tracking-[0.1em] text-sobre-escuro">{h}</th>
                       ))}
                     </tr>
                   </thead>

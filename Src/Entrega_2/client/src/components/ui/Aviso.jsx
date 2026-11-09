@@ -10,8 +10,8 @@ const TIPOS = {
   atencao: { fundo: 'border-gel-ambar/70 bg-gel-ambar/15', icone: 'text-tinta', Icone: IconAlerta, role: 'status' },
 }
 
-// no palco os icones usam a versao pastel (a forte some no fundo escuro)
-const ICONE_ESCURO = { erro: 'text-gel-rubi', sucesso: 'text-gel-verde', info: 'text-gel-indigo', atencao: 'text-gel-ambar' }
+// no palco escuro os icones usam a versao pastel (a forte some); no claro os tokens trocam pra versao forte
+const ICONE_ESCURO = { erro: 'text-acento-rubi', sucesso: 'text-acento-verde', info: 'text-acento', atencao: 'text-acento-ambar' }
 
 // escuro = versao pra usar direto sobre o palco
 export default function Aviso({ tipo = 'info', escuro = false, className = '', children }) {

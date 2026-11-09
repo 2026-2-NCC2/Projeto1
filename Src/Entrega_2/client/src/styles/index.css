@@ -55,7 +55,60 @@
   --shadow-brutal: 6px 6px 0 #7a6be0;
 
   --ease-saida: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── tokens de tema ──
+     Cada um tem aqui o valor do modo ESCURO (o original do site, inalterado) e e redefinido
+     mais abaixo, em :root[data-theme='light'], para o modo claro. */
+  /* texto sobre fundo escuro FIXO (bg-tinta): continua branco nos dois temas */
+  --color-sobre-escuro: #ffffff;
+  /* hover dos botoes 'tinta': nao acompanha o palco, senao ficaria branco no claro */
+  --color-tinta-hover: #2b2838;
+  /* texto colorido sobre o PALCO (no claro precisa da versao forte pra dar contraste) */
+  --color-acento: #ab9ff2;         /* = gel-indigo */
+  --color-acento-hover: #ab9ff2;
+  --color-acento-rubi: #ee9dab;    /* = gel-rubi */
+  --color-acento-verde: #9fd8b4;   /* = gel-verde */
+  --color-acento-ambar: #f2d38a;   /* = gel-ambar */
+  /* cortina dos modais */
+  --color-veu: #111017;            /* = palco */
 }
+
+/* ── MODO CLARO ──
+   So existe quando <html data-theme="light">. O modo escuro nao tem nenhuma regra aqui: ele e o que esta no @theme acima.
+   O site e escrito em "papeis": o PALCO (fundo da pagina, com texto 'white'), a FOLHA (cards claros com texto 'tinta')
+   e a TINTA (preto quente). No claro o palco vira papel claro e o 'white' vira tinta, entao cada texto/borda
+   escrito como white/xx passa a ser tinta/xx sem mexer em nenhum componente. As folhas ficam quase brancas,
+   com a mesma borda preta e a mesma sombra chapada lavanda, e as gelatinas pastel continuam as mesmas. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-palco: #f1eee8;
+  --color-palco-2: #e6e2da;
+  --color-palco-3: #fbfaf7;
+  --color-white: #1a1722;          /* texto e linhas "sobre o palco" (white/xx) viram tinta clara */
+  --color-luz-violeta: #8b74f0;
+  --color-luz-rosa: #f26b93;
+
+  --color-folha: #fdfcfa;
+  --color-mesa: #f7f4ee;
+  --color-papel: #f2efe9;
+
+  --color-acento: #5a4bbd;         /* = gel-indigo-forte */
+  --color-acento-hover: #3f31a0;
+  --color-acento-rubi: #b03a52;
+  --color-acento-verde: #2d7a4f;
+  --color-acento-ambar: #8a5a00;
+  --color-veu: #15131c;
+
+  --color-foco: #5a4bbd;
+
+}
+/* o Tailwind grava o valor da sombra direto na classe (nao usa a variavel), entao o claro sobrescreve a classe:
+   mesma sombra chapada lavanda, so com a sombra macia de baixo mais leve (a escura pesa demais no fundo claro) */
+:root[data-theme='light'] .shadow-folha {
+  --tw-shadow: 6px 6px 0 rgb(171 159 242 / 0.55), 0 16px 30px -22px rgb(31 29 46 / 0.35);
+}
+
 
 @layer base {
   html {
@@ -68,7 +121,7 @@
     margin: 0;
     min-width: 320px;
     background: var(--color-palco);
-    color: #fff;
+    color: var(--color-white, #fff); /* branco no escuro; no claro vira tinta (ver :root[data-theme='light']) */
     font-family: var(--font-sans);
     font-feature-settings: 'ss01';
     -webkit-font-smoothing: antialiased;
@@ -114,6 +167,13 @@
     background-image:
       radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--color-luz-violeta) 38%, transparent), transparent),
       radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--color-luz-rosa) 30%, transparent), transparent);
+  }
+
+  /* no claro as manchas de luz ficam mais suaves */
+  :root[data-theme='light'] .fundo-luz::before {
+    background-image:
+      radial-gradient(ellipse 60% 50% at 85% 8%, color-mix(in srgb, var(--color-luz-violeta) 26%, transparent), transparent),
+      radial-gradient(ellipse 50% 45% at 10% 95%, color-mix(in srgb, var(--color-luz-rosa) 20%, transparent), transparent);
   }
 
   /* furo de rebite das folhas de gelatina: um circulo vazado na cor do palco */

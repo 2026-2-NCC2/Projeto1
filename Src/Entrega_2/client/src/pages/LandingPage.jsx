@@ -101,7 +101,7 @@ function IngressoInterativo() {
           />
 
           <div className="relative z-[2] flex items-center justify-between px-6 pt-5 font-mono text-[10px] font-semibold tracking-[0.14em]">
-            <span className="grid size-9 place-items-center bg-tinta text-xs font-black tracking-[-0.04em] text-white">TT</span>
+            <span className="grid size-9 place-items-center bg-tinta text-xs font-black tracking-[-0.04em] text-sobre-escuro">TT</span>
             <span>SEU PRÓXIMO EVENTO</span>
           </div>
 

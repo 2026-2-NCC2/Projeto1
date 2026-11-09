@@ -3,6 +3,7 @@ import logo from '../assets/branding/logos/logo_navbar_web_128.png' // versao 12
 import { useAuth } from '../services/AuthContext.jsx'
 import { rolarAteSecao } from '../utils/rolagem'
 import { btn, pilulaCls } from './ui/estilos'
+import BotaoTema from './BotaoTema'
 
 // secoes de eventos do organizador (a pagina PainelDeEventos le o ?tab= da url)
 const EVENTOS_ORGANIZADOR = [
@@ -60,7 +61,7 @@ export default function Header() {
       <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[1fr_auto_1fr] items-center gap-6 px-5 sm:px-8 max-[900px]:grid-cols-[1fr_auto] max-[900px]:gap-x-4 max-[900px]:gap-y-0">
         <Link to="/" className="flex h-[68px] shrink-0 items-center gap-2.5 text-[19px] font-black tracking-[-0.025em] text-white no-underline max-[900px]:h-14 max-[540px]:text-base" aria-label="TrocaTicket, início">
           <img src={logo} alt="" className="size-8 object-contain max-[540px]:size-7" />
-          <span>Troca<span className="text-gel-indigo">Ticket</span></span>
+          <span>Troca<span className="text-acento">Ticket</span></span>
         </Link>
 
         <nav
@@ -98,6 +99,8 @@ export default function Header() {
 
         <nav className="flex shrink-0 items-center justify-end gap-3 max-[540px]:gap-2" aria-label="Conta">
           {voltar && <NavItem to={voltar.to} className="mr-2 max-[900px]:hidden">{voltar.label}</NavItem>}
+
+          <BotaoTema />
 
           {logado ? (
             <>
