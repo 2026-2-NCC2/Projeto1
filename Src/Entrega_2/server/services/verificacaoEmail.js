@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import nodemailer from 'nodemailer'
 
 // Confirmação de e-mail: gera o token, monta o link e envia a mensagem.
 
@@ -35,42 +36,51 @@ function escaparHtml(texto) {
     return String(texto).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
 }
 
+// Transporte SMTP do Nodemailer, criado uma vez. Uma única conta SMTP nossa envia para qualquer
+// destinatário, então o usuário não precisa configurar nada. Padrão: Gmail (grátis, com senha de app).
+let transporteCache
+function obterTransporte() {
+    const { SMTP_USER, SMTP_PASS } = process.env
+    if (!SMTP_USER || !SMTP_PASS) return null
+    if (!transporteCache) {
+        const porta = Number(process.env.SMTP_PORT) || 465
+        transporteCache = nodemailer.createTransport({
+            host: process.env.SMTP_HOST || 'smtp.gmail.com',
+            port: porta,
+            secure: porta === 465,
+            auth: { user: SMTP_USER, pass: SMTP_PASS },
+        })
+    }
+    return transporteCache
+}
+
 // Envia o e-mail de confirmação. Devolve true se enviou, false se não deu.
 // Nunca lança erro: o cadastro já foi gravado e a pessoa pode pedir o reenvio no login.
 export async function enviarEmailVerificacao({ nome, email, token }) {
     const link = `${urlDoFrontend()}/verificar-email?token=${token}`
-    const chave = process.env.RESEND_API_KEY
+    const transporte = obterTransporte()
 
-    if (!chave) {
+    if (!transporte) {
         if (process.env.NODE_ENV === 'production') {
-            console.error('[email] RESEND_API_KEY não configurada: e-mail de confirmação não enviado.')
+            console.error('[email] SMTP_USER/SMTP_PASS não configurados: e-mail de confirmação não enviado.')
             return false
         }
-        // Desenvolvimento sem provedor de e-mail: mostra o link no terminal.
+        // Desenvolvimento sem SMTP: mostra o link no terminal.
         console.log(`[email:dev] Link de confirmação: ${link}`)
         return true
     }
 
     try {
-        const resposta = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${chave}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                from: process.env.EMAIL_FROM || 'TrocaTicket <onboarding@resend.dev>',
-                to: [email],
-                subject: 'Confirme seu e-mail no TrocaTicket',
-                text: `Olá, ${nome}!\n\nConfirme seu e-mail para ativar sua conta no TrocaTicket:\n${link}\n\nO link vale por ${VALIDADE_TOKEN_HORAS} horas. Se você não criou esta conta, ignore esta mensagem.`,
-                html: `<p>Olá, ${escaparHtml(nome)}!</p>
+        await transporte.sendMail({
+            from: process.env.EMAIL_FROM || `TrocaTicket <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: 'Confirme seu e-mail no TrocaTicket',
+            text: `Olá, ${nome}!\n\nConfirme seu e-mail para ativar sua conta no TrocaTicket:\n${link}\n\nO link vale por ${VALIDADE_TOKEN_HORAS} horas. Se você não criou esta conta, ignore esta mensagem.`,
+            html: `<p>Olá, ${escaparHtml(nome)}!</p>
 <p>Confirme seu e-mail para ativar sua conta no TrocaTicket:</p>
 <p><a href="${link}">Confirmar meu e-mail</a></p>
 <p>O link vale por ${VALIDADE_TOKEN_HORAS} horas. Se você não criou esta conta, ignore esta mensagem.</p>`,
-            }),
         })
-       if (!resposta.ok) {
-        const corpo = await resposta.text()
-        console.error('[email] provedor recusou o envio, status', resposta.status, corpo)
-      return false
-}
         return true
     } catch (erro) {
         // Só a mensagem: nada de e-mail ou token no log.
