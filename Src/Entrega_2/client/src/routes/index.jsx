@@ -37,6 +37,12 @@ export const router = createBrowserRouter([
       // propostas — fornecedor (enviadas) e organizador (recebidas)
       { path: '/propostas', lazy: paginaProtegida(() => import('../pages/Propostas'), ['fornecedor', 'organizador']) },
 
+      // cliente — compra de ingressos (checkout simulado), ingressos comprados e saldo
+      { path: '/checkout', lazy: paginaProtegida(() => import('../pages/Checkout'), ['cliente']) },
+      { path: '/ingressos', lazy: paginaProtegida(() => import('../pages/MeusIngressos'), ['cliente']) },
+      { path: '/saldo', lazy: paginaProtegida(() => import('../pages/Saldo'), ['cliente']) },
+      { path: '/saldo/adicionar', lazy: paginaProtegida(() => import('../pages/AdicionarSaldo'), ['cliente']) },
+
       // admin — so perfil 'administrador'
       { path: '/AprovarCadastros', lazy: paginaProtegida(() => import('../pages/adminPages/AprovarCadastros'), ['administrador']) },
       { path: '/AdminDashboard', lazy: paginaProtegida(() => import('../pages/adminPages/AdminDashboard.jsx'), ['administrador']) },

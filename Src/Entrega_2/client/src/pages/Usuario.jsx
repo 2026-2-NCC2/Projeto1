@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../services/AuthContext'
 import { solicitar } from '../services/api'
-import { brl } from '../utils/formato'
+import { brl, dataCurta } from '../utils/formato'
 import Badge from '../components/ui/Badge'
 import Spinner from '../components/ui/Spinner'
 import Aviso from '../components/ui/Aviso'
@@ -65,10 +65,16 @@ export default function Usuario() {
   const dadosPerfil = usuario // veja o comentario "PONTO DE INTEGRACAO" no topo
 
   // organizador -> eventos dele (GET /eventos, filtrado pelo id); fornecedor -> propostas (GET /propostas)
-  // cliente e administrador nao tem lista para buscar
-  const rota = perfil === 'organizador' ? '/eventos' : perfil === 'fornecedor' ? '/propostas' : null
+  // cliente -> ingressos comprados (GET /compras); administrador nao tem lista para buscar
+  const rota = perfil === 'organizador' ? '/eventos' : perfil === 'fornecedor' ? '/propostas' : perfil === 'cliente' ? '/compras' : null
   const [lista, setLista] = useState(null)
   const [erro, setErro] = useState('')
+  const [saldo, setSaldo] = useState(null) // so cliente: vem do servidor (GET /saldo), nunca e calculado aqui
+
+  useEffect(() => {
+    if (perfil !== 'cliente') return
+    solicitar('/saldo').then((d) => setSaldo(d.saldo)).catch(() => {}) // sem saldo disponivel, o card mostra "—"
+  }, [perfil])
 
   useEffect(() => {
     if (!rota) return
@@ -92,7 +98,7 @@ export default function Usuario() {
   // ---- card de baixo (esquerda): depende do perfil ----
   function conteudoLista() {
     if (carregando) return <Spinner text="Carregando..." />
-    if (erro) return <Aviso tipo="erro">{erro}</Aviso>
+    if (erro) return <Aviso tipo={perfil === 'cliente' ? 'atencao' : 'erro'}>{erro}</Aviso>
 
     if (perfil === 'organizador') {
       if (!lista.length) {
@@ -135,8 +141,23 @@ export default function Usuario() {
       )
     }
 
-    // cliente: ainda nao existe endpoint de ingressos
-    return <Vazio titulo="Você ainda não tem ingressos" texto="Os ingressos que você comprar aparecerão aqui." acao={<Link to="/PainelDeEventos" className={linkAcao}>Ver eventos</Link>} />
+    // cliente: ingressos comprados (os 5 mais recentes; a lista completa fica em /ingressos)
+    if (!lista.length) {
+      return <Vazio titulo="Você ainda não tem ingressos" texto="Os ingressos que você comprar aparecerão aqui." acao={<Link to="/PainelDeEventos" className={linkAcao}>Ver eventos</Link>} />
+    }
+    return (
+      <>
+        <ul className="m-0 list-none divide-y divide-tinta/10 p-0">
+          {lista.slice(0, 5).map((c) => (
+            <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+              <span><strong>{c.evento_titulo}</strong><br /><span className="text-tinta/60">{dataCurta(c.evento_data)} · {c.quantidade} × {c.tipo_nome}</span></span>
+              <span className="font-mono text-xs tracking-[0.1em]">{c.codigo}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-4"><Link to="/ingressos" className={linkAcao}>Ver todos os ingressos</Link></div>
+      </>
+    )
   }
 
   const tituloLista = { organizador: 'Meus eventos', fornecedor: 'Propostas enviadas', administrador: 'Administração' }[perfil] || 'Meus ingressos'
@@ -144,17 +165,17 @@ export default function Usuario() {
   // ---- card da direita (alto): saldo (cliente) ou resumo (demais) ----
   function conteudoLateral() {
     if (perfil === 'cliente') {
-      const temSaldo = typeof dadosPerfil.saldo === 'number'
+      const temSaldo = typeof saldo === 'number'
       return (
         <>
           <h2 className={cardTitulo}>Saldo na plataforma</h2>
-          <p className="tabular m-0 text-4xl font-black tracking-[-0.025em]">{temSaldo ? brl(dadosPerfil.saldo) : '—'}</p>
+          <p className="tabular m-0 text-4xl font-black tracking-[-0.025em]">{temSaldo ? brl(saldo) : '—'}</p>
           <p className="mb-5 mt-2 text-sm text-tinta/65">
-            {temSaldo ? 'Disponível para usar na compra de ingressos.' : 'O saldo para usar em eventos ainda não está disponível.'}
+            {temSaldo ? 'Disponível para usar na compra de ingressos.' : 'O saldo ainda não está disponível.'}
           </p>
-          <button type="button" disabled className={`${btn('claro')} w-full`}>
-            Adicionar saldo (em breve)
-          </button>
+          <Link to="/saldo" className={`${btn('claro')} w-full`}>
+            Adicionar saldo
+          </Link>
         </>
       )
     }

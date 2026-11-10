@@ -83,6 +83,13 @@ export default function Header() {
             </NavItem>
           )}
 
+          {perfil === 'cliente' && (
+            <>
+              <NavItem to="/ingressos" active={path === '/ingressos'}>Meus ingressos</NavItem>
+              <NavItem to="/saldo" active={path.startsWith('/saldo')}>Saldo</NavItem>
+            </>
+          )}
+
           {isAdmin && (
             <>
               <NavItem to="/AdminDashboard" active={path === '/admindashboard'}>Painel</NavItem>
