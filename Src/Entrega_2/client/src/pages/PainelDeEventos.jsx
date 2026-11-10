@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import FornecedoresConfirmados from '../components/FornecedoresConfirmados';
 import CustosFornecedor from '../components/CustosFornecedor';
 import TicketEstimado from '../components/TicketEstimado';
+import CompraIngressos from '../components/CompraIngressos';
 import Aviso from '../components/ui/Aviso';
 import Badge from '../components/ui/Badge';
 import CabecalhoPagina from '../components/ui/CabecalhoPagina';
@@ -34,6 +35,8 @@ function formatCurrency(val) {
 export default function PainelDeEventos() {
   const { perfil, usuario } = useAuth();
   const idUsuarioLogado = usuario?.id_usuario;
+  // cliente e visitante: nao veem itens de custo (so quem organiza, fornece ou administra) e nao tem rascunhos
+  const veCustos = ['organizador', 'fornecedor', 'administrador'].includes(perfil);
   // ── Aba ativa vem do query param gerenciado pelo Header ──────────────────
   // ex: ?tab=meus mostra so os meus eventos, sem nada mostra todos
   const [searchParams] = useSearchParams();
@@ -195,7 +198,7 @@ export default function PainelDeEventos() {
 
             {/* filtro por status: controle segmentado, o selecionado fica claro */}
             <div className="flex flex-wrap border-[1.5px] border-white/40 bg-palco-2" role="group" aria-label="Filtrar por status">
-              {['Todos', 'Publicado', 'Rascunho', 'Encerrado', 'Cancelado'].map((s) => (
+              {['Todos', 'Publicado', ...(perfil === 'organizador' ? ['Rascunho'] : []), 'Encerrado', 'Cancelado'].map((s) => (
                 <button
                   key={s}
                   onClick={() => setFiltroStatus(s)}
@@ -236,7 +239,7 @@ export default function PainelDeEventos() {
                     {/* faixa da gelatina do evento: o mesmo id sempre tem a mesma cor */}
                     <div className={`relative flex h-24 items-end justify-between px-5 pb-3 ${gel.bg}`}>
                       <span className="rebite left-5 top-4" aria-hidden="true" />
-                      <span className={`font-mono text-[11px] font-semibold tracking-[0.06em] opacity-85 ${gel.sobre}`}>{gel.codigo} · {gel.nome}</span>
+                      <span aria-hidden="true" />
                       <Badge label={ev.status_publicacao} />
                     </div>
 
@@ -272,10 +275,12 @@ export default function PainelDeEventos() {
                             <dd className="tabular mt-0.5 text-xs text-tinta/60">2º lote: {formatCurrency(ev.segundo_lote)}</dd>
                           )}
                         </div>
-                        <div className="text-right">
-                          <dt className={dadoRotuloCls}>Itens de custo</dt>
-                          <dd className="tabular mt-1 text-xl font-black">{ev.quantidade_itens}</dd>
-                        </div>
+                        {veCustos && (
+                          <div className="text-right">
+                            <dt className={dadoRotuloCls}>Itens de custo</dt>
+                            <dd className="tabular mt-1 text-xl font-black">{ev.quantidade_itens}</dd>
+                          </div>
+                        )}
                       </dl>
 
                       {/* abre a tela de detalhes desse evento */}
@@ -319,7 +324,7 @@ export default function PainelDeEventos() {
               {/* faixa grande com a gelatina do evento e o status */}
               <div className={`relative flex h-36 items-end justify-between px-6 pb-4 sm:px-9 ${gel.bg}`}>
                 <span className="rebite left-6 top-5 sm:left-9" aria-hidden="true" />
-                <span className={`font-mono text-xs font-semibold tracking-[0.06em] opacity-85 ${gel.sobre}`}>{gel.codigo} · {gel.nome}</span>
+                <span aria-hidden="true" />
                 <Badge label={eventoSelecionado.status_publicacao} />
               </div>
 
@@ -348,9 +353,10 @@ export default function PainelDeEventos() {
                       valor: formatCurrency(eventoSelecionado.primeiro_lote),
                       extra: eventoSelecionado.segundo_lote != null && `Segundo lote: ${formatCurrency(eventoSelecionado.segundo_lote)}`,
                     },
-                    { Icone: IconLista, rotulo: 'Itens de custo', valor: `${eventoSelecionado.quantidade_itens} itens registrados` },
-                  ].map(({ Icone, rotulo, valor, extra }) => (
-                    <div key={rotulo} className="flex gap-3 bg-papel px-5 py-4">
+                    ...(veCustos ? [{ Icone: IconLista, rotulo: 'Itens de custo', valor: `${eventoSelecionado.quantidade_itens} itens registrados` }] : []),
+                  ].map(({ Icone, rotulo, valor, extra }, i, lista) => (
+                    // quantidade impar de itens: o ultimo ocupa a linha toda (sem sobrar uma celula vazia)
+                    <div key={rotulo} className={`flex gap-3 bg-papel px-5 py-4 ${i === lista.length - 1 && lista.length % 2 === 1 ? 'sm:col-span-2' : ''}`}>
                       <span className="mt-0.5 text-tinta/45"><Icone tamanho={18} /></span>
                       <div className="min-w-0">
                         <dt className={dadoRotuloCls}>{rotulo}</dt>
@@ -361,6 +367,10 @@ export default function PainelDeEventos() {
                   ))}
                 </dl>
 
+                {/* compra de ingressos: so eventos publicados (cliente escolhe; visitante recebe o convite pra entrar) */}
+                {eventoSelecionado.status_publicacao === 'Publicado' && !['organizador', 'fornecedor', 'administrador'].includes(perfil) && (
+                  <CompraIngressos key={`ingressos-${eventoSelecionado.id}`} evento={eventoSelecionado} />
+                )}
                 {['organizador', 'fornecedor'].includes(perfil) && <FornecedoresConfirmados key={`fornecedores-${eventoSelecionado.id}`} eventoId={eventoSelecionado.id} />}
                 {perfil === 'fornecedor' && (
                   <CustosFornecedor

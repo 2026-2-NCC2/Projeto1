@@ -4,6 +4,7 @@ import authRoutes from './routes/authRoutes.js'
 import eventoRoutes from './routes/eventoRoutes.js'
 import propostaRoutes from './routes/propostaRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import compraRoutes from './routes/compraRoutes.js'
 import { tratarErros } from './middlewares/erros.js'
 
 // Este arquivo só monta o app (rotas e middlewares), sem chamar app.listen.
@@ -54,6 +55,9 @@ app.use('/api', eventoRoutes)
 
 // Registra as rotas relacionadas ao admin com o prefixo /api
 app.use('/api', adminRoutes)
+
+// Compra de ingressos e saldo do cliente (exige a migration proposta em docs/database-changes-proposal.md)
+app.use('/api', compraRoutes)
 
 app.use('/api/propostas', propostaRoutes)
 app.use(tratarErros)

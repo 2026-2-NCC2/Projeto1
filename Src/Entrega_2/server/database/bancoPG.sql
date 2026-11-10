@@ -153,7 +153,43 @@ CREATE TABLE produto_solicitacao (
 );
 
 -- =========================================================================
--- 4. ÍNDICES DE PERFORMANCE (Recomendados para o Postgres)
+-- 4. COMPRA DE INGRESSOS E SALDO DO CLIENTE (pagamento SIMULADO)
+-- Usadas por server/routes/compraRoutes.js.
+-- =========================================================================
+
+-- Compra: cada linha e uma compra APROVADA (compra recusada nao grava nada).
+--   Os ingressos sao "quantidade" unidades do tipo escolhido, com um codigo unico.
+CREATE TABLE IF NOT EXISTS compra (
+    id_compra INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario_fk INT NOT NULL,
+    id_evento_fk INT NOT NULL,
+    tipo_ingresso VARCHAR(20) NOT NULL CHECK (tipo_ingresso IN ('lote_inicial', 'segundo_lote')),
+    quantidade INT NOT NULL CHECK (quantidade > 0),
+    valor_unitario NUMERIC(12,2) NOT NULL CHECK (valor_unitario > 0), -- preco no momento da compra
+    valor_total NUMERIC(12,2) NOT NULL CHECK (valor_total > 0),
+    metodo VARCHAR(10) NOT NULL CHECK (metodo IN ('saldo', 'cartao')),
+    codigo CHAR(12) NOT NULL UNIQUE,
+    criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_compra_usuario FOREIGN KEY (id_usuario_fk) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    -- RESTRICT: um evento com vendas nao pode ser apagado (protege as compras dos clientes)
+    CONSTRAINT fk_compra_evento FOREIGN KEY (id_evento_fk) REFERENCES evento(id_evento) ON DELETE RESTRICT
+);
+
+-- Movimentacao de saldo: o saldo do cliente = soma das 'recarga' menos soma das 'compra'.
+--    Nao existe coluna de saldo na tabela usuario, entao nao ha um numero para alterar direto.
+CREATE TABLE IF NOT EXISTS movimentacao_saldo (
+    id_movimentacao INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_usuario_fk INT NOT NULL,
+    tipo VARCHAR(10) NOT NULL CHECK (tipo IN ('recarga', 'compra')),
+    descricao VARCHAR(150) NOT NULL,
+    valor NUMERIC(12,2) NOT NULL CHECK (valor > 0),
+    saldo_resultante NUMERIC(12,2) NOT NULL CHECK (saldo_resultante >= 0), -- saldo logo depois desta movimentacao
+    criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_movimentacao_usuario FOREIGN KEY (id_usuario_fk) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+-- =========================================================================
+-- 5. ÍNDICES DE PERFORMANCE (Recomendados para o Postgres)
 -- =========================================================================
 CREATE INDEX idx_usuario_email ON usuario(email);
 CREATE INDEX idx_evento_data ON evento(data_evento);
@@ -174,6 +210,9 @@ CREATE INDEX IF NOT EXISTS idx_solicitacao_evento ON solicitacao_fornecimento(id
 CREATE INDEX IF NOT EXISTS idx_solicitacao_fornecedor ON solicitacao_fornecimento(id_fornecedor_fk);
 CREATE INDEX IF NOT EXISTS idx_produto_solicitacao ON produto_solicitacao(id_solicitacao_fk);
 CREATE INDEX IF NOT EXISTS idx_produto_itemcusto ON produto_solicitacao(id_item_custo_fk);
+CREATE INDEX IF NOT EXISTS idx_compra_usuario ON compra(id_usuario_fk);
+CREATE INDEX IF NOT EXISTS idx_compra_evento ON compra(id_evento_fk);
+CREATE INDEX IF NOT EXISTS idx_movimentacao_usuario ON movimentacao_saldo(id_usuario_fk);
 
 ALTER TABLE usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE organizador ENABLE ROW LEVEL SECURITY;
@@ -185,4 +224,5 @@ ALTER TABLE custoindependente ENABLE ROW LEVEL SECURITY;
 ALTER TABLE proposta ENABLE ROW LEVEL SECURITY;
 ALTER TABLE solicitacao_fornecimento ENABLE ROW LEVEL SECURITY;
 ALTER TABLE produto_solicitacao ENABLE ROW LEVEL SECURITY;
-
+ALTER TABLE compra ENABLE ROW LEVEL SECURITY;
+ALTER TABLE movimentacao_saldo ENABLE ROW LEVEL SECURITY;
