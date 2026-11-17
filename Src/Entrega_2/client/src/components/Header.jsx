@@ -99,6 +99,7 @@ export default function Header() {
 
           {path === '/' && <a className={`${LINK_BASE} ${LINK_IDLE} select-none`} href="#categorias" onClick={rolarAteSecao}>Categorias</a>}
           {path === '/' && <a className={`${LINK_BASE} ${LINK_IDLE} select-none`} href="#como-funciona" onClick={rolarAteSecao}>Como funciona</a>}
+          {path === '/' && <NavItem to="/trabalhe-conosco">Trabalhe conosco</NavItem>}
 
           {/* no celular o "voltar" vai pra linha do menu; os que levam pra "/" ficam so no desktop (o logo ja faz isso) */}
           {voltar && voltar.to !== '/' && <NavItem to={voltar.to} className="min-[901px]:hidden">{voltar.label}</NavItem>}

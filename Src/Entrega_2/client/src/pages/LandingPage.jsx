@@ -272,9 +272,14 @@ function LandingPage() {
             <h2 className="max-w-[16ch] text-[clamp(2.25rem,5vw,4.25rem)] font-black leading-[0.92] tracking-[-0.025em]">Pronto para descobrir algo novo?</h2>
             <p className="mt-5 max-w-[52ch] text-base font-medium leading-relaxed text-tinta/80">Explore a página de eventos e encontre a próxima experiência para guardar na memória.</p>
           </div>
-          <Link to="/PainelDeEventos" className={`${btn('tinta', 'lg')} relative`}>
-            Explorar eventos <IconSeta />
-          </Link>
+          <div className="relative flex flex-col items-start gap-4">
+            <Link to="/PainelDeEventos" className={btn('tinta', 'lg')}>
+              Explorar eventos <IconSeta />
+            </Link>
+            <Link to="/trabalhe-conosco" className="text-sm font-semibold text-tinta underline decoration-tinta/40 decoration-2 underline-offset-4 transition-colors hover:decoration-tinta">
+              Quer ser administrador parceiro? Trabalhe conosco
+            </Link>
+          </div>
         </div>
       </section>
 

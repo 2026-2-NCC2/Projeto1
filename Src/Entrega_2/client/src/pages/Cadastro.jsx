@@ -456,6 +456,11 @@ export default function Cadastro() {
               })}
             </div>
 
+            {/* administrador nao e um tipo de conta publico: quem quer ser admin vai pelo "Trabalhe conosco" */}
+            <p className="mt-5 text-center text-sm text-tinta/65">
+              Quer ser administrador? <Link to="/trabalhe-conosco" className={linkClaroCls}>Trabalhe conosco</Link>
+            </p>
+
             {/* erro geral da API (ex: backend fora do ar) */}
             {apiError && <Aviso tipo="erro" className="mt-5">{apiError}</Aviso>}
 
