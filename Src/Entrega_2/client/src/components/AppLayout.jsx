@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, ScrollRestoration } from 'react-router-dom'
 import Header from './Header'
 
 // layout que envolve todas as paginas do site
@@ -14,6 +14,9 @@ export default function AppLayout() {
       </a>
       {/* cabecalho que aparece em todas as paginas */}
       <Header />
+      {/* ao trocar de pagina volta pro topo (e ao usar "voltar" do navegador, devolve a posicao de antes).
+          a chave e so o caminho: trocar de aba (?tab=) na mesma pagina nao faz a tela pular */}
+      <ScrollRestoration getKey={(location) => location.pathname} />
       {/* aqui entra a pagina da rota atual (landing, login, cadastro...) */}
       <div id="conteudo" tabIndex={-1} className="outline-none">
         <Outlet />

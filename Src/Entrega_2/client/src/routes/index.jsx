@@ -30,6 +30,7 @@ export const router = createBrowserRouter([
       { path: '/Login', lazy: pagina(() => import('../pages/Login')) },
       { path: '/verificar-email', lazy: pagina(() => import('../pages/VerificarEmail')) },
       { path: '/PainelDeEventos', lazy: pagina(() => import('../pages/PainelDeEventos')) },
+      { path: '/trabalhe-conosco', lazy: pagina(() => import('../pages/TrabalheConosco')) },
 
       // perfil do usuario — qualquer perfil logado
       { path: '/usuario', lazy: paginaProtegida(() => import('../pages/Usuario')) },

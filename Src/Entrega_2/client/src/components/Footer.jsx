@@ -15,6 +15,9 @@ export default function Footer() {
           </Link>
           <p className="mt-3 max-w-[40ch] text-sm leading-relaxed text-white/65">Descubra eventos e encontre experiências para viver e compartilhar.</p>
         </div>
+        <nav aria-label="Rodapé" className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold">
+          <Link to="/trabalhe-conosco" className="text-white/75 no-underline transition-colors hover:text-white">Trabalhe conosco</Link>
+        </nav>
       </div>
       <div className={`${containerCls} flex flex-wrap items-center justify-between gap-3 border-t border-white/10 py-5 text-xs text-white/55`}>
         <span>© {new Date().getFullYear()} TrocaTicket. Todos os direitos reservados.</span>
